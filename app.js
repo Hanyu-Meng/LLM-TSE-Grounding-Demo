@@ -6,6 +6,18 @@ document.querySelectorAll("audio").forEach((player) => {
   });
 });
 
+document.querySelectorAll("details").forEach((details) => {
+  details.addEventListener("toggle", () => {
+    if (!details.open) return;
+    const image = details.querySelector("img[data-src]");
+    if (!image) return;
+    image.src = image.dataset.src;
+    image.loading = "lazy";
+    image.decoding = "async";
+    image.removeAttribute("data-src");
+  }, { once: true });
+});
+
 const frozen = window.FROZEN_NOISY_TEST;
 
 if (frozen?.table?.rows && Array.isArray(frozen.table.rows)) {

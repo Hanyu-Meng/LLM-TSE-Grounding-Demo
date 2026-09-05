@@ -22,7 +22,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <title>Repair Before Grounding · Audio Demo</title>
     <link rel="icon" href="public/favicon.svg" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=20260905-2" />
   </head>
   <body>
     <a class="skip-link" href="#content">Skip to content</a>
@@ -103,7 +103,7 @@
           </li>
         </ol>
         <figure class="method-figure">
-          <img src="public/assets/figures/data-flow.png" alt="Data flow from mixture and target enrollment through candidate generation and selection to direct or generative output" />
+          <img loading="lazy" decoding="async" src="public/assets/figures/data-flow.png" alt="Data flow from mixture and target enrollment through candidate generation and selection to direct or generative output" />
           <figcaption>
             Figure 1. Deployable inputs are limited to the mixture and target enrollment. Evaluation
             references are used only after inference.
@@ -233,7 +233,7 @@
             <label class="wrong">Primary WeSep <small>wrong speaker</small><audio controls preload="none" src="public/assets/audio/clean/segmented/primary.wav"></audio></label>
             <label class="correct">Pool D selected <small>target recovered</small><audio controls preload="none" src="public/assets/audio/clean/segmented/pool-d.wav"></audio></label>
           </div>
-          <details><summary>View spectrogram comparison</summary><img src="public/assets/figures/clean-case-segmented.png" alt="Spectrogram comparison for Case 1" /></details>
+          <details><summary>View spectrogram comparison</summary><img data-src="public/assets/figures/clean-case-segmented.png" alt="Spectrogram comparison for Case 1" /></details>
         </article>
 
         <article class="audio-case">
@@ -249,7 +249,7 @@
             <label class="wrong">Primary WeSep <small>wrong speaker</small><audio controls preload="none" src="public/assets/audio/clean/tfmap/primary.wav"></audio></label>
             <label class="correct">Pool D / TF-map <small>target recovered</small><audio controls preload="none" src="public/assets/audio/clean/tfmap/pool-d.wav"></audio></label>
           </div>
-          <details><summary>View spectrogram comparison</summary><img src="public/assets/figures/clean-case-tfmap.png" alt="Spectrogram comparison for Case 2" /></details>
+          <details><summary>View spectrogram comparison</summary><img data-src="public/assets/figures/clean-case-tfmap.png" alt="Spectrogram comparison for Case 2" /></details>
         </article>
 
         <article class="audio-case">
@@ -265,7 +265,7 @@
             <label class="wrong">Q-Full UD <small>decoder drift</small><audio controls preload="none" src="public/assets/audio/clean/csg/ud.wav"></audio></label>
             <label>Q-Full + CSG <small>constrained</small><audio controls preload="none" src="public/assets/audio/clean/csg/csg.wav"></audio></label>
           </div>
-          <details><summary>View spectrogram comparison</summary><img src="public/assets/figures/clean-case-csg.png" alt="Spectrogram comparison for Case 3" /></details>
+          <details><summary>View spectrogram comparison</summary><img data-src="public/assets/figures/clean-case-csg.png" alt="Spectrogram comparison for Case 3" /></details>
         </article>
 
         <p class="pending"><strong>Noisy TEST audio is pending.</strong> Examples will be selected by the frozen deterministic rule after the single permitted TEST run, not by manual cherry-picking.</p>
@@ -275,7 +275,7 @@
         <h2>Robustness and cost</h2>
         <div class="figure-grid">
           <figure>
-            <img src="public/assets/figures/noisy/candidate-recovery-by-snr-dev.png" alt="Candidate recovery rate by SNR on Noisy DEV" />
+            <img loading="lazy" decoding="async" src="public/assets/figures/noisy/candidate-recovery-by-snr-dev.png" alt="Candidate recovery rate by SNR on Noisy DEV" />
             <figcaption>Figure 2. Candidate recovery by controlled SNR on frozen Noisy DEV.</figcaption>
           </figure>
           <div>
@@ -342,7 +342,7 @@
       </div>
     </footer>
 
-    <script src="frozen-noisy-test.js"></script>
-    <script src="app.js"></script>
+    <script src="frozen-noisy-test.js?v=20260905-2"></script>
+    <script src="app.js?v=20260905-2"></script>
   </body>
 </html>
