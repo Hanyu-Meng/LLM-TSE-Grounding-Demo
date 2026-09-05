@@ -22,7 +22,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <title>Repair Before Grounding · Audio Demo</title>
     <link rel="icon" href="public/favicon.svg" />
-    <link rel="stylesheet" href="styles.css?v=20260905-4" />
+    <link rel="stylesheet" href="styles.css?v=20260905-5" />
   </head>
   <body>
     <a class="skip-link" href="#content">Skip to content</a>
@@ -38,16 +38,17 @@
           <a href="https://github.com/Hanyu-Meng/LLM-TSE-Grounding-Demo">GitHub</a>
         </div>
         <hr />
-        <p class="status complete"><span aria-hidden="true"></span><strong>Status:</strong> Frozen Noisy TEST is complete; reported Clean TEST rows are frozen, with Clean GNR pending.</p>
+        <p class="status complete"><span aria-hidden="true"></span><strong>Status:</strong> Frozen Noisy TEST and all reported Clean TEST rows are complete.</p>
       </header>
 
       <section id="overview">
         <h2>Overview</h2>
         <p>
-          A target speech extractor can produce clear, intelligible speech from the wrong speaker.
-          We treat this as an evidence-interface failure: five frozen TSE candidates are generated from
-          the same mixture and target enrollment, and Pool D selects the candidate most consistent with
-          the enrolled speaker. The selected waveform can be returned directly or used to ground Q-Full.
+          Two failures are easy to conflate. A deterministic waveform TSE system does not introduce
+          autoregressive token hallucination, but under noise it may sound distorted or extract the wrong
+          speaker. An autoregressive speech model can raise estimated perceptual quality, yet its learned
+          prior can change words or speaker identity. Our rule is therefore simple: <strong>repair the
+          target evidence first, then ground generation on that repaired evidence.</strong>
         </p>
         <div class="explanation-box">
           <strong>Key result.</strong> On the frozen 6,000-trial natural-noise TEST set, Pool D direct
@@ -55,45 +56,29 @@
           <strong>15.57% to 7.95%</strong>, and acoustic-switch rate from
           <strong>14.57% to 7.17%</strong> relative to the primary extractor.
         </div>
+
+        <figure class="figure-card story-figure">
+          <img
+            src="public/assets/figures/repair-before-grounding-story.png"
+            alt="Repair-before-grounding story: deterministic TSE can be distorted or select the wrong speaker; Pool D repairs target identity; grounded autoregressive generation improves estimated quality while CSG limits drift"
+          />
+          <figcaption>
+            <strong>Figure 1.</strong> The two-stage story. Pool D repairs <em>who</em> is in the
+            evidence; the autoregressive prior supplies the quality gain, and CSG constrains its
+            content and speaker drift. Grounding confused evidence can reinforce the wrong speaker.
+          </figcaption>
+        </figure>
       </section>
 
       <section id="method">
         <h2>Method</h2>
         <p>
-          Candidate repair and LLM grounding answer different questions: Pool D determines
-          <em>which speaker</em> is present in the evidence; CSG determines <em>how closely</em> the
-          generated tokens should follow that repaired evidence.
+          Pool D selects the most enrollment-consistent waveform from five frozen, conditioning-diverse
+          TSE candidates. It can be returned directly as the content-fidelity endpoint, or tokenized as
+          evidence for Q-Full. The Q-Full speech prior supplies the estimated-quality gain; CSG keeps its
+          next-token choices close to the repaired evidence. This ordering matters: CSG limits generation
+          drift, but cannot repair a wrong-speaker anchor by itself.
         </p>
-
-        <figure class="figure-card">
-          <div class="pipeline-simple" role="img" aria-label="Mixture and target enrollment produce five TSE candidates; Pool D selects target-consistent evidence, which is returned directly or sent to an optional grounded Q-Full branch">
-            <div class="pipeline-inputs">
-              <div class="pipeline-node"><small>Input</small><strong>Speech mixture</strong></div>
-              <div class="pipeline-node"><small>Input</small><strong>Target enrollment</strong></div>
-            </div>
-            <span class="pipeline-arrow" aria-hidden="true">→</span>
-            <div class="pipeline-node candidate-bank">
-              <small>Generate</small>
-              <strong>Five TSE candidates</strong>
-              <span>4 enrollment views + TF-map/context</span>
-            </div>
-            <span class="pipeline-arrow" aria-hidden="true">→</span>
-            <div class="pipeline-node selected-node">
-              <small>Select</small>
-              <strong>Pool D evidence</strong>
-              <span>maximum frozen ECAPA cosine</span>
-            </div>
-            <span class="pipeline-arrow branch-arrow" aria-hidden="true">↗<br />↘</span>
-            <div class="pipeline-outputs">
-              <div class="pipeline-node direct-output"><small>Main endpoint</small><strong>Pool D direct</strong><span>selected waveform</span></div>
-              <div class="pipeline-node llm-output"><small>Optional branch</small><strong>Q-Full + grounding</strong><span>UD / CSG / GNR</span></div>
-            </div>
-          </div>
-          <figcaption>
-            <strong>Figure 1.</strong> End-to-end inference structure. Only the mixture and target
-            enrollment are used at inference; clean sources and transcripts are evaluation-only.
-          </figcaption>
-        </figure>
 
         <h3>How grounding works</h3>
         <p>
@@ -182,7 +167,16 @@
               <div class="audio-cell wrong"><strong>Primary WeSep</strong><small>wrong speaker</small><audio controls preload="none" src="public/assets/audio/clean/segmented/primary.wav"></audio></div>
               <div class="audio-cell ours"><strong>Pool D direct</strong><small>target recovered</small><audio controls preload="none" src="public/assets/audio/clean/segmented/pool-d.wav"></audio></div>
             </div>
-            <details class="spectrogram"><summary>Show spectrogram comparison</summary><img data-src="public/assets/figures/clean-case-segmented.png" alt="Spectrogram comparison for Example 1" /></details>
+            <div class="transcript-panel" aria-label="Transcripts for Example 1">
+              <p class="transcript-note"><strong>Frozen clean-reference transcript</strong> · Whisper-small.en; evaluation only</p>
+              <dl>
+                <div><dt>Target</dt><dd>this attitude springs from a false conception of sin the conception that sin is a small matter easily taken care of by good works that we must</dd></div>
+                <div><dt>Interferer</dt><dd>he obtained the desired speed and load with a friction brake also regulator of speed but waited for an indicator to verify it</dd></div>
+                <div class="wrong-line"><dt>Primary ASR</dt><dd>he obtained the desired speed and load with a friction brake also it regularly matched speed but waited for an indicator to verify</dd></div>
+                <div class="ours-line"><dt>Pool D ASR</dt><dd>this attitude springs from a false conception of sin the conception that sin is a small matter easily taken care of by good works that we must</dd></div>
+              </dl>
+            </div>
+            <details class="spectrogram"><summary>View compact spectrogram</summary><div class="spectrogram-frame"><img data-src="public/assets/figures/clean-case-segmented.png" alt="Spectrogram comparison for Example 1" /></div></details>
           </article>
 
           <article class="audio-case" data-audio-case hidden>
@@ -203,7 +197,16 @@
               <div class="audio-cell wrong"><strong>Primary WeSep</strong><small>wrong speaker</small><audio controls preload="none" src="public/assets/audio/clean/tfmap/primary.wav"></audio></div>
               <div class="audio-cell ours"><strong>Pool D / TF-map</strong><small>target recovered</small><audio controls preload="none" src="public/assets/audio/clean/tfmap/pool-d.wav"></audio></div>
             </div>
-            <details class="spectrogram"><summary>Show spectrogram comparison</summary><img data-src="public/assets/figures/clean-case-tfmap.png" alt="Spectrogram comparison for Example 2" /></details>
+            <div class="transcript-panel" aria-label="Transcripts for Example 2">
+              <p class="transcript-note"><strong>Frozen clean-reference transcript</strong> · Whisper-small.en; evaluation only</p>
+              <dl>
+                <div><dt>Target</dt><dd>your father thought a moment and looked at your mother and smiled</dd></div>
+                <div><dt>Interferer</dt><dd>she is wonderful more wonderful than anybody weve ever seen</dd></div>
+                <div class="wrong-line"><dt>Primary ASR</dt><dd>she is wonderful more wonderful than anybody weve ever seen</dd></div>
+                <div class="ours-line"><dt>Pool D ASR</dt><dd>your father thought a moment and looked at your mother and smiled</dd></div>
+              </dl>
+            </div>
+            <details class="spectrogram"><summary>View compact spectrogram</summary><div class="spectrogram-frame"><img data-src="public/assets/figures/clean-case-tfmap.png" alt="Spectrogram comparison for Example 2" /></div></details>
           </article>
 
           <article class="audio-case" data-audio-case hidden>
@@ -219,7 +222,18 @@
               <div class="audio-cell wrong"><strong>Q-Full UD</strong><small>decoder drift</small><audio controls preload="none" src="public/assets/audio/clean/csg/ud.wav"></audio></div>
               <div class="audio-cell"><strong>Q-Full + CSG</strong><small>constrained</small><audio controls preload="none" src="public/assets/audio/clean/csg/csg.wav"></audio></div>
             </div>
-            <details class="spectrogram"><summary>Show spectrogram comparison</summary><img data-src="public/assets/figures/clean-case-csg.png" alt="Spectrogram comparison for Example 3" /></details>
+            <div class="transcript-panel" aria-label="Transcripts for Example 3">
+              <p class="transcript-note"><strong>Frozen clean-reference transcript</strong> · Whisper-small.en; evaluation only</p>
+              <dl>
+                <div><dt>Target</dt><dd>i like you still rachel im sure ill always like you</dd></div>
+                <div><dt>Interferer</dt><dd>but thou art not such a lover my beloved</dd></div>
+                <div class="ours-line"><dt>Pool D ASR</dt><dd>i like you still rachel im sure ill always like you</dd></div>
+                <div class="wrong-line"><dt>Q-Full UD ASR</dt><dd>i like your stove rachel im sure ill always like you maam <span class="wer-tag">WER 27.27%</span></dd></div>
+                <div class="ours-line"><dt>Q-Full + CSG ASR</dt><dd>i like your still rachel im sure ill always like you <span class="wer-tag">WER 9.09%</span></dd></div>
+              </dl>
+              <p class="transcript-reading"><strong>Why grounding matters:</strong> the ungrounded AR decoder substitutes plausible words (“stove”, “maam”); CSG keeps the output closer to the repaired evidence and removes most of that content drift.</p>
+            </div>
+            <details class="spectrogram"><summary>View compact spectrogram</summary><div class="spectrogram-frame"><img data-src="public/assets/figures/clean-case-csg.png" alt="Spectrogram comparison for Example 3" /></div></details>
           </article>
         </div>
 
@@ -270,7 +284,7 @@
                 <tr class="key-row"><td><strong>Pool D direct</strong></td><td><strong>6.54</strong></td><td><strong>.88</strong></td><td>.78</td><td><strong>.506</strong></td><td>3.699</td></tr>
                 <tr><td>Pool D → Q-Full UD</td><td>14.08</td><td>1.00</td><td>.43</td><td>.422</td><td><strong>3.705</strong></td></tr>
                 <tr><td>Pool D → fixed CSG</td><td>12.74</td><td>1.00</td><td><strong>.23</strong></td><td>.422</td><td>3.699</td></tr>
-                <tr><td>Pool D → selected GNR</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                <tr><td>Pool D → CSG → GNR (K20/R2)</td><td>13.43</td><td>1.07</td><td>.23</td><td>.423</td><td>3.702</td></tr>
               </tbody>
             </table>
           </div>
@@ -349,6 +363,6 @@
     </main>
 
     <script src="frozen-noisy-test.js?v=20260905-3"></script>
-    <script src="app.js?v=20260905-4"></script>
+    <script src="app.js?v=20260905-5"></script>
   </body>
 </html>

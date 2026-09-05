@@ -14,8 +14,8 @@ The page presents one focused claim: reliable target-conditioned evidence must b
 - Frozen Clean TEST results over 6,000 trials.
 - Clearly labelled provisional Noisy DEV results over 8,400 trials.
 - Frozen natural-noise TEST results over 6,000 trials from the one permitted run.
-- Compact system and token-level grounding diagrams.
-- Three paged listening cases covering enrollment-view recovery, complementary TF-map/context evidence, and constrained grounding.
+- A compact repair-before-grounding story figure plus a token-level grounding diagram.
+- Three paged listening cases with frozen clean-reference ASR transcripts and compact, lazy-loaded spectrograms.
 - Per-SNR robustness and deployment-cost summaries.
 
 No remote-machine configuration, internal agent instructions, unpublished credentials, or mutable experiment workspace files are included.
@@ -31,6 +31,7 @@ To publish it with GitHub Pages, select `main` and `/ (root)` under **Settings â
 - DEV selects configurations; frozen TEST supports final claims.
 - Partial Noisy TEST outputs are never displayed as final results.
 - The published Noisy TEST block was imported only after the frozen ledger reported `COMPLETE`, `execution_count = 1`, and `post_test_tuning = false`.
+- The Clean GNR row was added only after its K=20/R=2 protocol and summary both reported `COMPLETE`, with 6,000/6,000 decoded and zero failures.
 - References shown in listening examples are for evaluation and explanation only; the deployed selector does not use them.
 
 ## Repository layout

@@ -50,7 +50,7 @@ if (frozen?.table?.rows && Array.isArray(frozen.table.rows)) {
 
   const status = document.querySelector(".status");
   if (status) {
-    status.innerHTML = '<span aria-hidden="true"></span><strong>Status:</strong> Frozen Noisy TEST is complete; reported Clean TEST rows are frozen, with Clean GNR pending.';
+    status.innerHTML = '<span aria-hidden="true"></span><strong>Status:</strong> Frozen Noisy TEST and all reported Clean TEST rows are complete.';
     status.classList.add("complete");
   }
 }
