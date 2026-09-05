@@ -22,7 +22,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <title>Repair Before Grounding · Audio Demo</title>
     <link rel="icon" href="public/favicon.svg" />
-    <link rel="stylesheet" href="styles.css?v=20260905-2" />
+    <link rel="stylesheet" href="styles.css?v=20260905-3" />
   </head>
   <body>
     <a class="skip-link" href="#content">Skip to content</a>
@@ -31,7 +31,7 @@
       <div class="page-width topbar-inner">
         <a class="site-name" href="#top">ICASSP 2027 audio demo</a>
         <nav aria-label="Page navigation">
-          <a href="#method">Method</a>
+          <a href="#method">How it works</a>
           <a href="#results">Results</a>
           <a href="#audio">Audio</a>
           <a href="#protocol">Protocol</a>
@@ -54,7 +54,7 @@
           <a href="#results">Main results</a>
           <a href="https://github.com/Hanyu-Meng/LLM-TSE-Grounding-Demo">GitHub repository</a>
         </p>
-        <p class="status"><span aria-hidden="true"></span><strong>Study status:</strong> Clean TEST is frozen; Noisy TEST is running once under a locked protocol.</p>
+        <p class="status complete"><span aria-hidden="true"></span><strong>Study status:</strong> Frozen Noisy TEST is complete; reported Clean TEST rows are frozen, with Clean GNR pending.</p>
       </section>
 
       <aside class="summary" aria-labelledby="summary-title">
@@ -84,7 +84,12 @@
       </section>
 
       <section id="method">
-        <h2>Method</h2>
+        <h2>How it works</h2>
+        <p class="section-intro">
+          The method has two distinct jobs: first repair the acoustic evidence when the primary
+          extractor follows the wrong speaker; then, only if a generated endpoint is wanted, constrain
+          Q-Full with that repaired evidence. Use the controls below to inspect each stage.
+        </p>
         <ol class="method-steps">
           <li>
             <strong>Generate complementary evidence.</strong>
@@ -99,16 +104,195 @@
           <li>
             <strong>Use or ground the repaired evidence.</strong>
             Pool D direct is the fidelity endpoint. The optional Q-Full branch compares unconstrained
-            decoding with CSG and local grounding-neighbourhood refinement (GNR).
+            decoding with CSG and Grounded Neighborhood Refinement (GNR).
           </li>
         </ol>
-        <figure class="method-figure">
-          <img loading="lazy" decoding="async" src="public/assets/figures/data-flow.png" alt="Data flow from mixture and target enrollment through candidate generation and selection to direct or generative output" />
+        <figure class="system-figure" aria-labelledby="system-map-caption">
+          <div class="system-map" role="img" aria-label="System overview from mixture and target enrollment to candidate repair, Pool D selection, and direct or grounded generative output">
+            <div class="map-inputs">
+              <div class="map-node input-node">
+                <span class="node-kicker">Input 1</span>
+                <strong>Speech mixture</strong>
+                <span class="mini-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+              </div>
+              <div class="map-node input-node">
+                <span class="node-kicker">Input 2</span>
+                <strong>Target enrollment</strong>
+                <span class="speaker-mark" aria-hidden="true">T</span>
+              </div>
+            </div>
+
+            <span class="map-arrow" aria-hidden="true">→</span>
+
+            <div class="map-node candidate-node">
+              <span class="node-kicker">Confusion repair</span>
+              <strong>Five complementary TSE candidates</strong>
+              <div class="candidate-chips" aria-label="Four speaker-vector views and one TF-map context expert">
+                <span>Full</span><span>First</span><span>Middle</span><span>Last</span><span>TF-map</span>
+              </div>
+            </div>
+
+            <span class="map-arrow" aria-hidden="true">→</span>
+
+            <div class="map-node selector-node">
+              <span class="node-kicker">Pool D</span>
+              <strong>Choose target-consistent evidence</strong>
+              <small>largest frozen ECAPA cosine to enrollment</small>
+            </div>
+
+            <span class="map-arrow split-arrow" aria-hidden="true">↗<br />↘</span>
+
+            <div class="map-outputs">
+              <div class="map-node direct-node">
+                <span class="node-kicker">Fidelity endpoint</span>
+                <strong>Selected waveform</strong>
+                <small>Pool D direct</small>
+              </div>
+              <div class="map-node generation-node">
+                <span class="node-kicker">Optional LLM branch</span>
+                <strong>Q-Full → CSG → GNR</strong>
+                <small>grounded token generation</small>
+              </div>
+            </div>
+          </div>
           <figcaption>
-            Figure 1. Deployable inputs are limited to the mixture and target enrollment. Evaluation
-            references are used only after inference.
+            <span id="system-map-caption">Figure 1. Full inference structure.</span> Only the mixture and
+            target enrollment are deployable inputs. Clean sources and transcripts enter only after
+            inference for evaluation.
           </figcaption>
         </figure>
+
+        <div class="method-boundary" role="note">
+          <strong>Main claim:</strong> Pool D repairs wrong-speaker evidence before generation.
+          CSG and GNR study how tightly an optional LLM decoder can remain attached to that evidence;
+          they are not presented as replacements for the stronger direct waveform endpoint.
+        </div>
+
+        <div class="explainer" id="pipeline-explainer">
+          <div class="explainer-heading">
+            <div>
+              <p class="eyebrow">Interactive walkthrough</p>
+              <h3>From speaker confusion to grounded speech</h3>
+            </div>
+            <output id="pipeline-stage-count" aria-live="polite">Stage 1 of 5</output>
+          </div>
+
+          <div class="stage-tabs" role="tablist" aria-label="System stages">
+            <button type="button" role="tab" aria-selected="true" aria-controls="stage-repair" id="tab-repair" data-stage="repair">1. Repair</button>
+            <button type="button" role="tab" aria-selected="false" aria-controls="stage-propose" id="tab-propose" data-stage="propose" tabindex="-1">2. Propose</button>
+            <button type="button" role="tab" aria-selected="false" aria-controls="stage-ground" id="tab-ground" data-stage="ground" tabindex="-1">3. Ground</button>
+            <button type="button" role="tab" aria-selected="false" aria-controls="stage-refine" id="tab-refine" data-stage="refine" tabindex="-1">4. Refine</button>
+            <button type="button" role="tab" aria-selected="false" aria-controls="stage-report" id="tab-report" data-stage="report" tabindex="-1">5. Report</button>
+          </div>
+
+          <div class="stage-panel" id="stage-repair" role="tabpanel" aria-labelledby="tab-repair" data-stage-panel="repair">
+            <div class="panel-copy">
+              <span class="stage-number">01</span>
+              <h4>Repair the evidence before asking the LLM to generate.</h4>
+              <p>
+                The same mixture is extracted with complementary views of the same enrollment. Pool D
+                chooses the waveform most similar to the enrolled target; it never sees a clean target,
+                transcript, WER, or cohort label.
+              </p>
+              <p class="takeaway"><strong>Why it matters:</strong> an LLM cannot reconstruct target words that are missing because the front end selected the interferer.</p>
+            </div>
+            <div class="candidate-board" aria-label="Five extraction candidates converge on Pool D selection">
+              <div class="candidate-stack">
+                <span>Speaker vector · full</span>
+                <span>Speaker vector · first 2 s</span>
+                <span>Speaker vector · middle 2 s</span>
+                <span>Speaker vector · last 2 s</span>
+                <span class="alt-expert">TF-map / context expert</span>
+              </div>
+              <span class="board-arrow" aria-hidden="true">→</span>
+              <div class="selection-target"><span>Pool D</span><strong>Target-consistent evidence</strong><small>arg max enrollment cosine</small></div>
+            </div>
+          </div>
+
+          <div class="stage-panel" id="stage-propose" role="tabpanel" aria-labelledby="tab-propose" data-stage-panel="propose" hidden>
+            <div class="panel-copy">
+              <span class="stage-number">02</span>
+              <h4>Q-Full proposes the next discrete speech token.</h4>
+              <p>
+                The mixture, target-speaker embedding, and Pool-D evidence tokens condition one
+                autoregressive generator. Unconstrained decoding uses only the model logits at each step,
+                so a fluent proposal can still drift away from the repaired content.
+              </p>
+              <p class="takeaway"><strong>UD:</strong> the raw Q-Full operating point, used as the unconstrained-decoding baseline.</p>
+            </div>
+            <div class="proposal-flow" aria-label="Q-Full combines mixture, speaker embedding, and evidence tokens to produce token logits">
+              <div class="signal-stack"><span>mixture</span><span>speaker embedding</span><span>evidence tokens</span></div>
+              <span class="board-arrow" aria-hidden="true">→</span>
+              <div class="qfull-core"><small>autoregressive model</small><strong>Q-Full</strong><span>6,561 token logits</span></div>
+              <span class="board-arrow" aria-hidden="true">→</span>
+              <div class="logit-bars" aria-label="Illustrative token logit ranking"><i style="--bar:88%"></i><i style="--bar:69%"></i><i style="--bar:52%"></i><i style="--bar:31%"></i></div>
+            </div>
+          </div>
+
+          <div class="stage-panel" id="stage-ground" role="tabpanel" aria-labelledby="tab-ground" data-stage-panel="ground" hidden>
+            <div class="panel-copy">
+              <span class="stage-number">03</span>
+              <h4>CSG discounts proposals that disagree with nearby evidence.</h4>
+              <p>
+                Each FSQ token is an eight-coordinate ternary code. CSG subtracts a Hamming-distance
+                penalty from the Q-Full logit, pulling generation toward the evidence token at the same
+                or a nearby time step.
+              </p>
+              <p class="equation"><span>grounded logit</span> = raw logit − λ · min<sub>|δ|≤w</sub> Hamming(candidate, evidence<sub>t+δ</sub>)</p>
+            </div>
+            <div class="token-comparison" aria-label="An evidence token is compared with a raw Q-Full proposal using Hamming distance">
+              <div><small>Pool-D evidence</small><div class="trit-row evidence-row"><span>0</span><span>2</span><span>1</span><span>1</span><span>0</span><span>2</span><span>0</span><span>1</span></div></div>
+              <div class="distance-bridge"><strong>d<sub>H</sub> = 4</strong><span>penalty grows with disagreement</span></div>
+              <div><small>Raw Q-Full favourite</small><div class="trit-row proposal-row"><span class="changed">2</span><span>2</span><span class="changed">0</span><span>1</span><span class="changed">2</span><span>2</span><span>0</span><span class="changed">0</span></div></div>
+              <div class="operating-points">
+                <span><strong>Fixed CSG</strong> λ=1, w=0</span>
+                <span><strong>Nominal adaptive run</strong> realized as λ=.5, w=1 for every noisy trial</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stage-panel" id="stage-refine" role="tabpanel" aria-labelledby="tab-refine" data-stage-panel="refine" hidden>
+            <div class="panel-copy">
+              <span class="stage-number">04</span>
+              <h4>GNR permits a bounded local edit around the complete CSG anchor.</h4>
+              <p>
+                For each position, GNR intersects the raw Q-Full Top-20 with the radius-2 FSQ Hamming
+                ball around the immutable anchor. The anchor is always retained and is replaced only by
+                a strictly higher-logit allowed proposal.
+              </p>
+              <p class="takeaway"><strong>No feedback:</strong> an accepted edit never changes the history used to score later positions.</p>
+            </div>
+            <div class="gnr-board" aria-label="GNR accepts only local proposals within Hamming radius two">
+              <div class="anchor-strip"><span>a₁</span><span>a₂</span><span>a₃</span><span class="focus">aₜ</span><span>aₜ₊₁</span><span>…</span><span>a<sub>T</sub></span></div>
+              <div class="neighborhood">
+                <div class="neighbor anchor-choice"><strong>anchor aₜ</strong><span>d=0 · fallback</span></div>
+                <div class="neighbor accepted"><strong>proposal p₁</strong><span>d=1 · higher logit ✓</span></div>
+                <div class="neighbor allowed"><strong>proposal p₂</strong><span>d=2 · allowed</span></div>
+                <div class="neighbor rejected"><strong>proposal p₃</strong><span>d=4 · rejected</span></div>
+              </div>
+              <div class="refined-strip"><span>a₁</span><span>a₂</span><span>a₃</span><span class="edited">p₁</span><span>aₜ₊₁</span><span>…</span><span>a<sub>T</sub></span></div>
+            </div>
+          </div>
+
+          <div class="stage-panel" id="stage-report" role="tabpanel" aria-labelledby="tab-report" data-stage-panel="report" hidden>
+            <div class="panel-copy">
+              <span class="stage-number">05</span>
+              <h4>Report content fidelity and speaker identity separately.</h4>
+              <p>
+                Pool D direct is the evidence-repair endpoint. UD, CSG, and GNR isolate what the optional
+                generator changes. WER measures target-content consistency; C-sw. and A-sw. diagnose
+                content and acoustic speaker switching; DNSMOS/UTMOS estimate perceptual quality.
+              </p>
+              <p class="takeaway"><strong>Interpretation:</strong> lower switch rates do not automatically imply lower WER or better target content.</p>
+            </div>
+            <div class="endpoint-board" aria-label="Direct and generated endpoints are evaluated along distinct content speaker and quality axes">
+              <div class="endpoint direct-endpoint"><span>Pool D direct</span><strong>content-fidelity endpoint</strong></div>
+              <div class="endpoint generated-endpoint"><span>UD / CSG / GNR</span><strong>generative ablations</strong></div>
+              <div class="metric-axis"><span>WER<br /><small>target words</small></span><span>C-sw.<br /><small>content identity</small></span><span>A-sw.<br /><small>voice identity</small></span><span>DNSMOS / UTMOS<br /><small>perceptual proxy</small></span></div>
+            </div>
+          </div>
+        </div>
+
       </section>
 
       <section id="results">
@@ -167,8 +351,8 @@
               <tr class="key-row"><td><strong>Pool D direct</strong></td><td><strong>46.75</strong></td><td><strong>11.86</strong></td><td>10.93</td><td>.332</td><td>2.132</td><td>1.930</td></tr>
               <tr><td>Pool D → Q-Full UD</td><td>66.87</td><td>13.68</td><td>2.99</td><td>.362</td><td>3.063</td><td>3.164</td></tr>
               <tr><td>Pool D → fixed CSG</td><td>62.66</td><td>13.44</td><td><strong>1.27</strong></td><td><strong>.370</strong></td><td>3.066</td><td>3.047</td></tr>
-              <tr><td>Pool D → adaptive CSG</td><td>62.92</td><td>13.42</td><td>1.64</td><td>.369</td><td>3.079</td><td>3.104</td></tr>
-              <tr><td>Pool D → GNR (K20/R2)</td><td>65.96</td><td>13.44</td><td>1.67</td><td>.369</td><td><strong>3.081</strong></td><td><strong>3.118</strong></td></tr>
+              <tr><td>Pool D → CSG (λ=.5, w=1; nominal adaptive)</td><td>62.92</td><td>13.42</td><td>1.64</td><td>.369</td><td>3.079</td><td>3.104</td></tr>
+              <tr><td>Pool D → CSG (λ=.5, w=1) → GNR (K20/R2)</td><td>65.96</td><td>13.44</td><td>1.67</td><td>.369</td><td><strong>3.081</strong></td><td><strong>3.118</strong></td></tr>
             </tbody>
           </table>
         </div>
@@ -179,7 +363,7 @@
         </p>
 
         <h3>Noisy TEST</h3>
-        <p class="table-note" id="noisy-test-note">One frozen run is in progress. Partial results are intentionally not reported.</p>
+        <p class="table-note" id="noisy-test-note">Frozen natural-noise TEST, 6,000 trials from the one permitted run.</p>
         <div class="table-scroll">
           <table id="noisy-test-table">
             <thead>
@@ -189,17 +373,17 @@
                 <th>C-sw. ↓</th>
                 <th>A-sw. ↓</th>
                 <th>Spk. margin ↑</th>
-                <th>DNSMOS ↑</th>
+                <th>DNSMOS P.835 OVRL ↑</th>
                 <th>UTMOS ↑</th>
               </tr>
             </thead>
             <tbody id="noisy-test-body">
-              <tr><td>Primary WeSep</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-              <tr><td>Pool D direct</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-              <tr><td>Pool D → Q-Full UD</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-              <tr><td>Pool D → fixed CSG</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-              <tr><td>Pool D → adaptive CSG</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-              <tr><td>Pool D → GNR (K20/R2)</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              <tr><td>Primary WeSep</td><td>46.17</td><td>15.57</td><td>14.57</td><td>.304</td><td>2.291</td><td>2.061</td></tr>
+              <tr class="key-row"><td><strong>Pool D direct</strong></td><td><strong>35.64</strong></td><td><strong>7.95</strong></td><td>7.17</td><td>.363</td><td>2.201</td><td>1.990</td></tr>
+              <tr><td>Pool D → Q-Full UD</td><td>58.00</td><td>10.13</td><td>1.68</td><td>.378</td><td>3.086</td><td><strong>3.253</strong></td></tr>
+              <tr><td>Pool D → fixed CSG</td><td>53.90</td><td><strong>9.48</strong></td><td><strong>.52</strong></td><td><strong>.386</strong></td><td>3.082</td><td>3.147</td></tr>
+              <tr><td>Pool D → CSG (λ=.5, w=1; nominal adaptive)</td><td>50.99</td><td>9.72</td><td>.98</td><td>.384</td><td>3.093</td><td>3.196</td></tr>
+              <tr><td>Pool D → CSG (λ=.5, w=1) → GNR (K20/R2)</td><td>54.79</td><td>9.65</td><td>.98</td><td>.384</td><td><strong>3.095</strong></td><td>3.207</td></tr>
             </tbody>
           </table>
         </div>
@@ -268,7 +452,7 @@
           <details><summary>View spectrogram comparison</summary><img data-src="public/assets/figures/clean-case-csg.png" alt="Spectrogram comparison for Case 3" /></details>
         </article>
 
-        <p class="pending"><strong>Noisy TEST audio is pending.</strong> Examples will be selected by the frozen deterministic rule after the single permitted TEST run, not by manual cherry-picking.</p>
+        <p class="pending"><strong>Noisy TEST listening cases are not yet published.</strong> They will be selected from the completed frozen outputs by the predeclared deterministic rule, not by manual cherry-picking.</p>
       </section>
 
       <section id="robustness">
@@ -343,6 +527,6 @@
     </footer>
 
     <script src="frozen-noisy-test.js?v=20260905-2"></script>
-    <script src="app.js?v=20260905-2"></script>
+    <script src="app.js?v=20260905-3"></script>
   </body>
 </html>

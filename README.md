@@ -13,7 +13,8 @@ The page presents one focused claim: reliable target-conditioned evidence must b
 
 - Frozen Clean TEST results over 6,000 trials.
 - Clearly labelled provisional Noisy DEV results over 8,400 trials.
-- A locked Noisy TEST table that is populated only after the one-shot evaluation completes.
+- Frozen natural-noise TEST results over 6,000 trials from the one permitted run.
+- Interactive system and token-level grounding explainers.
 - Three ordered listening cases covering enrollment-view recovery, complementary TF-map/context evidence, and constrained grounding.
 - Per-SNR robustness and deployment-cost summaries.
 
@@ -29,7 +30,7 @@ To publish it with GitHub Pages, select `main` and `/ (root)` under **Settings �
 
 - DEV selects configurations; frozen TEST supports final claims.
 - Partial Noisy TEST outputs are never displayed as final results.
-- The Noisy TEST block is updated only when the frozen ledger reports `COMPLETE`, `execution_count = 1`, and `post_test_tuning = false`.
+- The published Noisy TEST block was imported only after the frozen ledger reported `COMPLETE`, `execution_count = 1`, and `post_test_tuning = false`.
 - References shown in listening examples are for evaluation and explanation only; the deployed selector does not use them.
 
 ## Repository layout
@@ -38,8 +39,8 @@ To publish it with GitHub Pages, select `main` and `/ (root)` under **Settings �
 .
 ├── index.html             # research story and demo interface
 ├── styles.css             # responsive visual design
-├── app.js                 # frozen-result loading and audio interaction
-├── frozen-noisy-test.js   # validated Noisy TEST payload; null while pending
+├── app.js                 # explainer, frozen-result, and audio interaction
+├── frozen-noisy-test.js   # validated frozen Noisy TEST payload
 └── public/assets/
     ├── audio/clean/       # selected listening examples
     └── figures/           # spectrogram and supporting figures
