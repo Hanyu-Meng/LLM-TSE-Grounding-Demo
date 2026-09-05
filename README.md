@@ -1,6 +1,6 @@
 # Repair Before Grounding — Demo
 
-Interactive research demo for **Repair Before Grounding: Conditioning-Diverse Candidate Selection for Confusion-Resilient Target Speaker Extraction**.
+Minimal academic project page and audio demo for **Repair Before Grounding: Conditioning-Diverse Candidate Selection for Confusion-Resilient Target Speaker Extraction**.
 
 **Live demo:** <https://hanyu-meng.github.io/LLM-TSE-Grounding-Demo/>
 
@@ -38,7 +38,7 @@ To publish it with GitHub Pages, select `main` and `/ (root)` under **Settings �
 .
 ├── index.html             # research story and demo interface
 ├── styles.css             # responsive visual design
-├── app.js                 # tables, chart, and audio interaction
+├── app.js                 # frozen-result loading and audio interaction
 ├── frozen-noisy-test.js   # validated Noisy TEST payload; null while pending
 └── public/assets/
     ├── audio/clean/       # selected listening examples

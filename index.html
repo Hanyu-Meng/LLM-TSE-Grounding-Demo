@@ -5,311 +5,343 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Repair Before Grounding — an ICASSP 2027 research story and audio demonstration for confusion-resilient target speaker extraction."
+      content="Repair Before Grounding: confusion-resilient target speaker extraction through target-consistent evidence selection and constrained LLM grounding."
     />
-    <meta name="theme-color" content="#f5f2ea" />
+    <meta name="theme-color" content="#ffffff" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Repair Before Grounding" />
     <meta
       property="og:description"
-      content="Confusion-resilient target speaker extraction through evidence repair and constrained LLM grounding."
+      content="Target-consistent evidence selection for confusion-resilient LLM-based target speaker extraction."
     />
     <meta property="og:url" content="https://hanyu-meng.github.io/LLM-TSE-Grounding-Demo/" />
-    <meta
-      property="og:image"
-      content="https://hanyu-meng.github.io/LLM-TSE-Grounding-Demo/public/og.png"
-    />
+    <meta property="og:image" content="https://hanyu-meng.github.io/LLM-TSE-Grounding-Demo/public/og.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Repair Before Grounding — Confusion-Resilient Target Speaker Extraction" />
+    <meta property="og:image:alt" content="Repair Before Grounding" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Repair Before Grounding" />
-    <meta
-      name="twitter:description"
-      content="Confusion-resilient target speaker extraction through evidence repair and constrained LLM grounding."
-    />
-    <meta
-      name="twitter:image"
-      content="https://hanyu-meng.github.io/LLM-TSE-Grounding-Demo/public/og.png"
-    />
-    <title>Repair Before Grounding · ICASSP 2027 Demo</title>
+    <title>Repair Before Grounding · Audio Demo</title>
     <link rel="icon" href="public/favicon.svg" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <a class="skip-link" href="#main">Skip to content</a>
-    <header class="site-header">
-      <a class="brand" href="#top" aria-label="Repair Before Grounding home">
-        <span class="brand-mark">R<span>→</span>G</span>
-        <span>ICASSP 2027 demo</span>
-      </a>
-      <nav aria-label="Primary navigation">
-        <a href="#story">Story</a>
-        <a href="#evidence">Evidence</a>
-        <a href="#listen">Listen</a>
-        <a href="#robustness">Robustness</a>
-        <a href="#protocol">Protocol</a>
-        <a class="nav-repo" href="https://github.com/Hanyu-Meng/LLM-TSE-Grounding-Demo" target="_blank" rel="noreferrer">Demo source ↗</a>
-      </nav>
-      <span class="header-status"><i></i> Frozen protocol · live results</span>
+    <a class="skip-link" href="#content">Skip to content</a>
+
+    <header class="topbar">
+      <div class="page-width topbar-inner">
+        <a class="site-name" href="#top">ICASSP 2027 audio demo</a>
+        <nav aria-label="Page navigation">
+          <a href="#method">Method</a>
+          <a href="#results">Results</a>
+          <a href="#audio">Audio</a>
+          <a href="#protocol">Protocol</a>
+          <a href="https://github.com/Hanyu-Meng/LLM-TSE-Grounding-Demo">Code</a>
+        </nav>
+      </div>
     </header>
 
-    <main id="main">
-      <section class="hero" id="top">
-        <div class="hero-copy">
-          <p class="eyebrow">Confusion-resilient target speaker extraction</p>
-          <h1>Repair the evidence.<br /><em>Then</em> ground the generator.</h1>
-          <p class="hero-lede">
-            A target-speaker extractor can return fluent speech from the wrong person.
-            Once the target evidence is missing, a language model cannot reliably invent it
-            back. We recover target-consistent acoustic evidence first, then constrain
-            generation to stay faithful to it.
-          </p>
-          <div class="hero-actions">
-            <a class="button primary" href="#listen">Hear the failure and repair</a>
-            <a class="button ghost" href="#evidence">Inspect the evidence</a>
-            <a class="button ghost" href="https://github.com/Hanyu-Meng/LLM-TSE-Grounding-Demo" target="_blank" rel="noreferrer">Demo source ↗</a>
-          </div>
-          <p class="claim-boundary">
-            <strong>Claim boundary.</strong> The LLM is not the source of the best WER.
-            Candidate repair is the reliability contribution; constrained grounding reduces
-            drift within the generative branch.
-          </p>
-        </div>
-        <aside class="hero-panel" aria-label="Headline clean test evidence">
-          <p class="panel-kicker">Frozen clean TEST · 6,000 trials</p>
-          <div class="hero-metric">
-            <strong>89.20<span>%</span></strong>
-            <p>primary speaker confusions repaired by deployable Pool D selection</p>
-          </div>
-          <div class="metric-rule"></div>
-          <div class="metric-pair">
-            <div><strong>13.68 → 6.54</strong><span>WER, %</span></div>
-            <div><strong>6.98 → 0.78</strong><span>acoustic switch, %</span></div>
-          </div>
-          <div class="safety-chip">Control regression · 2 / 5,588 · 0.036%</div>
-        </aside>
-      </section>
-
-      <section class="status-strip" aria-label="Study status">
-        <article class="status done">
-          <span>01</span><div><strong>Clean TEST</strong><p>Frozen replication complete</p></div>
-        </article>
-        <article class="status done">
-          <span>02</span><div><strong>Noisy DEV</strong><p>Six-system selection frozen</p></div>
-        </article>
-        <article class="status active">
-          <span>03</span><div><strong>Noisy TEST</strong><p>One-shot evaluation in progress</p></div>
-        </article>
-        <p class="status-note">execution_count = 1 · post-test tuning = false · final report pending</p>
-      </section>
-
-      <section class="section story" id="story">
-        <div class="section-heading">
-          <p class="eyebrow">The research story</p>
-          <h2>The bottleneck is not fluency.<br />It is whether the evidence belongs to the target.</h2>
-        </div>
-        <div class="failure-grid">
-          <article class="failure-card problem">
-            <span class="card-index">01</span>
-            <h3>Fluent failure</h3>
-            <p>The primary frozen TSE can emit intelligible, high-confidence speech from the interferer.</p>
-            <div class="signal bad"><i></i> wrong speaker · coherent speech</div>
-          </article>
-          <article class="failure-card principle">
-            <span class="card-index">02</span>
-            <h3>Missing evidence</h3>
-            <p>Grounding cannot reconstruct target words that are absent from its acoustic evidence stream.</p>
-            <div class="signal neutral"><i></i> generation cannot recover absence</div>
-          </article>
-          <article class="failure-card solution">
-            <span class="card-index">03</span>
-            <h3>Repair before grounding</h3>
-            <p>Build complementary candidates, select by enrollment consistency, then constrain token generation.</p>
-            <div class="signal good"><i></i> target evidence · controlled drift</div>
-          </article>
-        </div>
-
-        <div class="pipeline" aria-label="Method pipeline">
-          <div class="pipeline-node input"><small>Deployable inputs</small><strong>Mixture + enrollment</strong></div>
-          <span class="arrow">→</span>
-          <div class="pipeline-node candidates"><small>Frozen TSE family</small><strong>5 complementary candidates</strong><span>full · 3 views · TF-map</span></div>
-          <span class="arrow">→</span>
-          <div class="pipeline-node select"><small>Target consistency</small><strong>ECAPA cosine selection</strong><span>no clean reference</span></div>
-          <span class="arrow">→</span>
-          <div class="pipeline-fork">
-            <div class="pipeline-node direct"><small>Fidelity endpoint</small><strong>Pool D direct</strong></div>
-            <div class="pipeline-node ground"><small>Generative endpoint</small><strong>Q-Full + CSG / GNR</strong></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="section evidence" id="evidence">
-        <div class="section-heading row">
-          <div><p class="eyebrow">Quantitative evidence</p><h2>Three splits, one honest protocol.</h2></div>
-          <div class="segmented" role="group" aria-label="Result split">
-            <button data-table="clean">Clean TEST</button>
-            <button class="active" data-table="noisyDev">Noisy DEV</button>
-            <button data-table="noisyTest">Noisy TEST</button>
-          </div>
-        </div>
-        <p class="table-intro" id="table-intro">
-          Held-out frozen TEST. Lower is better for WER and switch rates; higher is better for speaker margin and P.808.
+    <main class="page-width" id="content">
+      <section class="intro" id="top">
+        <p class="venue">Research demo · ICASSP 2027 submission in preparation</p>
+        <h1>Repair Before Grounding: Conditioning-Diverse Candidate Selection for Confusion-Resilient Target Speaker Extraction</h1>
+        <p class="lead">
+          A target speech extractor can produce clean, intelligible speech from the wrong speaker.
+          We repair the acoustic evidence first, then study how an LLM speech decoder can be kept
+          faithful to that evidence.
         </p>
-        <div class="table-wrap">
-          <table id="result-table">
-            <thead><tr><th>System</th><th>Role</th><th>WER ↓</th><th>Content switch ↓</th><th>Acoustic switch ↓</th><th>Speaker margin ↑</th><th>DNSMOS ↑</th><th>UTMOS ↑</th></tr></thead>
-            <tbody></tbody>
+        <p class="links">
+          <a href="#audio">Audio examples</a>
+          <a href="#results">Main results</a>
+          <a href="https://github.com/Hanyu-Meng/LLM-TSE-Grounding-Demo">GitHub repository</a>
+        </p>
+        <p class="status"><span aria-hidden="true"></span><strong>Study status:</strong> Clean TEST is frozen; Noisy TEST is running once under a locked protocol.</p>
+      </section>
+
+      <aside class="summary" aria-labelledby="summary-title">
+        <h2 id="summary-title">TL;DR</h2>
+        <p>
+          On the frozen 6,000-trial clean TEST set, target-consistent Pool D selection reduces
+          ASR-consistency WER from <strong>13.68% to 6.54%</strong> and acoustic speaker switches
+          from <strong>6.98% to 0.78%</strong>. It repairs <strong>355 of 398</strong> primary
+          speaker confusions while introducing only <strong>2 regressions in 5,588</strong>
+          primary-correct controls. Constrained speech generation reduces decoder drift, but direct
+          selected evidence remains the strongest content-fidelity endpoint.
+        </p>
+      </aside>
+
+      <section id="abstract">
+        <h2>Abstract</h2>
+        <p>
+          LLM-based speech generation cannot recover target content that is absent from its acoustic
+          conditioning. We therefore treat wrong-speaker extraction as an evidence-interface failure.
+          From the same mixture and target enrollment available at inference, a frozen TSE family
+          produces five complementary candidates. A frozen speaker encoder selects the candidate most
+          consistent with the enrollment. The selected waveform can be used directly or supplied to a
+          token-based speech generator with constrained speech grounding (CSG). The central claim is
+          deliberately narrow: candidate selection repairs speaker confusion; CSG controls drift in
+          the optional generative branch.
+        </p>
+      </section>
+
+      <section id="method">
+        <h2>Method</h2>
+        <ol class="method-steps">
+          <li>
+            <strong>Generate complementary evidence.</strong>
+            Four candidates use deterministic views of the same target enrollment; a fifth uses a
+            TF-map/context conditioning expert.
+          </li>
+          <li>
+            <strong>Select for target consistency.</strong>
+            Pool D chooses the candidate with the largest frozen ECAPA cosine to the full enrollment.
+            No clean target, transcript, WER, or cohort label is available to the selector.
+          </li>
+          <li>
+            <strong>Use or ground the repaired evidence.</strong>
+            Pool D direct is the fidelity endpoint. The optional Q-Full branch compares unconstrained
+            decoding with CSG and local grounding-neighbourhood refinement (GNR).
+          </li>
+        </ol>
+        <figure class="method-figure">
+          <img src="public/assets/figures/data-flow.png" alt="Data flow from mixture and target enrollment through candidate generation and selection to direct or generative output" />
+          <figcaption>
+            Figure 1. Deployable inputs are limited to the mixture and target enrollment. Evaluation
+            references are used only after inference.
+          </figcaption>
+        </figure>
+      </section>
+
+      <section id="results">
+        <h2>Main results</h2>
+        <p>
+          Lower is better for WER and switch rates; higher is better for speaker margin and estimated
+          perceptual quality. Results marked DEV are used for selection and must not be presented as TEST.
+        </p>
+
+        <h3>Clean TEST</h3>
+        <p class="table-note">Frozen held-out evaluation, 6,000 trials.</p>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>System</th>
+                <th>WER ↓</th>
+                <th>C-sw. ↓</th>
+                <th>A-sw. ↓</th>
+                <th>Spk. margin ↑</th>
+                <th>DNSMOS P.808 ↑</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Primary WeSep</td><td>13.68</td><td>7.00</td><td>6.98</td><td>.449</td><td>3.688</td></tr>
+              <tr class="key-row"><td><strong>Pool D direct</strong></td><td><strong>6.54</strong></td><td><strong>.88</strong></td><td><strong>.78</strong></td><td><strong>.506</strong></td><td>3.699</td></tr>
+              <tr><td>Pool D → Q-Full UD</td><td>14.08</td><td>1.00</td><td>.43</td><td>.422</td><td>3.705</td></tr>
+              <tr><td>Pool D → fixed CSG</td><td>12.74</td><td>1.00</td><td>.23</td><td>.422</td><td>3.699</td></tr>
+              <tr><td>Pool D → selected GNR</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+            </tbody>
           </table>
         </div>
-        <div class="interpretation" id="table-interpretation"></div>
+        <p class="result-reading">
+          <strong>Reading.</strong> Pool D direct more than halves WER and sharply reduces speaker
+          confusion. CSG improves the Q-Full branch over unconstrained decoding, but does not overtake
+          the direct selected waveform.
+        </p>
 
-        <div class="evidence-cards">
-          <article>
-            <p class="mini-label">Recovery</p><strong>355 / 398</strong>
-            <p>Clean TEST primary swaps repaired by Pool D.</p>
-          </article>
-          <article>
-            <p class="mini-label">Near-oracle</p><strong>360 / 398</strong>
-            <p>Five-candidate availability; only five recoverable cases missed.</p>
-          </article>
-          <article>
-            <p class="mini-label">Generation control</p><strong>14.08 → 12.74</strong>
-            <p>Clean TEST WER for Q-Full UD → CSG on identical selected evidence.</p>
-          </article>
+        <h3>Noisy DEV</h3>
+        <p class="table-note">Frozen selection set, 8,400 trials: 6,000 natural and 2,400 controlled mixtures.</p>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>System</th>
+                <th>WER ↓</th>
+                <th>C-sw. ↓</th>
+                <th>A-sw. ↓</th>
+                <th>Spk. margin ↑</th>
+                <th>DNSMOS OVRL ↑</th>
+                <th>UTMOS ↑</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Primary WeSep</td><td>53.50</td><td>20.11</td><td>19.54</td><td>.269</td><td>2.243</td><td>1.997</td></tr>
+              <tr class="key-row"><td><strong>Pool D direct</strong></td><td><strong>46.75</strong></td><td><strong>11.86</strong></td><td>10.93</td><td>.332</td><td>2.132</td><td>1.930</td></tr>
+              <tr><td>Pool D → Q-Full UD</td><td>66.87</td><td>13.68</td><td>2.99</td><td>.362</td><td>3.063</td><td>3.164</td></tr>
+              <tr><td>Pool D → fixed CSG</td><td>62.66</td><td>13.44</td><td><strong>1.27</strong></td><td><strong>.370</strong></td><td>3.066</td><td>3.047</td></tr>
+              <tr><td>Pool D → adaptive CSG</td><td>62.92</td><td>13.42</td><td>1.64</td><td>.369</td><td>3.079</td><td>3.104</td></tr>
+              <tr><td>Pool D → GNR (K20/R2)</td><td>65.96</td><td>13.44</td><td>1.67</td><td>.369</td><td><strong>3.081</strong></td><td><strong>3.118</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="result-reading">
+          <strong>Reading.</strong> Evidence repair improves content fidelity, while generation improves
+          estimated perceptual quality and acoustic speaker consistency at the cost of higher WER.
+          GNR is retained as a negative ablation rather than promoted as the main method.
+        </p>
+
+        <h3>Noisy TEST</h3>
+        <p class="table-note" id="noisy-test-note">One frozen run is in progress. Partial results are intentionally not reported.</p>
+        <div class="table-scroll">
+          <table id="noisy-test-table">
+            <thead>
+              <tr>
+                <th>System</th>
+                <th>WER ↓</th>
+                <th>C-sw. ↓</th>
+                <th>A-sw. ↓</th>
+                <th>Spk. margin ↑</th>
+                <th>DNSMOS ↑</th>
+                <th>UTMOS ↑</th>
+              </tr>
+            </thead>
+            <tbody id="noisy-test-body">
+              <tr><td>Primary WeSep</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              <tr><td>Pool D direct</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              <tr><td>Pool D → Q-Full UD</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              <tr><td>Pool D → fixed CSG</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              <tr><td>Pool D → adaptive CSG</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              <tr><td>Pool D → GNR (K20/R2)</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="definitions">
+          <p><strong>WER:</strong> Whisper-small.en ASR-consistency WER against the target transcript; it is a content-fidelity proxy, not a listening score.</p>
+          <p><strong>C-sw.:</strong> content-switch rate, based on whether ASR content is closer to the interferer than the target.</p>
+          <p><strong>A-sw.:</strong> acoustic-switch rate, based on whether output speaker similarity favours the interferer over the enrolled target.</p>
+          <p><strong>Important:</strong> C-sw. and A-sw. are operational metrics defined for this study and must be introduced explicitly in the paper.</p>
         </div>
       </section>
 
-      <section class="section listen" id="listen">
-        <div class="section-heading">
-          <p class="eyebrow">Audio evidence</p>
-          <h2>Listen in the order the argument unfolds.</h2>
-          <p>References are shown for explanation only. They are never used by the deployed selector or generator.</p>
-        </div>
+      <section id="audio">
+        <h2>Audio examples</h2>
+        <p>
+          Listen from left to right. Clean targets and interferers are shown only for interpretation;
+          the deployable system never accesses them. Starting a clip automatically pauses the previous one.
+        </p>
 
-        <article class="audio-story featured">
-          <div class="story-copy">
-            <p class="story-number">Case 01 · enrollment-view recovery</p>
-            <h3>The primary follows the interferer. A two-second enrollment view recovers the target.</h3>
-            <p class="quote target">Target: “This attitude springs from a false conception of sin…”</p>
-            <p class="quote interferer">Interferer: “He obtained the desired speed and load with a friction brake…”</p>
-            <div class="case-delta"><span>WER <b>100 → 0%</b></span><span>margin <b>−0.285 → +0.520</b></span></div>
+        <article class="audio-case">
+          <h3>Case 1 — recovery from an enrollment view</h3>
+          <p>
+            The primary follows the interferer. A deterministic two-second view of the same enrollment
+            produces target-consistent evidence. WER: <strong>100% → 0%</strong>; speaker margin:
+            <strong>−.285 → +.520</strong>.
+          </p>
+          <div class="audio-list">
+            <label>Mixture <small>system input</small><audio controls preload="none" src="public/assets/audio/clean/segmented/mixture.wav"></audio></label>
+            <label>Clean target <small>evaluation only</small><audio controls preload="none" src="public/assets/audio/clean/segmented/target.wav"></audio></label>
+            <label>Interferer <small>evaluation only</small><audio controls preload="none" src="public/assets/audio/clean/segmented/interferer.wav"></audio></label>
+            <label class="wrong">Primary WeSep <small>wrong speaker</small><audio controls preload="none" src="public/assets/audio/clean/segmented/primary.wav"></audio></label>
+            <label class="correct">Pool D selected <small>target recovered</small><audio controls preload="none" src="public/assets/audio/clean/segmented/pool-d.wav"></audio></label>
           </div>
-          <div class="audio-grid six">
-            <div class="audio-item input-audio"><span>Enrollment <i>input</i></span><audio controls preload="none" src="public/assets/audio/clean/segmented/enrollment.wav"></audio></div>
-            <div class="audio-item input-audio"><span>Mixture <i>input</i></span><audio controls preload="none" src="public/assets/audio/clean/segmented/mixture.wav"></audio></div>
-            <div class="audio-item ref-audio"><span>Clean target <i>eval only</i></span><audio controls preload="none" src="public/assets/audio/clean/segmented/target.wav"></audio></div>
-            <div class="audio-item ref-audio"><span>Interferer <i>eval only</i></span><audio controls preload="none" src="public/assets/audio/clean/segmented/interferer.wav"></audio></div>
-            <div class="audio-item bad-audio"><span>Primary / full <i>wrong speaker</i></span><audio controls preload="none" src="public/assets/audio/clean/segmented/primary.wav"></audio></div>
-            <div class="audio-item good-audio"><span>Pool D / middle <i>selected</i></span><audio controls preload="none" src="public/assets/audio/clean/segmented/pool-d.wav"></audio></div>
-          </div>
-          <details><summary>Show spectrogram comparison</summary><img src="public/assets/figures/clean-case-segmented.png" alt="Spectrogram comparison for the enrollment-view recovery case" /></details>
+          <details><summary>View spectrogram comparison</summary><img src="public/assets/figures/clean-case-segmented.png" alt="Spectrogram comparison for Case 1" /></details>
         </article>
 
-        <article class="audio-story">
-          <div class="story-copy">
-            <p class="story-number">Case 02 · complementary conditioning</p>
-            <h3>All speaker-vector candidates fail. The TF-map/context expert contributes different evidence.</h3>
-            <p class="quote target">Target: “Your father thought a moment and looked at your mother and smiled.”</p>
-            <p class="quote interferer">Interferer: “She is wonderful, more wonderful than anybody we’ve ever seen.”</p>
-            <div class="case-delta"><span>WER <b>100 → 0%</b></span><span>margin <b>−0.543 → +0.505</b></span></div>
+        <article class="audio-case">
+          <h3>Case 2 — complementary TF-map/context evidence</h3>
+          <p>
+            The speaker-vector candidates fail, but the alternative conditioning expert recovers the
+            target. WER: <strong>100% → 0%</strong>; speaker margin: <strong>−.543 → +.505</strong>.
+          </p>
+          <div class="audio-list">
+            <label>Mixture <small>system input</small><audio controls preload="none" src="public/assets/audio/clean/tfmap/mixture.wav"></audio></label>
+            <label>Clean target <small>evaluation only</small><audio controls preload="none" src="public/assets/audio/clean/tfmap/target.wav"></audio></label>
+            <label>Interferer <small>evaluation only</small><audio controls preload="none" src="public/assets/audio/clean/tfmap/interferer.wav"></audio></label>
+            <label class="wrong">Primary WeSep <small>wrong speaker</small><audio controls preload="none" src="public/assets/audio/clean/tfmap/primary.wav"></audio></label>
+            <label class="correct">Pool D / TF-map <small>target recovered</small><audio controls preload="none" src="public/assets/audio/clean/tfmap/pool-d.wav"></audio></label>
           </div>
-          <div class="audio-grid six">
-            <div class="audio-item input-audio"><span>Enrollment <i>input</i></span><audio controls preload="none" src="public/assets/audio/clean/tfmap/enrollment.flac"></audio></div>
-            <div class="audio-item input-audio"><span>Mixture <i>input</i></span><audio controls preload="none" src="public/assets/audio/clean/tfmap/mixture.wav"></audio></div>
-            <div class="audio-item ref-audio"><span>Clean target <i>eval only</i></span><audio controls preload="none" src="public/assets/audio/clean/tfmap/target.wav"></audio></div>
-            <div class="audio-item ref-audio"><span>Interferer <i>eval only</i></span><audio controls preload="none" src="public/assets/audio/clean/tfmap/interferer.wav"></audio></div>
-            <div class="audio-item bad-audio"><span>Primary / full <i>wrong speaker</i></span><audio controls preload="none" src="public/assets/audio/clean/tfmap/primary.wav"></audio></div>
-            <div class="audio-item good-audio"><span>Pool D / TF-map <i>selected</i></span><audio controls preload="none" src="public/assets/audio/clean/tfmap/pool-d.wav"></audio></div>
-          </div>
-          <details><summary>Show spectrogram comparison</summary><img src="public/assets/figures/clean-case-tfmap.png" alt="Spectrogram comparison for the TF-map-only recovery case" /></details>
+          <details><summary>View spectrogram comparison</summary><img src="public/assets/figures/clean-case-tfmap.png" alt="Spectrogram comparison for Case 2" /></details>
         </article>
 
-        <article class="audio-story">
-          <div class="story-copy">
-            <p class="story-number">Case 03 · constrained grounding</p>
-            <h3>Correct evidence enters Q-Full. CSG reduces decoder drift—but direct evidence remains strongest.</h3>
-            <p class="quote target">Target: “I like you still, Rachel. I’m sure I’ll always like you.”</p>
-            <div class="case-delta"><span>UD WER <b>27.3%</b></span><span>CSG WER <b>9.1%</b></span><span>Direct <b>0%</b></span></div>
+        <article class="audio-case">
+          <h3>Case 3 — constrained LLM grounding</h3>
+          <p>
+            The same repaired evidence enters Q-Full. CSG reduces decoder drift, although the direct
+            selected waveform remains strongest: <strong>UD 27.3%</strong>, <strong>CSG 9.1%</strong>,
+            <strong>direct 0% WER</strong>.
+          </p>
+          <div class="audio-list four">
+            <label>Clean target <small>evaluation only</small><audio controls preload="none" src="public/assets/audio/clean/csg/target.wav"></audio></label>
+            <label class="correct">Pool D direct <small>repaired evidence</small><audio controls preload="none" src="public/assets/audio/clean/csg/pool-d.wav"></audio></label>
+            <label class="wrong">Q-Full UD <small>decoder drift</small><audio controls preload="none" src="public/assets/audio/clean/csg/ud.wav"></audio></label>
+            <label>Q-Full + CSG <small>constrained</small><audio controls preload="none" src="public/assets/audio/clean/csg/csg.wav"></audio></label>
           </div>
-          <div class="audio-grid four">
-            <div class="audio-item ref-audio"><span>Clean target <i>eval only</i></span><audio controls preload="none" src="public/assets/audio/clean/csg/target.wav"></audio></div>
-            <div class="audio-item good-audio"><span>Pool D evidence <i>direct</i></span><audio controls preload="none" src="public/assets/audio/clean/csg/pool-d.wav"></audio></div>
-            <div class="audio-item bad-audio"><span>Q-Full UD <i>unconstrained</i></span><audio controls preload="none" src="public/assets/audio/clean/csg/ud.wav"></audio></div>
-            <div class="audio-item csg-audio"><span>Q-Full + CSG <i>grounded</i></span><audio controls preload="none" src="public/assets/audio/clean/csg/csg.wav"></audio></div>
-          </div>
-          <details><summary>Show spectrogram comparison</summary><img src="public/assets/figures/clean-case-csg.png" alt="Spectrogram comparison for Q-Full UD and constrained grounding" /></details>
+          <details><summary>View spectrogram comparison</summary><img src="public/assets/figures/clean-case-csg.png" alt="Spectrogram comparison for Case 3" /></details>
         </article>
 
-        <div class="pending-audio">
-          <span class="pulse"></span>
-          <div><strong>Noisy TEST audio bank is intentionally pending.</strong><p>Cases will be selected by a frozen deterministic rule after the one permitted TEST run—not by manual cherry-picking.</p></div>
-        </div>
+        <p class="pending"><strong>Noisy TEST audio is pending.</strong> Examples will be selected by the frozen deterministic rule after the single permitted TEST run, not by manual cherry-picking.</p>
       </section>
 
-      <section class="section robustness" id="robustness">
-        <div class="section-heading row">
-          <div><p class="eyebrow">Noisy robustness</p><h2>Where does repair survive acoustic difficulty?</h2></div>
-          <span class="dev-badge">DEV · provisional</span>
-        </div>
-        <div class="chart-layout">
-          <div class="chart-card">
-            <div class="chart-head"><div><h3>Candidate recovery by controlled SNR</h3><p id="snr-subtitle">Frozen DEV analysis, 480 paired trials at each SNR.</p></div><div class="legend"><span class="teal">Pool D selected</span><span class="gold">Pool D oracle</span></div></div>
-            <canvas id="snr-chart" width="920" height="430" aria-label="Pool D selected and oracle recovery rate across SNR"></canvas>
-          </div>
-          <aside class="robustness-note">
-            <p class="mini-label">Interpretation</p>
-            <h3>Noise changes the operating regime.</h3>
-            <p>At −5 dB, the strict “primary swap” cohort is small and both target and interferer evidence are weak. Recovery increases sharply at 10–15 dB, where wrong-speaker extraction is identifiable and complementary evidence is usable.</p>
-            <dl><div><dt>All noisy DEV</dt><dd>54.87% selected recovery</dd></div><div><dt>Oracle ceiling</dt><dd>62.55%</dd></div><div><dt>Control regression</dt><dd>0.391%</dd></div></dl>
-          </aside>
-        </div>
-
-        <div class="cost-block">
-          <div><p class="eyebrow">Deployment cost</p><h2>Reliability has a measurable price.</h2><p>Clean DEV benchmark. RTF includes extractor and optional generative passes; peak VRAM is the observed process maximum.</p></div>
-          <div class="table-wrap compact">
-            <table class="cost-table">
-              <thead><tr><th>Configuration</th><th>Candidates</th><th>Q-Full</th><th>RTF ↓</th><th>Peak VRAM</th><th>Swap recovery ↑</th></tr></thead>
-              <tbody>
-                <tr><td>Primary</td><td>1</td><td>—</td><td>0.057</td><td>20.37 GiB</td><td>0.00%</td></tr>
-                <tr><td>Pool B direct</td><td>2</td><td>—</td><td>0.105</td><td>20.38 GiB</td><td>83.21%</td></tr>
-                <tr class="highlight"><td>Pool D direct</td><td>5</td><td>—</td><td>0.208</td><td>20.47 GiB</td><td>87.65%</td></tr>
-                <tr><td>Pool B + CSG</td><td>2</td><td>1 pass</td><td>0.473</td><td>20.38 GiB</td><td>79.01%</td></tr>
-                <tr><td>Pool D + CSG</td><td>5</td><td>1 pass</td><td>0.573</td><td>20.47 GiB</td><td>80.74%</td></tr>
-              </tbody>
-            </table>
+      <section id="robustness">
+        <h2>Robustness and cost</h2>
+        <div class="figure-grid">
+          <figure>
+            <img src="public/assets/figures/noisy/candidate-recovery-by-snr-dev.png" alt="Candidate recovery rate by SNR on Noisy DEV" />
+            <figcaption>Figure 2. Candidate recovery by controlled SNR on frozen Noisy DEV.</figcaption>
+          </figure>
+          <div>
+            <h3>Interpretation</h3>
+            <p>
+              Recovery rises at 10–15 dB, where a wrong-speaker extraction is identifiable and usable
+              complementary target evidence remains available. At −5 dB, both target and interferer
+              evidence are weak, so the strict primary-swap cohort is small.
+            </p>
+            <ul>
+              <li>Selected recovery across Noisy DEV: <strong>54.87%</strong></li>
+              <li>Five-candidate oracle ceiling: <strong>62.55%</strong></li>
+              <li>Control regression: <strong>.391%</strong></li>
+            </ul>
           </div>
         </div>
-      </section>
 
-      <section class="section protocol" id="protocol">
-        <div class="section-heading"><p class="eyebrow">Credibility by construction</p><h2>The result is only useful if the protocol cannot quietly move.</h2></div>
-        <div class="protocol-grid">
-          <article><span>DEV only</span><h3>Select and calibrate</h3><p>Candidate pool, CSG parameters, GNR configuration, thresholds and case-selection rules are fixed here.</p></article>
-          <article><span>Hash &amp; freeze</span><h3>Lock code and inputs</h3><p>A manifest verifies model assets, metric assets, scripts, data and final DEV choices before TEST exists.</p></article>
-          <article><span>Exactly once</span><h3>Execute noisy TEST</h3><p>A resume-safe ledger permits one execution and prohibits post-TEST tuning or system selection.</p></article>
-          <article><span>Paired evidence</span><h3>Report uncertainty</h3><p>10,000 paired bootstrap resamples, McNemar tests for switches, and fixed common worst-case cohorts.</p></article>
-        </div>
-        <div class="deliverables">
-          <h3>Final evidence package</h3>
-          <ul>
-            <li><b>Baseline / ablation:</b> Primary is the main-table single-expert baseline; TF-map remains a disclosed auxiliary control and candidate source; Pool D direct, UD, fixed CSG and selected GNR complete the comparison.</li>
-            <li><b>Statistics:</b> 95% paired intervals and switch-specific McNemar tests.</li>
-            <li><b>Efficiency:</b> candidate count, forward passes, RTF, latency and peak GPU memory.</li>
-            <li><b>Robustness:</b> per-SNR WER, content switch, speaker switch and recovery.</li>
-            <li><b>Listening:</b> deterministic clean and noisy cases, plus a ready-to-run small listening protocol.</li>
-          </ul>
+        <h3>Clean DEV deployment cost</h3>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Configuration</th><th>Candidates</th><th>Q-Full</th><th>RTF ↓</th><th>Peak VRAM</th><th>Swap recovery ↑</th></tr></thead>
+            <tbody>
+              <tr><td>Primary</td><td>1</td><td>—</td><td>.057</td><td>20.37 GiB</td><td>0.00%</td></tr>
+              <tr><td>Pool B direct</td><td>2</td><td>—</td><td>.105</td><td>20.38 GiB</td><td>83.21%</td></tr>
+              <tr class="key-row"><td><strong>Pool D direct</strong></td><td>5</td><td>—</td><td>.208</td><td>20.47 GiB</td><td><strong>87.65%</strong></td></tr>
+              <tr><td>Pool B + CSG</td><td>2</td><td>1 pass</td><td>.473</td><td>20.38 GiB</td><td>79.01%</td></tr>
+              <tr><td>Pool D + CSG</td><td>5</td><td>1 pass</td><td>.573</td><td>20.47 GiB</td><td>80.74%</td></tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
-      <section class="closing">
-        <p class="eyebrow">Takeaway</p>
-        <blockquote>Reliable target-conditioned evidence is a prerequisite for grounded speech generation.</blockquote>
-        <p>Complementary candidate construction repairs the evidence interface. Constrained grounding limits downstream drift. The demo keeps those two contributions distinct.</p>
+      <section id="protocol">
+        <h2>Evaluation protocol</h2>
+        <ul class="protocol-list">
+          <li><strong>Selection on DEV.</strong> Candidate pool, thresholds, CSG and GNR choices are fixed before TEST.</li>
+          <li><strong>Frozen TEST.</strong> Code, model assets and inputs are hash-checked; Noisy TEST is executed exactly once.</li>
+          <li><strong>Paired analysis.</strong> The final report includes paired confidence intervals and switch-specific significance tests.</li>
+          <li><strong>Reproducible examples.</strong> Audio cases use a deterministic selection rule rather than manual cherry-picking.</li>
+        </ul>
+
+        <div class="claim-boundary">
+          <h3>What this work claims</h3>
+          <p>
+            Target-consistent candidate selection repairs many wrong-speaker TSE failures, and better
+            acoustic evidence makes downstream grounding more reliable. CSG reduces drift within the
+            tested Q-Full branch.
+          </p>
+          <h3>What it does not claim</h3>
+          <p>
+            The LLM branch does not achieve the best WER. TF-map/context is an auxiliary conditioning
+            expert in the same TSE family, not a wholly independent architecture. ASR-consistency WER,
+            DNSMOS and UTMOS do not replace human listening tests, and simulated mixtures do not establish
+            universal real-world robustness.
+          </p>
+        </div>
       </section>
     </main>
 
-    <footer><span>Repair Before Grounding · ICASSP 2027 research artifact</span><span>DEV selects configurations; frozen TEST supports final claims · <a href="https://github.com/Hanyu-Meng/LLM-TSE-Grounding-Demo" target="_blank" rel="noreferrer">demo source ↗</a></span></footer>
+    <footer>
+      <div class="page-width footer-inner">
+        <p>Repair Before Grounding · research demo</p>
+        <p><a href="https://github.com/Hanyu-Meng/LLM-TSE-Grounding-Demo">Source and reproducibility notes</a></p>
+      </div>
+    </footer>
+
     <script src="frozen-noisy-test.js"></script>
     <script src="app.js"></script>
   </body>
