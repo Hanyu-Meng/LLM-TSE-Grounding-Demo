@@ -27,6 +27,12 @@ if (frozen?.table?.rows && Array.isArray(frozen.table.rows)) {
     "Pool D → adaptive CSG": "Pool D → difficulty-conditioned CSG",
     "Pool D → adaptive CSG → GNR-LLM": "Pool D → difficulty-conditioned CSG → GNR",
   };
+  const emphasizedColumns = {
+    "Pool D direct": [0, 1, 2],
+    "Pool D → Q-Full UD": [6],
+    "Pool D → fixed CSG": [2, 3, 4],
+    "Pool D → adaptive CSG → GNR-LLM": [5],
+  };
 
   body.replaceChildren(
     ...frozen.table.rows.map((row) => {
@@ -36,9 +42,16 @@ if (frozen?.table?.rows && Array.isArray(frozen.table.rows)) {
         : row.slice(0, 7);
       visibleValues.forEach((value, index) => {
         const td = document.createElement("td");
-        if (index === 0) td.textContent = displayLabels[value] || value;
-        else if (index === 5 && typeof value === "string") td.textContent = value.replace(/\s+OVRL$/, "");
-        else td.textContent = value;
+        let displayValue = value;
+        if (index === 0) displayValue = displayLabels[value] || value;
+        else if (index === 5 && typeof value === "string") displayValue = value.replace(/\s+OVRL$/, "");
+        if (emphasizedColumns[row[0]]?.includes(index)) {
+          const strong = document.createElement("strong");
+          strong.textContent = displayValue;
+          td.appendChild(strong);
+        } else {
+          td.textContent = displayValue;
+        }
         tr.appendChild(td);
       });
       if (row[8] === "best") tr.classList.add("key-row");

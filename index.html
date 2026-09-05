@@ -307,7 +307,7 @@
               <thead><tr><th>System</th><th>WER ↓</th><th>C-sw. ↓</th><th>A-sw. ↓</th><th>Spk. margin ↑</th><th>DNSMOS P.808 ↑</th></tr></thead>
               <tbody>
                 <tr><td>Primary WeSep</td><td>13.88</td><td>7.10</td><td>6.88</td><td>.459</td><td>3.709</td></tr>
-                <tr><td>Pool B direct</td><td>7.29</td><td>1.40</td><td>1.17</td><td>.513</td><td>3.729</td></tr>
+                <tr><td>Pool B direct</td><td>7.29</td><td>1.40</td><td>1.17</td><td>.513</td><td>3.728</td></tr>
                 <tr class="key-row"><td><strong>Pool D direct</strong></td><td><strong>7.01</strong></td><td><strong>1.13</strong></td><td>.88</td><td><strong>.515</strong></td><td>3.722</td></tr>
                 <tr><td>Pool D S3 reconstruction</td><td>13.02</td><td>1.25</td><td>.52</td><td>.427</td><td>3.736</td></tr>
                 <tr><td>Original Q-Full UD</td><td>20.97</td><td>7.20</td><td>1.23</td><td>.419</td><td>3.745</td></tr>
@@ -346,7 +346,7 @@
           <p><strong>C-sw.:</strong> output content is closer to the interferer transcript than the target transcript.</p>
           <p><strong>A-sw.:</strong> output speaker similarity favours the interferer over the enrolled target.</p>
           <p><strong>DNSMOS / UTMOS:</strong> predicted perceptual quality; neither proves content or target-speaker correctness.</p>
-          <p>C-sw. and A-sw. are operational metrics defined for this study.</p>
+          <p>WER, C-sw., and A-sw. are reported as percentages. C-sw. and A-sw. are operational metrics defined for this study.</p>
         </div>
       </section>
 
@@ -360,7 +360,8 @@
           <div>
             <p>
               Recovery rises at 10–15 dB, where wrong-speaker extraction remains identifiable and
-              complementary target evidence is still usable. Across Noisy DEV, selected recovery is
+              complementary target evidence is still usable. Across the combined 8,400-trial Noisy DEV set
+              (6,000 natural-noise + 2,400 controlled-SNR), selected recovery is
               <strong>54.87%</strong>, the five-candidate oracle ceiling is <strong>62.55%</strong>,
               and control regression is <strong>.391%</strong>.
             </p>
@@ -382,7 +383,7 @@
                 <tr><td>Pool D → UD</td><td>137.56 / 11.46</td><td>115.70 / 5.62</td><td>92.36 / 2.50</td><td>50.06 / 2.29</td><td>29.80 / 1.67</td></tr>
                 <tr><td>Pool D → fixed CSG</td><td>132.99 / 3.54</td><td>104.78 / 2.92</td><td>93.56 / 1.25</td><td>45.69 / 1.25</td><td>25.96 / 1.04</td></tr>
                 <tr><td>Pool D → difficulty CSG</td><td>130.58 / 5.83</td><td>110.77 / 2.92</td><td>84.84 / 1.46</td><td>50.42 / 1.46</td><td>26.38 / 1.04</td></tr>
-                <tr><td>Pool D → difficulty CSG → GNR</td><td>139.37 / 5.62</td><td>113.81 / 3.33</td><td>79.56 / 1.46</td><td>50.63 / 1.46</td><td>26.95 / 1.04</td></tr>
+                <tr><td>Pool D → difficulty CSG → GNR</td><td>139.37 / 5.62</td><td>113.81 / 3.33</td><td>79.56 / 1.46</td><td>50.63 / 1.46</td><td>26.94 / 1.04</td></tr>
               </tbody>
             </table>
           </div>
@@ -460,6 +461,6 @@
     </main>
 
     <script src="frozen-noisy-test.js?v=20260905-3"></script>
-    <script src="app.js?v=20260905-6"></script>
+    <script src="app.js?v=20260905-7"></script>
   </body>
 </html>
