@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Repair Before Grounding: target-consistent evidence selection and grounded LLM decoding for confusion-resilient target speaker extraction."
+      content="Speaker-Consistent Grounding for confusion-resilient LLM-based target speech extraction."
     />
     <meta name="theme-color" content="#f8f9fa" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Repair Before Grounding" />
+    <meta property="og:title" content="Speaker-Consistent Grounding" />
     <meta
       property="og:description"
       content="Target-consistent evidence selection for confusion-resilient LLM-based target speaker extraction."
@@ -18,11 +18,11 @@
     <meta property="og:image" content="https://hanyu-meng.github.io/LLM-TSE-Grounding-Demo/public/og.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Repair Before Grounding" />
+    <meta property="og:image:alt" content="Speaker-Consistent Grounding for Confusion-Resilient LLM-Based Target Speech Extraction" />
     <meta name="twitter:card" content="summary_large_image" />
-    <title>Repair Before Grounding · Audio Demo</title>
+    <title>Speaker-Consistent Grounding · Audio Demo</title>
     <link rel="icon" href="public/favicon.svg" />
-    <link rel="stylesheet" href="styles.css?v=20260905-6" />
+    <link rel="stylesheet" href="styles.css?v=20260906-1" />
   </head>
   <body>
     <a class="skip-link" href="#content">Skip to content</a>
@@ -30,10 +30,11 @@
     <main class="content-wrapper" id="content">
       <header class="paper-header" id="top">
         <p class="venue">ICASSP 2027 · Audio demo</p>
-        <h1>Repair Before Grounding: Conditioning-Diverse Candidate Selection for Confusion-Resilient Target Speaker Extraction</h1>
+        <h1>Speaker-Consistent Grounding for Confusion-Resilient LLM-Based Target Speech Extraction</h1>
         <p class="tagline">Repair the target-speaker evidence first; then constrain the optional LLM speech generator.</p>
         <div class="paper-links" aria-label="Project links">
           <a href="#audio">Audio examples</a>
+          <a href="#metrics">Metrics</a>
           <a href="#results">Results</a>
           <a href="https://github.com/Hanyu-Meng/LLM-TSE-Grounding-Demo">GitHub</a>
         </div>
@@ -51,21 +52,25 @@
           target evidence first, then ground generation on that repaired evidence.</strong>
         </p>
         <div class="explanation-box">
-          <strong>Key result.</strong> On the frozen 6,000-trial natural-noise TEST set, Pool D direct
+          <strong>Key result.</strong> On the frozen 6,000-trial natural-noise TEST set, CDCS-5 direct
           reduces WER from <strong>46.17% to 35.64%</strong>, content-switch rate from
           <strong>15.57% to 7.95%</strong>, and acoustic-switch rate from
           <strong>14.57% to 7.17%</strong> relative to the primary extractor.
         </div>
 
         <figure class="figure-card story-figure">
-          <img
-            src="public/assets/figures/repair-before-grounding-story.png"
-            alt="Repair-before-grounding story: deterministic TSE can be distorted or select the wrong speaker; Pool D repairs target identity; grounded autoregressive generation improves estimated quality while CSG limits drift"
-          />
+          <a href="public/assets/figures/method-overview-paper.png" target="_blank" rel="noopener">
+            <img
+              src="public/assets/figures/method-overview-paper.png"
+              width="2885"
+              height="656"
+              alt="Paper-aligned method overview: five deterministic TSE candidates enter CDCS-5 target-identity repair, then the selected waveform is returned directly or used as evidence for Qwen-TSE decoding"
+            />
+          </a>
           <figcaption>
-            <strong>Figure 1.</strong> The two-stage story. Pool D repairs <em>who</em> is in the
-            evidence; the autoregressive prior supplies the quality gain, and CSG constrains its
-            content and speaker drift. Grounding confused evidence can reinforce the wrong speaker.
+            <strong>Figure 1.</strong> Paper-aligned method overview. CDCS-5 repairs <em>who</em> is
+            present in the evidence before Qwen-TSE generation; fixed CSG then constrains content and
+            speaker drift. Select the figure to inspect it at full resolution.
           </figcaption>
         </figure>
       </section>
@@ -73,9 +78,10 @@
       <section id="method">
         <h2>Method</h2>
         <p>
-          Pool D selects the most enrollment-consistent waveform from five frozen, conditioning-diverse
-          TSE candidates. It can be returned directly as the content-fidelity endpoint, or tokenized as
-          evidence for Q-Full. The Q-Full speech prior supplies the estimated-quality gain; CSG keeps its
+          Conditioning-diverse candidate selection (CDCS-5) selects the most enrollment-consistent
+          waveform from five frozen TSE candidates. It can be returned directly as the content-fidelity
+          endpoint, or tokenized as evidence for Qwen-TSE. The Qwen-TSE speech prior supplies the
+          estimated-quality gain; CSG keeps its
           next-token choices close to the repaired evidence. This ordering matters: CSG limits generation
           drift, but cannot repair a wrong-speaker anchor by itself.
         </p>
@@ -83,14 +89,14 @@
         <h3>How grounding works</h3>
         <p>
           The speech tokenizer represents each acoustic token with eight ternary FSQ coordinates.
-          Grounding changes token selection inside Q-Full; it does not change the Pool D selector.
+          Grounding changes token selection inside Qwen-TSE; it does not change the CDCS-5 selector.
         </p>
 
         <figure class="figure-card">
           <div class="grounding-steps">
             <article class="grounding-step">
               <span class="step-number">1</span>
-              <h4>Q-Full proposes</h4>
+              <h4>Qwen-TSE proposes</h4>
               <p>Raw logits rank the next token. A fluent high-score proposal may still drift from the evidence.</p>
               <div class="token-labels"><span>Evidence</span><span>Raw proposal</span></div>
               <div class="token-pair">
@@ -125,7 +131,7 @@
           </div>
           <figcaption>
             <strong>Figure 2.</strong> Illustrative token-level grounding. Fixed CSG uses
-            λ=1, w=0. The reported difficulty-conditioned noisy branch resolved to λ=.5, w=1 for every trial; GNR uses
+            λ=1, w=0. The reported adaptive noisy branch resolved to λ=.5, w=1 for every trial; GNR uses
             K=20, R=2 and is reported as a negative ablation because local code proximity did not lower WER.
           </figcaption>
         </figure>
@@ -165,7 +171,7 @@
               <div class="audio-cell reference"><strong>Clean target</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/clean/segmented/target.wav"></audio></div>
               <div class="audio-cell reference"><strong>Interferer</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/clean/segmented/interferer.wav"></audio></div>
               <div class="audio-cell wrong"><strong>Primary WeSep</strong><small>wrong speaker</small><audio controls preload="none" src="public/assets/audio/clean/segmented/primary.wav"></audio></div>
-              <div class="audio-cell ours"><strong>Pool D direct</strong><small>target recovered</small><audio controls preload="none" src="public/assets/audio/clean/segmented/pool-d.wav"></audio></div>
+              <div class="audio-cell ours"><strong>CDCS-5 direct</strong><small>target recovered</small><audio controls preload="none" src="public/assets/audio/clean/segmented/pool-d.wav"></audio></div>
             </div>
             <div class="transcript-panel" aria-label="Transcripts for Example 1">
               <p class="transcript-note"><strong>Frozen clean-reference transcript</strong> · Whisper-small.en; evaluation only</p>
@@ -173,10 +179,10 @@
                 <div><dt>Target</dt><dd>this attitude springs from a false conception of sin the conception that sin is a small matter easily taken care of by good works that we must</dd></div>
                 <div><dt>Interferer</dt><dd>he obtained the desired speed and load with a friction brake also regulator of speed but waited for an indicator to verify it</dd></div>
                 <div class="wrong-line"><dt>Primary ASR</dt><dd>he obtained the desired speed and load with a friction brake also it regularly matched speed but waited for an indicator to verify</dd></div>
-                <div class="ours-line"><dt>Pool D ASR</dt><dd>this attitude springs from a false conception of sin the conception that sin is a small matter easily taken care of by good works that we must</dd></div>
+                <div class="ours-line"><dt>CDCS-5 ASR</dt><dd>this attitude springs from a false conception of sin the conception that sin is a small matter easily taken care of by good works that we must</dd></div>
               </dl>
             </div>
-            <details class="spectrogram"><summary>View compact high-resolution spectrogram</summary><figure class="spectrogram-frame"><a href="public/assets/figures/clean-case-segmented.png?v=20260905-2" target="_blank" rel="noopener"><img data-src="public/assets/figures/clean-case-segmented.png?v=20260905-2" width="2000" height="1160" alt="Spectrogram comparison for Example 1" /></a><figcaption>Target, interferer, primary output, and repaired output. Select the figure to inspect the full-resolution image.</figcaption></figure></details>
+            <details class="spectrogram"><summary>View compact high-resolution spectrogram</summary><figure class="spectrogram-frame"><a href="public/assets/figures/clean-case-segmented.png?v=20260906-1" target="_blank" rel="noopener"><img data-src="public/assets/figures/clean-case-segmented.png?v=20260906-1" width="2000" height="1160" alt="Spectrogram comparison for Example 1" /></a><figcaption>Target, interferer, primary output, and repaired output. Select the figure to inspect the full-resolution image.</figcaption></figure></details>
           </article>
 
           <article class="audio-case" data-audio-case hidden>
@@ -195,7 +201,7 @@
               <div class="audio-cell reference"><strong>Clean target</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/clean/tfmap/target.wav"></audio></div>
               <div class="audio-cell reference"><strong>Interferer</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/clean/tfmap/interferer.wav"></audio></div>
               <div class="audio-cell wrong"><strong>Primary WeSep</strong><small>wrong speaker</small><audio controls preload="none" src="public/assets/audio/clean/tfmap/primary.wav"></audio></div>
-              <div class="audio-cell ours"><strong>Pool D / TF-map</strong><small>target recovered</small><audio controls preload="none" src="public/assets/audio/clean/tfmap/pool-d.wav"></audio></div>
+              <div class="audio-cell ours"><strong>CDCS-5 direct</strong><small>TF-map candidate selected</small><audio controls preload="none" src="public/assets/audio/clean/tfmap/pool-d.wav"></audio></div>
             </div>
             <div class="transcript-panel" aria-label="Transcripts for Example 2">
               <p class="transcript-note"><strong>Frozen clean-reference transcript</strong> · Whisper-small.en; evaluation only</p>
@@ -203,37 +209,37 @@
                 <div><dt>Target</dt><dd>your father thought a moment and looked at your mother and smiled</dd></div>
                 <div><dt>Interferer</dt><dd>she is wonderful more wonderful than anybody weve ever seen</dd></div>
                 <div class="wrong-line"><dt>Primary ASR</dt><dd>she is wonderful more wonderful than anybody weve ever seen</dd></div>
-                <div class="ours-line"><dt>Pool D ASR</dt><dd>your father thought a moment and looked at your mother and smiled</dd></div>
+                <div class="ours-line"><dt>CDCS-5 ASR</dt><dd>your father thought a moment and looked at your mother and smiled</dd></div>
               </dl>
             </div>
-            <details class="spectrogram"><summary>View compact high-resolution spectrogram</summary><figure class="spectrogram-frame"><a href="public/assets/figures/clean-case-tfmap.png?v=20260905-2" target="_blank" rel="noopener"><img data-src="public/assets/figures/clean-case-tfmap.png?v=20260905-2" width="2000" height="1160" alt="Spectrogram comparison for Example 2" /></a><figcaption>Target, interferer, primary output, and TF-map recovery. Select the figure to inspect the full-resolution image.</figcaption></figure></details>
+            <details class="spectrogram"><summary>View compact high-resolution spectrogram</summary><figure class="spectrogram-frame"><a href="public/assets/figures/clean-case-tfmap.png?v=20260906-1" target="_blank" rel="noopener"><img data-src="public/assets/figures/clean-case-tfmap.png?v=20260906-1" width="2000" height="1160" alt="Spectrogram comparison for Example 2" /></a><figcaption>Target, interferer, primary output, and TF-map recovery. Select the figure to inspect the full-resolution image.</figcaption></figure></details>
           </article>
 
           <article class="audio-case" data-audio-case hidden>
             <h3>Example 3 — constrained LLM grounding</h3>
             <p>
-              The same repaired evidence enters Q-Full. CSG reduces decoder drift, although the direct
+              The same repaired evidence enters Qwen-TSE. CSG reduces decoder drift, although the direct
               waveform remains strongest: <strong>UD 27.3%</strong>, <strong>CSG 9.1%</strong>,
-              <strong>Pool D direct 0% WER</strong>.
+              <strong>CDCS-5 direct 0% WER</strong>.
             </p>
             <div class="audio-grid four">
               <div class="audio-cell reference"><strong>Clean target</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/clean/csg/target.wav"></audio></div>
-              <div class="audio-cell ours"><strong>Pool D direct</strong><small>repaired evidence</small><audio controls preload="none" src="public/assets/audio/clean/csg/pool-d.wav"></audio></div>
-              <div class="audio-cell wrong"><strong>Q-Full UD</strong><small>decoder drift</small><audio controls preload="none" src="public/assets/audio/clean/csg/ud.wav"></audio></div>
-              <div class="audio-cell"><strong>Q-Full + CSG</strong><small>constrained</small><audio controls preload="none" src="public/assets/audio/clean/csg/csg.wav"></audio></div>
+              <div class="audio-cell ours"><strong>CDCS-5 direct</strong><small>repaired evidence</small><audio controls preload="none" src="public/assets/audio/clean/csg/pool-d.wav"></audio></div>
+              <div class="audio-cell wrong"><strong>Qwen-TSE UD</strong><small>decoder drift</small><audio controls preload="none" src="public/assets/audio/clean/csg/ud.wav"></audio></div>
+              <div class="audio-cell"><strong>Qwen-TSE fixed CSG</strong><small>constrained</small><audio controls preload="none" src="public/assets/audio/clean/csg/csg.wav"></audio></div>
             </div>
             <div class="transcript-panel" aria-label="Transcripts for Example 3">
               <p class="transcript-note"><strong>Frozen clean-reference transcript</strong> · Whisper-small.en; evaluation only</p>
               <dl>
                 <div><dt>Target</dt><dd>i like you still rachel im sure ill always like you</dd></div>
                 <div><dt>Interferer</dt><dd>but thou art not such a lover my beloved</dd></div>
-                <div class="ours-line"><dt>Pool D ASR</dt><dd>i like you still rachel im sure ill always like you</dd></div>
-                <div class="wrong-line"><dt>Q-Full UD ASR</dt><dd>i like your stove rachel im sure ill always like you maam <span class="wer-tag">WER 27.27%</span></dd></div>
-                <div class="ours-line"><dt>Q-Full + CSG ASR</dt><dd>i like your still rachel im sure ill always like you <span class="wer-tag">WER 9.09%</span></dd></div>
+                <div class="ours-line"><dt>CDCS-5 ASR</dt><dd>i like you still rachel im sure ill always like you</dd></div>
+                <div class="wrong-line"><dt>Qwen-TSE UD ASR</dt><dd>i like your stove rachel im sure ill always like you maam <span class="wer-tag">WER 27.27%</span></dd></div>
+                <div class="ours-line"><dt>Qwen-TSE fixed CSG ASR</dt><dd>i like your still rachel im sure ill always like you <span class="wer-tag">WER 9.09%</span></dd></div>
               </dl>
               <p class="transcript-reading"><strong>Why grounding matters:</strong> the ungrounded AR decoder substitutes plausible words (“stove”, “maam”); CSG keeps the output closer to the repaired evidence and removes most of that content drift.</p>
             </div>
-            <details class="spectrogram"><summary>View compact high-resolution spectrogram</summary><figure class="spectrogram-frame"><a href="public/assets/figures/clean-case-csg.png?v=20260905-2" target="_blank" rel="noopener"><img data-src="public/assets/figures/clean-case-csg.png?v=20260905-2" width="2000" height="1160" alt="Spectrogram comparison for Example 3" /></a><figcaption>Target, repaired evidence, unconstrained generation, and fixed CSG. Select the figure to inspect the full-resolution image.</figcaption></figure></details>
+            <details class="spectrogram"><summary>View compact high-resolution spectrogram</summary><figure class="spectrogram-frame"><a href="public/assets/figures/clean-case-csg.png?v=20260906-1" target="_blank" rel="noopener"><img data-src="public/assets/figures/clean-case-csg.png?v=20260906-1" width="2000" height="1160" alt="Spectrogram comparison for Example 3" /></a><figcaption>Target, repaired evidence, unconstrained generation, and fixed CSG. Select the figure to inspect the full-resolution image.</figcaption></figure></details>
           </article>
         </div>
 
@@ -255,25 +261,83 @@
           <a href="#controlled-snr">Controlled SNR</a>
         </nav>
 
+        <aside class="metric-guide" id="metrics" aria-labelledby="metric-guide-title">
+          <div class="metric-intro">
+            <p class="study-badge">Introduced in this work</p>
+            <h3 id="metric-guide-title">Two operational diagnostics for speaker confusion</h3>
+            <p>
+              WER alone cannot tell whether an output followed the competing speaker. We therefore
+              define paired, reference-based indicators for lexical identity and acoustic identity.
+            </p>
+          </div>
+
+          <div class="switch-metric-grid">
+            <article class="switch-metric content-metric">
+              <div class="metric-title-line"><span class="metric-symbol">C-sw.</span><span class="metric-direction">↓ lower is better</span></div>
+              <h4>Content-switch rate</h4>
+              <p>
+                A trial is flagged when the fixed Whisper-small.en transcript of the output has lower
+                WER to the clean interferer transcript than to the clean target transcript. Ties are
+                not switches.
+              </p>
+              <div class="metric-formula" aria-label="The content-switch indicator is one when output WER to the interferer is lower than output WER to the target.">
+                c<sub>sw</sub> = 1[ WER(τ<sub>I</sub>, τ̂) &lt; WER(τ<sub>T</sub>, τ̂) ]
+              </div>
+            </article>
+
+            <article class="switch-metric acoustic-metric">
+              <div class="metric-title-line"><span class="metric-symbol">A-sw.</span><span class="metric-direction">↓ lower is better</span></div>
+              <h4>Acoustic-switch rate</h4>
+              <p>
+                A frozen CosyVoice CAMPPlus evaluator flags a trial when the output is more
+                cosine-similar to the clean interferer than to the clean target. Ties are not switches.
+              </p>
+              <div class="metric-formula formula-stack" aria-label="Speaker margin equals output similarity to the target minus output similarity to the interferer; the acoustic-switch indicator is one when this margin is negative.">
+                <span>m<sub>spk</sub> = cos(f(s<sub>T</sub>), f(ŝ)) − cos(f(s<sub>I</sub>), f(ŝ))</span>
+                <span>a<sub>sw</sub> = 1[m<sub>spk</sub> &lt; 0]</span>
+              </div>
+            </article>
+          </div>
+
+          <div class="rate-formula" aria-label="Content-switch and acoustic-switch rates are the percentage of evaluated trials whose corresponding indicator equals one.">
+            <span class="rate-expression">C-sw. = 100/N Σ c<sub>sw,n</sub></span>
+            <span class="rate-divider" aria-hidden="true">·</span>
+            <span class="rate-expression">A-sw. = 100/N Σ a<sub>sw,n</sub></span>
+          </div>
+          <p class="metric-caveat">
+            These are study-defined operational diagnostics, not standardized perceptual metrics or
+            proof of semantic or speaker correctness. Clean target and interferer references are used
+            for evaluation only; CDCS deployment uses neither. The CAMPPlus evaluator is independent
+            of the frozen ECAPA selector.
+          </p>
+        </aside>
+
+        <dl class="supporting-metrics" aria-label="Supporting metric definitions">
+          <div><dt>WER ↓</dt><dd>Uncapped utterance-mean ASR consistency against a same-ASR clean-target transcript.</dd></div>
+          <div><dt>Spk. margin ↑</dt><dd>Target-minus-interferer CAMPPlus cosine similarity; a negative value triggers A-sw.</dd></div>
+          <div><dt>DNSMOS ↑</dt><dd>Predicted P.808 quality for clean speech and P.835 OVRL for noisy speech.</dd></div>
+          <div><dt>UTMOS ↑</dt><dd>Reference-free predicted naturalness; it does not establish content or speaker identity.</dd></div>
+        </dl>
+
         <article class="result-group" id="clean-test">
           <p class="split-label">TEST · CLEAN</p>
           <h3>Frozen Clean TEST</h3>
           <p class="table-note">6,000 trials per system. Clean UTMOS is a post-hoc metric-only evaluation of unchanged frozen outputs; all six displayed systems have 6,000/6,000 scores and zero failures. <a href="public/results/clean-test-utmos.json">UTMOS manifest</a>.</p>
           <div class="table-scroll">
-            <table>
+            <table class="system-table">
               <caption>Frozen Clean TEST results for the six paper systems</caption>
-              <thead><tr><th>System</th><th>WER ↓</th><th>C-sw. ↓</th><th>A-sw. ↓</th><th>Spk. margin ↑</th><th>DNSMOS P.808 ↑</th><th>UTMOS ↑</th></tr></thead>
+              <thead><tr><th>System</th><th>Grounding evidence</th><th>WER ↓</th><th>C-sw. ↓</th><th>A-sw. ↓</th><th>Spk. margin ↑</th><th>DNSMOS P.808 ↑</th><th>UTMOS ↑</th></tr></thead>
               <tbody>
-                <tr><td>Primary WeSep</td><td>13.68</td><td>7.00</td><td>6.98</td><td>.449</td><td>3.688</td><td>3.606</td></tr>
-                <tr><td>TF-map/context WeSep</td><td>8.56</td><td>2.72</td><td>2.55</td><td>.491</td><td><strong>3.718</strong></td><td>3.702</td></tr>
-                <tr class="key-row"><td><strong>Pool D direct</strong></td><td><strong>6.54</strong></td><td><strong>.88</strong></td><td>.78</td><td><strong>.506</strong></td><td>3.699</td><td>3.647</td></tr>
-                <tr><td>Pool D → Q-Full UD</td><td>14.08</td><td>1.00</td><td>.43</td><td>.422</td><td>3.705</td><td>3.914</td></tr>
-                <tr><td>Pool D → fixed CSG</td><td>12.74</td><td>1.00</td><td><strong>.23</strong></td><td>.422</td><td>3.699</td><td>3.910</td></tr>
-                <tr><td>Pool D → fixed CSG → GNR (K20/R2)</td><td>13.43</td><td>1.07</td><td>.23</td><td>.423</td><td>3.702</td><td><strong>3.915</strong></td></tr>
+                <tr><td>Primary WeSep</td><td>—</td><td>13.68</td><td>7.00</td><td>6.98</td><td>0.449</td><td>3.688</td><td>3.606</td></tr>
+                <tr><td>TF-map/context WeSep</td><td>—</td><td>8.56</td><td>2.72</td><td>2.55</td><td>0.491</td><td>3.718</td><td>3.702</td></tr>
+                <tr class="key-row"><td><strong>CDCS-5 direct</strong></td><td>—</td><td><strong>6.54</strong></td><td><strong>0.88</strong></td><td><strong>0.78</strong></td><td><strong>0.506</strong></td><td><strong>3.699</strong></td><td>3.647</td></tr>
+                <tr class="branch-start"><td>Qwen-TSE UD</td><td>CDCS-5</td><td>14.08</td><td>1.00</td><td>0.43</td><td>0.422</td><td><strong>3.705</strong></td><td>3.914</td></tr>
+                <tr><td><strong>Qwen-TSE fixed CSG</strong></td><td>CDCS-5</td><td><strong>12.74</strong></td><td><strong>1.00</strong></td><td><strong>0.23</strong></td><td><strong>0.422</strong></td><td>3.699</td><td>3.910</td></tr>
+                <tr><td>Qwen-TSE GNR</td><td>CDCS-5</td><td>13.43</td><td>1.07</td><td>0.23</td><td>0.423</td><td>3.702</td><td><strong>3.915</strong></td></tr>
               </tbody>
             </table>
           </div>
-          <p class="result-reading"><strong>Reading.</strong> Pool D direct is the best clean content-fidelity endpoint. Generative systems receive higher predicted naturalness, but UTMOS does not establish content or speaker correctness.</p>
+          <p class="result-reading"><strong>Reading.</strong> CDCS-5 direct is the best clean content-fidelity endpoint. Qwen-TSE systems receive higher predicted naturalness, but UTMOS does not establish content or speaker correctness.</p>
         </article>
 
         <article class="result-group" id="noisy-test">
@@ -281,20 +345,20 @@
           <h3>Frozen Noisy TEST</h3>
           <p class="table-note" id="noisy-test-note">6,000 natural-noise trials per system from the one permitted TEST run.</p>
           <div class="table-scroll">
-            <table id="noisy-test-table">
+            <table class="system-table" id="noisy-test-table">
               <caption>Frozen natural-noise TEST results</caption>
-              <thead><tr><th>System</th><th>Raw WER ↓</th><th>C-sw. ↓</th><th>A-sw. ↓</th><th>Spk. margin ↑</th><th>DNSMOS OVRL ↑</th><th>UTMOS ↑</th></tr></thead>
+              <thead><tr><th>System</th><th>Grounding evidence</th><th>Raw WER ↓</th><th>C-sw. ↓</th><th>A-sw. ↓</th><th>Spk. margin ↑</th><th>DNSMOS OVRL ↑</th><th>UTMOS ↑</th></tr></thead>
               <tbody id="noisy-test-body">
-                <tr><td>Primary WeSep</td><td>46.17</td><td>15.57</td><td>14.57</td><td>.304</td><td>2.291</td><td>2.061</td></tr>
-                <tr class="key-row"><td><strong>Pool D direct</strong></td><td><strong>35.64</strong></td><td><strong>7.95</strong></td><td>7.17</td><td>.363</td><td>2.201</td><td>1.990</td></tr>
-                <tr><td>Pool D → Q-Full UD</td><td>58.00</td><td>10.13</td><td>1.68</td><td>.378</td><td>3.086</td><td><strong>3.253</strong></td></tr>
-                <tr><td>Pool D → fixed CSG</td><td>53.90</td><td><strong>9.48</strong></td><td><strong>.52</strong></td><td><strong>.386</strong></td><td>3.082</td><td>3.147</td></tr>
-                <tr><td>Pool D → difficulty-conditioned CSG</td><td>50.99</td><td>9.72</td><td>.98</td><td>.384</td><td>3.093</td><td>3.196</td></tr>
-                <tr><td>Pool D → difficulty-conditioned CSG → GNR</td><td>54.79</td><td>9.65</td><td>.98</td><td>.384</td><td><strong>3.095</strong></td><td>3.207</td></tr>
+                <tr><td>Primary WeSep</td><td>—</td><td>46.17</td><td>15.57</td><td>14.57</td><td>0.304</td><td>2.291</td><td>2.061</td></tr>
+                <tr class="key-row"><td><strong>CDCS-5 direct</strong></td><td>—</td><td><strong>35.64</strong></td><td><strong>7.95</strong></td><td>7.17</td><td>0.363</td><td>2.201</td><td>1.990</td></tr>
+                <tr class="branch-start"><td>Qwen-TSE UD</td><td>CDCS-5</td><td>58.00</td><td>10.13</td><td>1.68</td><td>0.378</td><td>3.086</td><td><strong>3.253</strong></td></tr>
+                <tr><td><strong>Qwen-TSE fixed CSG</strong></td><td>CDCS-5</td><td><strong>53.90</strong></td><td><strong>9.48</strong></td><td><strong>0.52</strong></td><td><strong>0.386</strong></td><td>3.082</td><td>3.147</td></tr>
+                <tr><td>Qwen-TSE adaptive CSG</td><td>CDCS-5</td><td>50.99</td><td>9.72</td><td>0.98</td><td>0.384</td><td>3.093</td><td>3.196</td></tr>
+                <tr><td>Qwen-TSE adaptive CSG+GNR</td><td>CDCS-5</td><td>54.79</td><td>9.65</td><td>0.98</td><td>0.384</td><td><strong>3.095</strong></td><td>3.207</td></tr>
               </tbody>
             </table>
           </div>
-          <p class="result-reading"><strong>Reading.</strong> Pool D is the strongest content-fidelity endpoint. Within the generative branch, fixed CSG reduces both raw WER and acoustic switching relative to UD, but no generated condition overtakes Pool D direct on WER.</p>
+          <p class="result-reading"><strong>Reading.</strong> CDCS-5 direct is the strongest content-fidelity endpoint. Within Qwen-TSE, fixed CSG reduces both raw WER and acoustic switching relative to UD, but no generated condition overtakes CDCS-5 direct on WER.</p>
         </article>
 
         <article class="result-group" id="clean-dev">
@@ -302,20 +366,20 @@
           <h3>Clean DEV system comparison</h3>
           <p class="table-note">6,000 trials per system; configuration selection and ablation evidence. A complete frozen Clean DEV UTMOS table was not run, so TEST UTMOS values are not copied here.</p>
           <div class="table-scroll">
-            <table>
+            <table class="system-table">
               <caption>Clean DEV system-level results</caption>
-              <thead><tr><th>System</th><th>WER ↓</th><th>C-sw. ↓</th><th>A-sw. ↓</th><th>Spk. margin ↑</th><th>DNSMOS P.808 ↑</th></tr></thead>
+              <thead><tr><th>System</th><th>Grounding evidence</th><th>WER ↓</th><th>C-sw. ↓</th><th>A-sw. ↓</th><th>Spk. margin ↑</th><th>DNSMOS P.808 ↑</th></tr></thead>
               <tbody>
-                <tr><td>Primary WeSep</td><td>13.88</td><td>7.10</td><td>6.88</td><td>.459</td><td>3.709</td></tr>
-                <tr><td>Pool B direct</td><td>7.29</td><td>1.40</td><td>1.17</td><td>.513</td><td>3.728</td></tr>
-                <tr class="key-row"><td><strong>Pool D direct</strong></td><td><strong>7.01</strong></td><td><strong>1.13</strong></td><td>.88</td><td><strong>.515</strong></td><td>3.722</td></tr>
-                <tr><td>Pool D S3 reconstruction</td><td>13.02</td><td>1.25</td><td>.52</td><td>.427</td><td>3.736</td></tr>
-                <tr><td>Original Q-Full UD</td><td>20.97</td><td>7.20</td><td>1.23</td><td>.419</td><td>3.745</td></tr>
-                <tr><td>Original Q-Full + CSG</td><td>19.06</td><td>7.15</td><td>1.07</td><td>.419</td><td>3.737</td></tr>
-                <tr><td>Pool B → Q-Full UD</td><td>14.82</td><td>1.58</td><td>.72</td><td>.427</td><td><strong>3.754</strong></td></tr>
-                <tr><td>Pool B → fixed CSG</td><td>12.88</td><td>1.52</td><td>.60</td><td>.428</td><td>3.745</td></tr>
-                <tr><td>Pool D → Q-Full UD</td><td>14.10</td><td>1.32</td><td>.55</td><td>.428</td><td>3.752</td></tr>
-                <tr><td>Pool D → fixed CSG</td><td>12.51</td><td>1.27</td><td><strong>.48</strong></td><td>.428</td><td>3.744</td></tr>
+                <tr><td>Primary WeSep</td><td>—</td><td>13.88</td><td>7.10</td><td>6.88</td><td>0.459</td><td>3.709</td></tr>
+                <tr><td>CDCS-2 direct</td><td>—</td><td>7.29</td><td>1.40</td><td>1.17</td><td>0.513</td><td>3.728</td></tr>
+                <tr class="key-row"><td><strong>CDCS-5 direct</strong></td><td>—</td><td><strong>7.01</strong></td><td><strong>1.13</strong></td><td>0.88</td><td><strong>0.515</strong></td><td>3.722</td></tr>
+                <tr><td>CDCS-5 S3 reconstruction</td><td>—</td><td>13.02</td><td>1.25</td><td>0.52</td><td>0.427</td><td>3.736</td></tr>
+                <tr class="branch-start"><td>Qwen-TSE UD</td><td>Primary</td><td>20.97</td><td>7.20</td><td>1.23</td><td>0.419</td><td>3.745</td></tr>
+                <tr><td>Qwen-TSE fixed CSG</td><td>Primary</td><td>19.06</td><td>7.15</td><td>1.07</td><td>0.419</td><td>3.737</td></tr>
+                <tr><td>Qwen-TSE UD</td><td>CDCS-2</td><td>14.82</td><td>1.58</td><td>0.72</td><td>0.427</td><td><strong>3.754</strong></td></tr>
+                <tr><td>Qwen-TSE fixed CSG</td><td>CDCS-2</td><td>12.88</td><td>1.52</td><td>0.60</td><td>0.428</td><td>3.745</td></tr>
+                <tr><td>Qwen-TSE UD</td><td>CDCS-5</td><td>14.10</td><td>1.32</td><td>0.55</td><td>0.428</td><td>3.752</td></tr>
+                <tr><td>Qwen-TSE fixed CSG</td><td>CDCS-5</td><td>12.51</td><td>1.27</td><td><strong>0.48</strong></td><td>0.428</td><td>3.744</td></tr>
               </tbody>
             </table>
           </div>
@@ -326,28 +390,21 @@
           <h3>Noisy DEV system comparison</h3>
           <p class="table-note">6,000 natural-noise trials per system. Raw, uncapped utterance-mean WER is shown; the separate 2,400 controlled-SNR DEV trials are reported below.</p>
           <div class="table-scroll">
-            <table>
+            <table class="system-table">
               <caption>Natural-noise DEV results</caption>
-              <thead><tr><th>System</th><th>Raw WER ↓</th><th>C-sw. ↓</th><th>A-sw. ↓</th><th>Spk. margin ↑</th><th>DNSMOS OVRL ↑</th><th>UTMOS ↑</th></tr></thead>
+              <thead><tr><th>System</th><th>Grounding evidence</th><th>Raw WER ↓</th><th>C-sw. ↓</th><th>A-sw. ↓</th><th>Spk. margin ↑</th><th>DNSMOS OVRL ↑</th><th>UTMOS ↑</th></tr></thead>
               <tbody>
-                <tr><td>Primary WeSep</td><td>45.88</td><td>16.12</td><td>15.15</td><td>.312</td><td>2.302</td><td>2.046</td></tr>
-                <tr class="key-row"><td><strong>Pool D direct</strong></td><td><strong>39.62</strong></td><td><strong>8.70</strong></td><td>7.28</td><td>.371</td><td>2.193</td><td>1.969</td></tr>
-                <tr><td>Pool D → Q-Full UD</td><td>59.57</td><td>10.62</td><td>2.30</td><td>.383</td><td>3.098</td><td><strong>3.261</strong></td></tr>
-                <tr><td>Pool D → fixed CSG</td><td>55.48</td><td>10.25</td><td><strong>.98</strong></td><td><strong>.391</strong></td><td>3.092</td><td>3.154</td></tr>
-                <tr><td>Pool D → difficulty-conditioned CSG</td><td>55.85</td><td>10.07</td><td>1.28</td><td>.390</td><td>3.107</td><td>3.208</td></tr>
-                <tr><td>Pool D → difficulty-conditioned CSG → GNR</td><td>59.51</td><td>10.20</td><td>1.30</td><td>.390</td><td><strong>3.110</strong></td><td>3.221</td></tr>
+                <tr><td>Primary WeSep</td><td>—</td><td>45.88</td><td>16.12</td><td>15.15</td><td>0.312</td><td>2.302</td><td>2.046</td></tr>
+                <tr class="key-row"><td><strong>CDCS-5 direct</strong></td><td>—</td><td><strong>39.62</strong></td><td><strong>8.70</strong></td><td>7.28</td><td>0.371</td><td>2.193</td><td>1.969</td></tr>
+                <tr class="branch-start"><td>Qwen-TSE UD</td><td>CDCS-5</td><td>59.57</td><td>10.62</td><td>2.30</td><td>0.383</td><td>3.098</td><td><strong>3.261</strong></td></tr>
+                <tr><td><strong>Qwen-TSE fixed CSG</strong></td><td>CDCS-5</td><td><strong>55.48</strong></td><td>10.25</td><td><strong>0.98</strong></td><td><strong>0.391</strong></td><td>3.092</td><td>3.154</td></tr>
+                <tr><td>Qwen-TSE adaptive CSG</td><td>CDCS-5</td><td>55.85</td><td><strong>10.07</strong></td><td>1.28</td><td>0.390</td><td>3.107</td><td>3.208</td></tr>
+                <tr><td>Qwen-TSE adaptive CSG+GNR</td><td>CDCS-5</td><td>59.51</td><td>10.20</td><td>1.30</td><td>0.390</td><td><strong>3.110</strong></td><td>3.221</td></tr>
               </tbody>
             </table>
           </div>
         </article>
 
-        <div class="definitions">
-          <p><strong>WER:</strong> uncapped utterance-mean ASR-consistency WER against same-ASR clean-target transcripts.</p>
-          <p><strong>C-sw.:</strong> output content is closer to the interferer transcript than the target transcript.</p>
-          <p><strong>A-sw.:</strong> output speaker similarity favours the interferer over the enrolled target.</p>
-          <p><strong>DNSMOS / UTMOS:</strong> predicted perceptual quality; neither proves content or target-speaker correctness.</p>
-          <p>WER, C-sw., and A-sw. are reported as percentages. C-sw. and A-sw. are operational metrics defined for this study.</p>
-        </div>
       </section>
 
       <section id="robustness">
@@ -371,34 +428,34 @@
         <div class="result-group" id="controlled-snr">
           <p class="split-label">CONTROLLED NOISE · DEV AND TEST</p>
           <h3>Performance by SNR</h3>
-          <p class="table-note">Each cell reports <strong>raw WER / A-sw.</strong> in percent; 480 trials per SNR and system. Raw WER may exceed 100% because ASR insertions are not capped.</p>
+          <p class="table-note">Each cell reports <strong>raw WER / A-sw.</strong> in percent; 480 trials per SNR and system. Raw WER may exceed 100% because ASR insertions are not capped. Every Qwen-TSE row uses CDCS-5 grounding evidence; GNR uses K=20, R=2.</p>
 
           <h4>Controlled-SNR DEV</h4>
           <div class="table-scroll compact-table">
-            <table>
+            <table class="matrix-table">
               <caption>Controlled-SNR DEV raw WER and acoustic-switch rate</caption>
               <thead><tr><th>System</th><th>−5 dB</th><th>0 dB</th><th>5 dB</th><th>10 dB</th><th>15 dB</th></tr></thead>
               <tbody>
-                <tr class="key-row"><td><strong>Pool D direct</strong></td><td>114.12 / 37.29</td><td>98.30 / 31.25</td><td>63.70 / 19.79</td><td>30.80 / 8.12</td><td>15.88 / 3.75</td></tr>
-                <tr><td>Pool D → UD</td><td>137.56 / 11.46</td><td>115.70 / 5.62</td><td>92.36 / 2.50</td><td>50.06 / 2.29</td><td>29.80 / 1.67</td></tr>
-                <tr><td>Pool D → fixed CSG</td><td>132.99 / 3.54</td><td>104.78 / 2.92</td><td>93.56 / 1.25</td><td>45.69 / 1.25</td><td>25.96 / 1.04</td></tr>
-                <tr><td>Pool D → difficulty CSG</td><td>130.58 / 5.83</td><td>110.77 / 2.92</td><td>84.84 / 1.46</td><td>50.42 / 1.46</td><td>26.38 / 1.04</td></tr>
-                <tr><td>Pool D → difficulty CSG → GNR</td><td>139.37 / 5.62</td><td>113.81 / 3.33</td><td>79.56 / 1.46</td><td>50.63 / 1.46</td><td>26.94 / 1.04</td></tr>
+                <tr class="key-row"><td><strong>CDCS-5 direct</strong></td><td>114.12 / 37.29</td><td>98.30 / 31.25</td><td>63.70 / 19.79</td><td>30.80 / 8.12</td><td>15.88 / 3.75</td></tr>
+                <tr class="branch-start"><td>Qwen-TSE UD</td><td>137.56 / 11.46</td><td>115.70 / 5.62</td><td>92.36 / 2.50</td><td>50.06 / 2.29</td><td>29.80 / 1.67</td></tr>
+                <tr><td>Qwen-TSE fixed CSG</td><td>132.99 / 3.54</td><td>104.78 / 2.92</td><td>93.56 / 1.25</td><td>45.69 / 1.25</td><td>25.96 / 1.04</td></tr>
+                <tr><td>Qwen-TSE adaptive CSG</td><td>130.58 / 5.83</td><td>110.77 / 2.92</td><td>84.84 / 1.46</td><td>50.42 / 1.46</td><td>26.38 / 1.04</td></tr>
+                <tr><td>Qwen-TSE adaptive CSG+GNR</td><td>139.37 / 5.62</td><td>113.81 / 3.33</td><td>79.56 / 1.46</td><td>50.63 / 1.46</td><td>26.94 / 1.04</td></tr>
               </tbody>
             </table>
           </div>
 
           <h4>Controlled-SNR TEST</h4>
           <div class="table-scroll compact-table">
-            <table>
+            <table class="matrix-table">
               <caption>Controlled-SNR TEST raw WER and acoustic-switch rate</caption>
               <thead><tr><th>System</th><th>−5 dB</th><th>0 dB</th><th>5 dB</th><th>10 dB</th><th>15 dB</th></tr></thead>
               <tbody>
-                <tr class="key-row"><td><strong>Pool D direct</strong></td><td>104.78 / 34.58</td><td>89.49 / 29.17</td><td>54.03 / 16.67</td><td>27.95 / 7.08</td><td>20.87 / 4.79</td></tr>
-                <tr><td>Pool D → UD</td><td>136.69 / 9.58</td><td>113.67 / 6.67</td><td>78.25 / 4.17</td><td>47.15 / 2.29</td><td>29.73 / 2.08</td></tr>
-                <tr><td>Pool D → fixed CSG</td><td>137.44 / 3.33</td><td>107.18 / 2.71</td><td>83.66 / 2.08</td><td>41.33 / 2.08</td><td>24.93 / 1.67</td></tr>
-                <tr><td>Pool D → difficulty CSG</td><td>116.77 / 7.08</td><td>106.38 / 3.96</td><td>79.37 / 2.92</td><td>45.22 / 1.88</td><td>25.89 / 2.08</td></tr>
-                <tr><td>Pool D → difficulty CSG → GNR</td><td>116.93 / 6.67</td><td>121.06 / 4.58</td><td>79.92 / 2.71</td><td>43.63 / 2.08</td><td>26.00 / 2.08</td></tr>
+                <tr class="key-row"><td><strong>CDCS-5 direct</strong></td><td>104.78 / 34.58</td><td>89.49 / 29.17</td><td>54.03 / 16.67</td><td>27.95 / 7.08</td><td>20.87 / 4.79</td></tr>
+                <tr class="branch-start"><td>Qwen-TSE UD</td><td>136.69 / 9.58</td><td>113.67 / 6.67</td><td>78.25 / 4.17</td><td>47.15 / 2.29</td><td>29.73 / 2.08</td></tr>
+                <tr><td>Qwen-TSE fixed CSG</td><td>137.44 / 3.33</td><td>107.18 / 2.71</td><td>83.66 / 2.08</td><td>41.33 / 2.08</td><td>24.93 / 1.67</td></tr>
+                <tr><td>Qwen-TSE adaptive CSG</td><td>116.77 / 7.08</td><td>106.38 / 3.96</td><td>79.37 / 2.92</td><td>45.22 / 1.88</td><td>25.89 / 2.08</td></tr>
+                <tr><td>Qwen-TSE adaptive CSG+GNR</td><td>116.93 / 6.67</td><td>121.06 / 4.58</td><td>79.92 / 2.71</td><td>43.63 / 2.08</td><td>26.00 / 2.08</td></tr>
               </tbody>
             </table>
           </div>
@@ -425,14 +482,14 @@
         <details class="additional-results">
           <summary>Show Clean DEV deployment cost</summary>
           <div class="table-scroll">
-            <table>
-              <thead><tr><th>Configuration</th><th>Candidates</th><th>Q-Full</th><th>RTF ↓</th><th>Peak VRAM</th><th>Swap recovery ↑</th></tr></thead>
+            <table class="matrix-table">
+              <thead><tr><th>Configuration</th><th>Candidates</th><th>Qwen-TSE passes</th><th>RTF ↓</th><th>Peak VRAM</th><th>Swap recovery ↑</th></tr></thead>
               <tbody>
-                <tr><td>Primary</td><td>1</td><td>—</td><td>.057</td><td>20.37 GiB</td><td>0.00%</td></tr>
-                <tr><td>Pool B direct</td><td>2</td><td>—</td><td>.105</td><td>20.38 GiB</td><td>83.21%</td></tr>
-                <tr class="key-row"><td><strong>Pool D direct</strong></td><td>5</td><td>—</td><td>.208</td><td>20.47 GiB</td><td><strong>87.65%</strong></td></tr>
-                <tr><td>Pool B + CSG</td><td>2</td><td>1 pass</td><td>.473</td><td>20.38 GiB</td><td>79.01%</td></tr>
-                <tr><td>Pool D + CSG</td><td>5</td><td>1 pass</td><td>.573</td><td>20.47 GiB</td><td>80.74%</td></tr>
+                <tr><td>Primary WeSep</td><td>1</td><td>—</td><td>0.057</td><td>20.37 GiB</td><td>0.00%</td></tr>
+                <tr><td>CDCS-2 direct</td><td>2</td><td>—</td><td>0.105</td><td>20.38 GiB</td><td>83.21%</td></tr>
+                <tr class="key-row"><td><strong>CDCS-5 direct</strong></td><td>5</td><td>—</td><td>0.208</td><td>20.47 GiB</td><td><strong>87.65%</strong></td></tr>
+                <tr class="branch-start"><td>CDCS-2 + Qwen-TSE CSG</td><td>2</td><td>1</td><td>0.473</td><td>20.38 GiB</td><td>79.01%</td></tr>
+                <tr><td>CDCS-5 + Qwen-TSE CSG</td><td>5</td><td>1</td><td>0.573</td><td>20.47 GiB</td><td>80.74%</td></tr>
               </tbody>
             </table>
           </div>
@@ -455,12 +512,12 @@
       </section>
 
       <footer>
-        <p>Repair Before Grounding · research demo</p>
+        <p>Speaker-Consistent Grounding · research demo</p>
         <p><a href="#top">Back to top</a> · <a href="https://github.com/Hanyu-Meng/LLM-TSE-Grounding-Demo">Source and reproducibility notes</a></p>
       </footer>
     </main>
 
     <script src="frozen-noisy-test.js?v=20260905-3"></script>
-    <script src="app.js?v=20260905-7"></script>
+    <script src="app.js?v=20260906-1"></script>
   </body>
 </html>

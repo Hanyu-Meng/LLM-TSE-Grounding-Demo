@@ -178,19 +178,19 @@ CASES = {
         (AUDIO / "segmented" / "target.wav", "Target reference", "evaluation only", BLUE),
         (AUDIO / "segmented" / "interferer.wav", "Interferer reference", "evaluation only", MUTED),
         (AUDIO / "segmented" / "primary.wav", "Primary WeSep", "wrong speaker · WER 100%", MUTED),
-        (AUDIO / "segmented" / "pool-d.wav", "Pool D · middle view", "target recovered · WER 0%", ORANGE),
+        (AUDIO / "segmented" / "pool-d.wav", "CDCS-5 · middle view", "target recovered · WER 0%", ORANGE),
     ],
     "clean-case-tfmap.png": [
         (AUDIO / "tfmap" / "target.wav", "Target reference", "evaluation only", BLUE),
         (AUDIO / "tfmap" / "interferer.wav", "Interferer reference", "evaluation only", MUTED),
         (AUDIO / "tfmap" / "primary.wav", "Primary WeSep", "wrong speaker · WER 100%", MUTED),
-        (AUDIO / "tfmap" / "pool-d.wav", "Pool D · TF-map view", "target recovered · WER 0%", ORANGE),
+        (AUDIO / "tfmap" / "pool-d.wav", "CDCS-5 · TF-map view", "target recovered · WER 0%", ORANGE),
     ],
     "clean-case-csg.png": [
         (AUDIO / "csg" / "target.wav", "Target reference", "evaluation only", BLUE),
-        (AUDIO / "csg" / "pool-d.wav", "Pool D evidence", "direct WER 0%", ORANGE),
-        (AUDIO / "csg" / "ud.wav", "Q-Full UD", "decoder drift · WER 27.3%", MUTED),
-        (AUDIO / "csg" / "csg.wav", "Q-Full + fixed CSG", "drift reduced · WER 9.1%", GREEN),
+        (AUDIO / "csg" / "pool-d.wav", "CDCS-5 evidence", "direct WER 0%", ORANGE),
+        (AUDIO / "csg" / "ud.wav", "Qwen-TSE UD", "decoder drift · WER 27.3%", MUTED),
+        (AUDIO / "csg" / "csg.wav", "Qwen-TSE fixed CSG", "drift reduced · WER 9.1%", GREEN),
     ],
 }
 

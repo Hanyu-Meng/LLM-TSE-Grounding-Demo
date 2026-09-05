@@ -1,6 +1,6 @@
-# Repair Before Grounding — Demo
+# Speaker-Consistent Grounding — Demo
 
-Minimal academic project page and audio demo for **Repair Before Grounding: Conditioning-Diverse Candidate Selection for Confusion-Resilient Target Speaker Extraction**.
+Minimal academic project page and audio demo for **Speaker-Consistent Grounding for Confusion-Resilient LLM-Based Target Speech Extraction**.
 
 **Live demo:** <https://hanyu-meng.github.io/LLM-TSE-Grounding-Demo/>
 
@@ -12,6 +12,8 @@ The page presents one focused claim: reliable target-conditioned evidence must b
 ## What is included
 
 - Directly visible Clean DEV, Clean TEST, natural-noise DEV, and frozen natural-noise TEST tables with split-specific denominators.
+- Paper-aligned public system names throughout: CDCS-2/CDCS-5 and the Qwen-TSE UD, CSG, and GNR variants.
+- Exact definitions and decision rules for the study-defined content-switch (C-sw.) and acoustic-switch (A-sw.) diagnostics.
 - Complete Clean TEST UTMOS for every displayed row, evaluated post hoc on the unchanged frozen outputs with the audited SpeechMOS v1.2.0 model.
 - Separate controlled-SNR DEV and TEST tables (480 trials per SNR and system), never pooled into the headline natural-noise table.
 - A compact repair-before-grounding story figure plus a token-level grounding diagram.
