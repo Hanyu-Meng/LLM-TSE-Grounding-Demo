@@ -14,8 +14,8 @@ The page presents one focused claim: reliable target-conditioned evidence must b
 - Frozen Clean TEST results over 6,000 trials.
 - Clearly labelled provisional Noisy DEV results over 8,400 trials.
 - Frozen natural-noise TEST results over 6,000 trials from the one permitted run.
-- Interactive system and token-level grounding explainers.
-- Three ordered listening cases covering enrollment-view recovery, complementary TF-map/context evidence, and constrained grounding.
+- Compact system and token-level grounding diagrams.
+- Three paged listening cases covering enrollment-view recovery, complementary TF-map/context evidence, and constrained grounding.
 - Per-SNR robustness and deployment-cost summaries.
 
 No remote-machine configuration, internal agent instructions, unpublished credentials, or mutable experiment workspace files are included.

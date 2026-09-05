@@ -50,43 +50,27 @@ if (frozen?.table?.rows && Array.isArray(frozen.table.rows)) {
 
   const status = document.querySelector(".status");
   if (status) {
-    status.innerHTML = '<span aria-hidden="true"></span><strong>Study status:</strong> Frozen Noisy TEST is complete; reported Clean TEST rows are frozen, with Clean GNR pending.';
+    status.innerHTML = '<span aria-hidden="true"></span><strong>Status:</strong> Frozen Noisy TEST is complete; reported Clean TEST rows are frozen, with Clean GNR pending.';
     status.classList.add("complete");
   }
 }
 
-const pipelineTabs = Array.from(document.querySelectorAll("#pipeline-explainer [role='tab']"));
-const pipelinePanels = Array.from(document.querySelectorAll("#pipeline-explainer [role='tabpanel']"));
-const pipelineCount = document.querySelector("#pipeline-stage-count");
+const audioCases = Array.from(document.querySelectorAll("[data-audio-case]"));
+const previousCase = document.querySelector("#case-previous");
+const nextCase = document.querySelector("#case-next");
+const caseCount = document.querySelector("#case-count");
+let activeCase = 0;
 
-function activatePipelineStage(tab, moveFocus = false) {
-  const panelId = tab.getAttribute("aria-controls");
-  const activeIndex = pipelineTabs.indexOf(tab);
-
-  pipelineTabs.forEach((item) => {
-    const isActive = item === tab;
-    item.setAttribute("aria-selected", String(isActive));
-    item.tabIndex = isActive ? 0 : -1;
+function showAudioCase(index) {
+  activeCase = (index + audioCases.length) % audioCases.length;
+  document.querySelectorAll("audio").forEach((player) => player.pause());
+  audioCases.forEach((audioCase, caseIndex) => {
+    audioCase.hidden = caseIndex !== activeCase;
   });
-
-  pipelinePanels.forEach((panel) => {
-    panel.hidden = panel.id !== panelId;
-  });
-
-  if (pipelineCount) pipelineCount.textContent = `Stage ${activeIndex + 1} of ${pipelineTabs.length}`;
-  if (moveFocus) tab.focus();
+  if (caseCount) caseCount.textContent = `Example ${activeCase + 1} of ${audioCases.length}`;
 }
 
-pipelineTabs.forEach((tab, index) => {
-  tab.addEventListener("click", () => activatePipelineStage(tab));
-  tab.addEventListener("keydown", (event) => {
-    let nextIndex = null;
-    if (event.key === "ArrowRight" || event.key === "ArrowDown") nextIndex = (index + 1) % pipelineTabs.length;
-    if (event.key === "ArrowLeft" || event.key === "ArrowUp") nextIndex = (index - 1 + pipelineTabs.length) % pipelineTabs.length;
-    if (event.key === "Home") nextIndex = 0;
-    if (event.key === "End") nextIndex = pipelineTabs.length - 1;
-    if (nextIndex === null) return;
-    event.preventDefault();
-    activatePipelineStage(pipelineTabs[nextIndex], true);
-  });
-});
+if (audioCases.length && previousCase && nextCase) {
+  previousCase.addEventListener("click", () => showAudioCase(activeCase - 1));
+  nextCase.addEventListener("click", () => showAudioCase(activeCase + 1));
+}
