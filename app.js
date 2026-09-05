@@ -24,8 +24,8 @@ if (frozen?.table?.rows && Array.isArray(frozen.table.rows)) {
   const body = document.querySelector("#noisy-test-body");
   const note = document.querySelector("#noisy-test-note");
   const displayLabels = {
-    "Pool D → adaptive CSG": "Pool D → CSG (λ=.5, w=1; nominal adaptive)",
-    "Pool D → adaptive CSG → GNR-LLM": "Pool D → CSG (λ=.5, w=1) → GNR (K20/R2)",
+    "Pool D → adaptive CSG": "Pool D → difficulty-conditioned CSG",
+    "Pool D → adaptive CSG → GNR-LLM": "Pool D → difficulty-conditioned CSG → GNR",
   };
 
   body.replaceChildren(

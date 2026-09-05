@@ -11,12 +11,11 @@ The page presents one focused claim: reliable target-conditioned evidence must b
 
 ## What is included
 
-- Frozen Clean TEST results over 6,000 trials.
+- Directly visible Clean DEV, Clean TEST, natural-noise DEV, and frozen natural-noise TEST tables with split-specific denominators.
 - Complete Clean TEST UTMOS for every displayed row, evaluated post hoc on the unchanged frozen outputs with the audited SpeechMOS v1.2.0 model.
-- Clearly labelled provisional Noisy DEV results over 8,400 trials.
-- Frozen natural-noise TEST results over 6,000 trials from the one permitted run.
+- Separate controlled-SNR DEV and TEST tables (480 trials per SNR and system), never pooled into the headline natural-noise table.
 - A compact repair-before-grounding story figure plus a token-level grounding diagram.
-- Three paged listening cases with frozen clean-reference ASR transcripts and compact, lazy-loaded spectrograms.
+- Three paged listening cases with frozen clean-reference ASR transcripts and compact, lazy-loaded 2,000-pixel spectrograms that link to their full-resolution originals.
 - Per-SNR robustness and deployment-cost summaries.
 
 No remote-machine configuration, internal agent instructions, unpublished credentials, or mutable experiment workspace files are included.
@@ -45,6 +44,7 @@ To publish it with GitHub Pages, select `main` and `/ (root)` under **Settings �
 ├── app.js                 # explainer, frozen-result, and audio interaction
 ├── frozen-noisy-test.js   # validated frozen Noisy TEST payload
 ├── public/results/         # compact result/provenance manifests
+├── scripts/                # reproducible compact-spectrogram renderer
 └── public/assets/
     ├── audio/clean/       # selected listening examples
     └── figures/           # spectrogram and supporting figures

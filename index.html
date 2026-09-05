@@ -22,7 +22,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <title>Repair Before Grounding · Audio Demo</title>
     <link rel="icon" href="public/favicon.svg" />
-    <link rel="stylesheet" href="styles.css?v=20260905-5" />
+    <link rel="stylesheet" href="styles.css?v=20260905-6" />
   </head>
   <body>
     <a class="skip-link" href="#content">Skip to content</a>
@@ -125,7 +125,7 @@
           </div>
           <figcaption>
             <strong>Figure 2.</strong> Illustrative token-level grounding. Fixed CSG uses
-            λ=1, w=0. The nominal adaptive noisy run assigned every trial λ=.5, w=1; GNR uses
+            λ=1, w=0. The reported difficulty-conditioned noisy branch resolved to λ=.5, w=1 for every trial; GNR uses
             K=20, R=2 and is reported as a negative ablation because local code proximity did not lower WER.
           </figcaption>
         </figure>
@@ -176,7 +176,7 @@
                 <div class="ours-line"><dt>Pool D ASR</dt><dd>this attitude springs from a false conception of sin the conception that sin is a small matter easily taken care of by good works that we must</dd></div>
               </dl>
             </div>
-            <details class="spectrogram"><summary>View compact spectrogram</summary><div class="spectrogram-frame"><img data-src="public/assets/figures/clean-case-segmented.png" alt="Spectrogram comparison for Example 1" /></div></details>
+            <details class="spectrogram"><summary>View compact high-resolution spectrogram</summary><figure class="spectrogram-frame"><a href="public/assets/figures/clean-case-segmented.png?v=20260905-2" target="_blank" rel="noopener"><img data-src="public/assets/figures/clean-case-segmented.png?v=20260905-2" width="2000" height="1160" alt="Spectrogram comparison for Example 1" /></a><figcaption>Target, interferer, primary output, and repaired output. Select the figure to inspect the full-resolution image.</figcaption></figure></details>
           </article>
 
           <article class="audio-case" data-audio-case hidden>
@@ -206,7 +206,7 @@
                 <div class="ours-line"><dt>Pool D ASR</dt><dd>your father thought a moment and looked at your mother and smiled</dd></div>
               </dl>
             </div>
-            <details class="spectrogram"><summary>View compact spectrogram</summary><div class="spectrogram-frame"><img data-src="public/assets/figures/clean-case-tfmap.png" alt="Spectrogram comparison for Example 2" /></div></details>
+            <details class="spectrogram"><summary>View compact high-resolution spectrogram</summary><figure class="spectrogram-frame"><a href="public/assets/figures/clean-case-tfmap.png?v=20260905-2" target="_blank" rel="noopener"><img data-src="public/assets/figures/clean-case-tfmap.png?v=20260905-2" width="2000" height="1160" alt="Spectrogram comparison for Example 2" /></a><figcaption>Target, interferer, primary output, and TF-map recovery. Select the figure to inspect the full-resolution image.</figcaption></figure></details>
           </article>
 
           <article class="audio-case" data-audio-case hidden>
@@ -233,7 +233,7 @@
               </dl>
               <p class="transcript-reading"><strong>Why grounding matters:</strong> the ungrounded AR decoder substitutes plausible words (“stove”, “maam”); CSG keeps the output closer to the repaired evidence and removes most of that content drift.</p>
             </div>
-            <details class="spectrogram"><summary>View compact spectrogram</summary><div class="spectrogram-frame"><img data-src="public/assets/figures/clean-case-csg.png" alt="Spectrogram comparison for Example 3" /></div></details>
+            <details class="spectrogram"><summary>View compact high-resolution spectrogram</summary><figure class="spectrogram-frame"><a href="public/assets/figures/clean-case-csg.png?v=20260905-2" target="_blank" rel="noopener"><img data-src="public/assets/figures/clean-case-csg.png?v=20260905-2" width="2000" height="1160" alt="Spectrogram comparison for Example 3" /></a><figcaption>Target, repaired evidence, unconstrained generation, and fixed CSG. Select the figure to inspect the full-resolution image.</figcaption></figure></details>
           </article>
         </div>
 
@@ -241,70 +241,113 @@
       </section>
 
       <section id="results">
-        <h2>Frozen Noisy TEST results</h2>
-        <p class="table-note" id="noisy-test-note">Frozen natural-noise TEST, 6,000 trials from the one permitted run.</p>
-        <div class="table-scroll">
-          <table id="noisy-test-table">
-            <thead>
-              <tr><th>System</th><th>WER ↓</th><th>C-sw. ↓</th><th>A-sw. ↓</th><th>Spk. margin ↑</th><th>DNSMOS OVRL ↑</th><th>UTMOS ↑</th></tr>
-            </thead>
-            <tbody id="noisy-test-body">
-              <tr><td>Primary WeSep</td><td>46.17</td><td>15.57</td><td>14.57</td><td>.304</td><td>2.291</td><td>2.061</td></tr>
-              <tr class="key-row"><td><strong>Pool D direct</strong></td><td><strong>35.64</strong></td><td><strong>7.95</strong></td><td>7.17</td><td>.363</td><td>2.201</td><td>1.990</td></tr>
-              <tr><td>Pool D → Q-Full UD</td><td>58.00</td><td>10.13</td><td>1.68</td><td>.378</td><td>3.086</td><td><strong>3.253</strong></td></tr>
-              <tr><td>Pool D → fixed CSG</td><td>53.90</td><td><strong>9.48</strong></td><td><strong>.52</strong></td><td><strong>.386</strong></td><td>3.082</td><td>3.147</td></tr>
-              <tr><td>Pool D → CSG (λ=.5, w=1; nominal adaptive)</td><td>50.99</td><td>9.72</td><td>.98</td><td>.384</td><td>3.093</td><td>3.196</td></tr>
-              <tr><td>Pool D → CSG (λ=.5, w=1) → GNR (K20/R2)</td><td>54.79</td><td>9.65</td><td>.98</td><td>.384</td><td><strong>3.095</strong></td><td>3.207</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="result-reading">
-          <strong>Reading.</strong> Pool D is the strongest content-fidelity endpoint. Inside the
-          generative branch, fixed CSG improves WER and acoustic speaker consistency over unconstrained
-          Q-Full, but no generated condition overtakes Pool D direct on WER.
+        <h2>Results</h2>
+        <p>
+          Clean and noisy conditions are reported separately, and DEV is kept distinct from TEST.
+          The headline noisy table uses the 6,000 natural-noise trials; the 2,400 controlled-SNR
+          trials appear separately below rather than being pooled into the main result.
         </p>
+        <nav class="result-jump" aria-label="Result table navigation">
+          <a href="#clean-test">Clean TEST</a>
+          <a href="#noisy-test">Noisy TEST</a>
+          <a href="#clean-dev">Clean DEV</a>
+          <a href="#noisy-dev">Noisy DEV</a>
+          <a href="#controlled-snr">Controlled SNR</a>
+        </nav>
+
+        <article class="result-group" id="clean-test">
+          <p class="split-label">TEST · CLEAN</p>
+          <h3>Frozen Clean TEST</h3>
+          <p class="table-note">6,000 trials per system. Clean UTMOS is a post-hoc metric-only evaluation of unchanged frozen outputs; all six displayed systems have 6,000/6,000 scores and zero failures. <a href="public/results/clean-test-utmos.json">UTMOS manifest</a>.</p>
+          <div class="table-scroll">
+            <table>
+              <caption>Frozen Clean TEST results for the six paper systems</caption>
+              <thead><tr><th>System</th><th>WER ↓</th><th>C-sw. ↓</th><th>A-sw. ↓</th><th>Spk. margin ↑</th><th>DNSMOS P.808 ↑</th><th>UTMOS ↑</th></tr></thead>
+              <tbody>
+                <tr><td>Primary WeSep</td><td>13.68</td><td>7.00</td><td>6.98</td><td>.449</td><td>3.688</td><td>3.606</td></tr>
+                <tr><td>TF-map/context WeSep</td><td>8.56</td><td>2.72</td><td>2.55</td><td>.491</td><td><strong>3.718</strong></td><td>3.702</td></tr>
+                <tr class="key-row"><td><strong>Pool D direct</strong></td><td><strong>6.54</strong></td><td><strong>.88</strong></td><td>.78</td><td><strong>.506</strong></td><td>3.699</td><td>3.647</td></tr>
+                <tr><td>Pool D → Q-Full UD</td><td>14.08</td><td>1.00</td><td>.43</td><td>.422</td><td>3.705</td><td>3.914</td></tr>
+                <tr><td>Pool D → fixed CSG</td><td>12.74</td><td>1.00</td><td><strong>.23</strong></td><td>.422</td><td>3.699</td><td>3.910</td></tr>
+                <tr><td>Pool D → fixed CSG → GNR (K20/R2)</td><td>13.43</td><td>1.07</td><td>.23</td><td>.423</td><td>3.702</td><td><strong>3.915</strong></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="result-reading"><strong>Reading.</strong> Pool D direct is the best clean content-fidelity endpoint. Generative systems receive higher predicted naturalness, but UTMOS does not establish content or speaker correctness.</p>
+        </article>
+
+        <article class="result-group" id="noisy-test">
+          <p class="split-label">TEST · NATURAL NOISE</p>
+          <h3>Frozen Noisy TEST</h3>
+          <p class="table-note" id="noisy-test-note">6,000 natural-noise trials per system from the one permitted TEST run.</p>
+          <div class="table-scroll">
+            <table id="noisy-test-table">
+              <caption>Frozen natural-noise TEST results</caption>
+              <thead><tr><th>System</th><th>Raw WER ↓</th><th>C-sw. ↓</th><th>A-sw. ↓</th><th>Spk. margin ↑</th><th>DNSMOS OVRL ↑</th><th>UTMOS ↑</th></tr></thead>
+              <tbody id="noisy-test-body">
+                <tr><td>Primary WeSep</td><td>46.17</td><td>15.57</td><td>14.57</td><td>.304</td><td>2.291</td><td>2.061</td></tr>
+                <tr class="key-row"><td><strong>Pool D direct</strong></td><td><strong>35.64</strong></td><td><strong>7.95</strong></td><td>7.17</td><td>.363</td><td>2.201</td><td>1.990</td></tr>
+                <tr><td>Pool D → Q-Full UD</td><td>58.00</td><td>10.13</td><td>1.68</td><td>.378</td><td>3.086</td><td><strong>3.253</strong></td></tr>
+                <tr><td>Pool D → fixed CSG</td><td>53.90</td><td><strong>9.48</strong></td><td><strong>.52</strong></td><td><strong>.386</strong></td><td>3.082</td><td>3.147</td></tr>
+                <tr><td>Pool D → difficulty-conditioned CSG</td><td>50.99</td><td>9.72</td><td>.98</td><td>.384</td><td>3.093</td><td>3.196</td></tr>
+                <tr><td>Pool D → difficulty-conditioned CSG → GNR</td><td>54.79</td><td>9.65</td><td>.98</td><td>.384</td><td><strong>3.095</strong></td><td>3.207</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="result-reading"><strong>Reading.</strong> Pool D is the strongest content-fidelity endpoint. Within the generative branch, fixed CSG reduces both raw WER and acoustic switching relative to UD, but no generated condition overtakes Pool D direct on WER.</p>
+        </article>
+
+        <article class="result-group" id="clean-dev">
+          <p class="split-label">DEV · CLEAN</p>
+          <h3>Clean DEV system comparison</h3>
+          <p class="table-note">6,000 trials per system; configuration selection and ablation evidence. A complete frozen Clean DEV UTMOS table was not run, so TEST UTMOS values are not copied here.</p>
+          <div class="table-scroll">
+            <table>
+              <caption>Clean DEV system-level results</caption>
+              <thead><tr><th>System</th><th>WER ↓</th><th>C-sw. ↓</th><th>A-sw. ↓</th><th>Spk. margin ↑</th><th>DNSMOS P.808 ↑</th></tr></thead>
+              <tbody>
+                <tr><td>Primary WeSep</td><td>13.88</td><td>7.10</td><td>6.88</td><td>.459</td><td>3.709</td></tr>
+                <tr><td>Pool B direct</td><td>7.29</td><td>1.40</td><td>1.17</td><td>.513</td><td>3.729</td></tr>
+                <tr class="key-row"><td><strong>Pool D direct</strong></td><td><strong>7.01</strong></td><td><strong>1.13</strong></td><td>.88</td><td><strong>.515</strong></td><td>3.722</td></tr>
+                <tr><td>Pool D S3 reconstruction</td><td>13.02</td><td>1.25</td><td>.52</td><td>.427</td><td>3.736</td></tr>
+                <tr><td>Original Q-Full UD</td><td>20.97</td><td>7.20</td><td>1.23</td><td>.419</td><td>3.745</td></tr>
+                <tr><td>Original Q-Full + CSG</td><td>19.06</td><td>7.15</td><td>1.07</td><td>.419</td><td>3.737</td></tr>
+                <tr><td>Pool B → Q-Full UD</td><td>14.82</td><td>1.58</td><td>.72</td><td>.427</td><td><strong>3.754</strong></td></tr>
+                <tr><td>Pool B → fixed CSG</td><td>12.88</td><td>1.52</td><td>.60</td><td>.428</td><td>3.745</td></tr>
+                <tr><td>Pool D → Q-Full UD</td><td>14.10</td><td>1.32</td><td>.55</td><td>.428</td><td>3.752</td></tr>
+                <tr><td>Pool D → fixed CSG</td><td>12.51</td><td>1.27</td><td><strong>.48</strong></td><td>.428</td><td>3.744</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+        <article class="result-group" id="noisy-dev">
+          <p class="split-label">DEV · NATURAL NOISE</p>
+          <h3>Noisy DEV system comparison</h3>
+          <p class="table-note">6,000 natural-noise trials per system. Raw, uncapped utterance-mean WER is shown; the separate 2,400 controlled-SNR DEV trials are reported below.</p>
+          <div class="table-scroll">
+            <table>
+              <caption>Natural-noise DEV results</caption>
+              <thead><tr><th>System</th><th>Raw WER ↓</th><th>C-sw. ↓</th><th>A-sw. ↓</th><th>Spk. margin ↑</th><th>DNSMOS OVRL ↑</th><th>UTMOS ↑</th></tr></thead>
+              <tbody>
+                <tr><td>Primary WeSep</td><td>45.88</td><td>16.12</td><td>15.15</td><td>.312</td><td>2.302</td><td>2.046</td></tr>
+                <tr class="key-row"><td><strong>Pool D direct</strong></td><td><strong>39.62</strong></td><td><strong>8.70</strong></td><td>7.28</td><td>.371</td><td>2.193</td><td>1.969</td></tr>
+                <tr><td>Pool D → Q-Full UD</td><td>59.57</td><td>10.62</td><td>2.30</td><td>.383</td><td>3.098</td><td><strong>3.261</strong></td></tr>
+                <tr><td>Pool D → fixed CSG</td><td>55.48</td><td>10.25</td><td><strong>.98</strong></td><td><strong>.391</strong></td><td>3.092</td><td>3.154</td></tr>
+                <tr><td>Pool D → difficulty-conditioned CSG</td><td>55.85</td><td>10.07</td><td>1.28</td><td>.390</td><td>3.107</td><td>3.208</td></tr>
+                <tr><td>Pool D → difficulty-conditioned CSG → GNR</td><td>59.51</td><td>10.20</td><td>1.30</td><td>.390</td><td><strong>3.110</strong></td><td>3.221</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
 
         <div class="definitions">
           <p><strong>WER:</strong> uncapped utterance-mean ASR-consistency WER against same-ASR clean-target transcripts.</p>
           <p><strong>C-sw.:</strong> output content is closer to the interferer transcript than the target transcript.</p>
           <p><strong>A-sw.:</strong> output speaker similarity favours the interferer over the enrolled target.</p>
+          <p><strong>DNSMOS / UTMOS:</strong> predicted perceptual quality; neither proves content or target-speaker correctness.</p>
           <p>C-sw. and A-sw. are operational metrics defined for this study.</p>
         </div>
-
-        <details class="additional-results">
-          <summary>Additional Clean TEST and Noisy DEV tables</summary>
-
-          <h3>Clean TEST</h3>
-          <p class="table-note">Frozen held-out evaluation, 6,000 trials. UTMOS was added post hoc by scoring the unchanged frozen outputs; no model, decoding, or selection was rerun. <a href="public/results/clean-test-utmos.json">Result manifest</a>.</p>
-          <div class="table-scroll">
-            <table>
-              <thead><tr><th>System</th><th>WER ↓</th><th>C-sw. ↓</th><th>A-sw. ↓</th><th>Spk. margin ↑</th><th>DNSMOS P.808 ↑</th><th>UTMOS ↑</th></tr></thead>
-              <tbody>
-                <tr><td>Primary WeSep</td><td>13.68</td><td>7.00</td><td>6.98</td><td>.449</td><td>3.688</td><td>3.606</td></tr>
-                <tr class="key-row"><td><strong>Pool D direct</strong></td><td><strong>6.54</strong></td><td><strong>.88</strong></td><td>.78</td><td><strong>.506</strong></td><td>3.699</td><td>3.647</td></tr>
-                <tr><td>Pool D → Q-Full UD</td><td>14.08</td><td>1.00</td><td>.43</td><td>.422</td><td><strong>3.705</strong></td><td>3.914</td></tr>
-                <tr><td>Pool D → fixed CSG</td><td>12.74</td><td>1.00</td><td><strong>.23</strong></td><td>.422</td><td>3.699</td><td>3.910</td></tr>
-                <tr><td>Pool D → CSG → GNR (K20/R2)</td><td>13.43</td><td>1.07</td><td>.23</td><td>.423</td><td>3.702</td><td><strong>3.915</strong></td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <h3>Noisy DEV</h3>
-          <p class="table-note">Frozen selection set: 6,000 natural and 2,400 controlled mixtures.</p>
-          <div class="table-scroll">
-            <table>
-              <thead><tr><th>System</th><th>WER ↓</th><th>C-sw. ↓</th><th>A-sw. ↓</th><th>Spk. margin ↑</th><th>DNSMOS OVRL ↑</th><th>UTMOS ↑</th></tr></thead>
-              <tbody>
-                <tr><td>Primary WeSep</td><td>53.50</td><td>20.11</td><td>19.54</td><td>.269</td><td>2.243</td><td>1.997</td></tr>
-                <tr class="key-row"><td><strong>Pool D direct</strong></td><td><strong>46.75</strong></td><td><strong>11.86</strong></td><td>10.93</td><td>.332</td><td>2.132</td><td>1.930</td></tr>
-                <tr><td>Pool D → Q-Full UD</td><td>66.87</td><td>13.68</td><td>2.99</td><td>.362</td><td>3.063</td><td>3.164</td></tr>
-                <tr><td>Pool D → fixed CSG</td><td>62.66</td><td>13.44</td><td><strong>1.27</strong></td><td><strong>.370</strong></td><td>3.066</td><td>3.047</td></tr>
-                <tr><td>Pool D → CSG (λ=.5, w=1; nominal adaptive)</td><td>62.92</td><td>13.42</td><td>1.64</td><td>.369</td><td>3.079</td><td>3.104</td></tr>
-                <tr><td>Pool D → CSG (λ=.5, w=1) → GNR (K20/R2)</td><td>65.96</td><td>13.44</td><td>1.67</td><td>.369</td><td><strong>3.081</strong></td><td><strong>3.118</strong></td></tr>
-              </tbody>
-            </table>
-          </div>
-        </details>
       </section>
 
       <section id="robustness">
@@ -321,6 +364,60 @@
               <strong>54.87%</strong>, the five-candidate oracle ceiling is <strong>62.55%</strong>,
               and control regression is <strong>.391%</strong>.
             </p>
+          </div>
+        </div>
+
+        <div class="result-group" id="controlled-snr">
+          <p class="split-label">CONTROLLED NOISE · DEV AND TEST</p>
+          <h3>Performance by SNR</h3>
+          <p class="table-note">Each cell reports <strong>raw WER / A-sw.</strong> in percent; 480 trials per SNR and system. Raw WER may exceed 100% because ASR insertions are not capped.</p>
+
+          <h4>Controlled-SNR DEV</h4>
+          <div class="table-scroll compact-table">
+            <table>
+              <caption>Controlled-SNR DEV raw WER and acoustic-switch rate</caption>
+              <thead><tr><th>System</th><th>−5 dB</th><th>0 dB</th><th>5 dB</th><th>10 dB</th><th>15 dB</th></tr></thead>
+              <tbody>
+                <tr class="key-row"><td><strong>Pool D direct</strong></td><td>114.12 / 37.29</td><td>98.30 / 31.25</td><td>63.70 / 19.79</td><td>30.80 / 8.12</td><td>15.88 / 3.75</td></tr>
+                <tr><td>Pool D → UD</td><td>137.56 / 11.46</td><td>115.70 / 5.62</td><td>92.36 / 2.50</td><td>50.06 / 2.29</td><td>29.80 / 1.67</td></tr>
+                <tr><td>Pool D → fixed CSG</td><td>132.99 / 3.54</td><td>104.78 / 2.92</td><td>93.56 / 1.25</td><td>45.69 / 1.25</td><td>25.96 / 1.04</td></tr>
+                <tr><td>Pool D → difficulty CSG</td><td>130.58 / 5.83</td><td>110.77 / 2.92</td><td>84.84 / 1.46</td><td>50.42 / 1.46</td><td>26.38 / 1.04</td></tr>
+                <tr><td>Pool D → difficulty CSG → GNR</td><td>139.37 / 5.62</td><td>113.81 / 3.33</td><td>79.56 / 1.46</td><td>50.63 / 1.46</td><td>26.95 / 1.04</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Controlled-SNR TEST</h4>
+          <div class="table-scroll compact-table">
+            <table>
+              <caption>Controlled-SNR TEST raw WER and acoustic-switch rate</caption>
+              <thead><tr><th>System</th><th>−5 dB</th><th>0 dB</th><th>5 dB</th><th>10 dB</th><th>15 dB</th></tr></thead>
+              <tbody>
+                <tr class="key-row"><td><strong>Pool D direct</strong></td><td>104.78 / 34.58</td><td>89.49 / 29.17</td><td>54.03 / 16.67</td><td>27.95 / 7.08</td><td>20.87 / 4.79</td></tr>
+                <tr><td>Pool D → UD</td><td>136.69 / 9.58</td><td>113.67 / 6.67</td><td>78.25 / 4.17</td><td>47.15 / 2.29</td><td>29.73 / 2.08</td></tr>
+                <tr><td>Pool D → fixed CSG</td><td>137.44 / 3.33</td><td>107.18 / 2.71</td><td>83.66 / 2.08</td><td>41.33 / 2.08</td><td>24.93 / 1.67</td></tr>
+                <tr><td>Pool D → difficulty CSG</td><td>116.77 / 7.08</td><td>106.38 / 3.96</td><td>79.37 / 2.92</td><td>45.22 / 1.88</td><td>25.89 / 2.08</td></tr>
+                <tr><td>Pool D → difficulty CSG → GNR</td><td>116.93 / 6.67</td><td>121.06 / 4.58</td><td>79.92 / 2.71</td><td>43.63 / 2.08</td><td>26.00 / 2.08</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="result-group compact-result">
+          <p class="split-label">MECHANISM · FOUR SPLITS</p>
+          <h3>Candidate repair and safety</h3>
+          <p class="table-note">Swap/control cohorts are defined by SI-SDR and therefore are not the same denominator as the full-set CAMPPlus A-sw. rate.</p>
+          <div class="table-scroll compact-table">
+            <table>
+              <caption>Candidate repair and safety across Clean and Noisy DEV and TEST</caption>
+              <thead><tr><th>Split</th><th>Trials</th><th>Primary swaps</th><th>Selected recovered</th><th>Oracle recovered</th><th>Controls</th><th>Regressions</th></tr></thead>
+              <tbody>
+                <tr><td>Clean DEV</td><td>6,000</td><td>405</td><td>355 (87.65%)</td><td>362 (89.38%)</td><td>5,586</td><td>2 (.0358%)</td></tr>
+                <tr><td>Clean TEST</td><td>6,000</td><td>398</td><td>355 (89.20%)</td><td>360 (90.45%)</td><td>5,588</td><td>2 (.0358%)</td></tr>
+                <tr><td>Noisy DEV · natural</td><td>6,000</td><td>679</td><td>397 (58.47%)</td><td>449 (66.13%)</td><td>4,707</td><td>19 (.4037%)</td></tr>
+                <tr><td>Noisy TEST · natural</td><td>6,000</td><td>646</td><td>374 (57.89%)</td><td>431 (66.72%)</td><td>4,709</td><td>8 (.1699%)</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -363,6 +460,6 @@
     </main>
 
     <script src="frozen-noisy-test.js?v=20260905-3"></script>
-    <script src="app.js?v=20260905-5"></script>
+    <script src="app.js?v=20260905-6"></script>
   </body>
 </html>
