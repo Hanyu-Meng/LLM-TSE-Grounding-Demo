@@ -275,16 +275,16 @@
           <summary>Additional Clean TEST and Noisy DEV tables</summary>
 
           <h3>Clean TEST</h3>
-          <p class="table-note">Frozen held-out evaluation, 6,000 trials.</p>
+          <p class="table-note">Frozen held-out evaluation, 6,000 trials. UTMOS was added post hoc by scoring the unchanged frozen outputs; no model, decoding, or selection was rerun. <a href="public/results/clean-test-utmos.json">Result manifest</a>.</p>
           <div class="table-scroll">
             <table>
-              <thead><tr><th>System</th><th>WER ↓</th><th>C-sw. ↓</th><th>A-sw. ↓</th><th>Spk. margin ↑</th><th>DNSMOS P.808 ↑</th></tr></thead>
+              <thead><tr><th>System</th><th>WER ↓</th><th>C-sw. ↓</th><th>A-sw. ↓</th><th>Spk. margin ↑</th><th>DNSMOS P.808 ↑</th><th>UTMOS ↑</th></tr></thead>
               <tbody>
-                <tr><td>Primary WeSep</td><td>13.68</td><td>7.00</td><td>6.98</td><td>.449</td><td>3.688</td></tr>
-                <tr class="key-row"><td><strong>Pool D direct</strong></td><td><strong>6.54</strong></td><td><strong>.88</strong></td><td>.78</td><td><strong>.506</strong></td><td>3.699</td></tr>
-                <tr><td>Pool D → Q-Full UD</td><td>14.08</td><td>1.00</td><td>.43</td><td>.422</td><td><strong>3.705</strong></td></tr>
-                <tr><td>Pool D → fixed CSG</td><td>12.74</td><td>1.00</td><td><strong>.23</strong></td><td>.422</td><td>3.699</td></tr>
-                <tr><td>Pool D → CSG → GNR (K20/R2)</td><td>13.43</td><td>1.07</td><td>.23</td><td>.423</td><td>3.702</td></tr>
+                <tr><td>Primary WeSep</td><td>13.68</td><td>7.00</td><td>6.98</td><td>.449</td><td>3.688</td><td>3.606</td></tr>
+                <tr class="key-row"><td><strong>Pool D direct</strong></td><td><strong>6.54</strong></td><td><strong>.88</strong></td><td>.78</td><td><strong>.506</strong></td><td>3.699</td><td>3.647</td></tr>
+                <tr><td>Pool D → Q-Full UD</td><td>14.08</td><td>1.00</td><td>.43</td><td>.422</td><td><strong>3.705</strong></td><td>3.914</td></tr>
+                <tr><td>Pool D → fixed CSG</td><td>12.74</td><td>1.00</td><td><strong>.23</strong></td><td>.422</td><td>3.699</td><td>3.910</td></tr>
+                <tr><td>Pool D → CSG → GNR (K20/R2)</td><td>13.43</td><td>1.07</td><td>.23</td><td>.423</td><td>3.702</td><td><strong>3.915</strong></td></tr>
               </tbody>
             </table>
           </div>
