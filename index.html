@@ -22,7 +22,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <title>Speaker-Consistent Grounding · Audio Demo</title>
     <link rel="icon" href="public/favicon.svg" />
-    <link rel="stylesheet" href="styles.css?v=20260906-1" />
+    <link rel="stylesheet" href="styles.css?v=20260906-2" />
   </head>
   <body>
     <a class="skip-link" href="#content">Skip to content</a>
@@ -58,21 +58,181 @@
           <strong>14.57% to 7.17%</strong> relative to the primary extractor.
         </div>
 
-        <figure class="figure-card story-figure">
-          <a href="public/assets/figures/method-overview-paper.png" target="_blank" rel="noopener">
-            <img
-              src="public/assets/figures/method-overview-paper.png"
-              width="2885"
-              height="656"
-              alt="Paper-aligned method overview: five deterministic TSE candidates enter CDCS-5 target-identity repair, then the selected waveform is returned directly or used as evidence for Qwen-TSE decoding"
-            />
-          </a>
-          <figcaption>
-            <strong>Figure 1.</strong> Paper-aligned method overview. CDCS-5 repairs <em>who</em> is
-            present in the evidence before Qwen-TSE generation; fixed CSG then constrains content and
-            speaker drift. Select the figure to inspect it at full resolution.
-          </figcaption>
-        </figure>
+        <div class="figure-sequence">
+          <figure class="figure-card academic-diagram problem-figure">
+            <div class="diagram-heading">
+              <span>Problem formulation</span>
+              <strong>Why repair must precede grounding</strong>
+            </div>
+            <div
+              class="problem-grid"
+              role="img"
+              aria-label="The paper addresses three connected failures: deterministic target speech extraction can distort speech or follow the interferer; ungrounded Qwen-TSE can drift in content or speaker; and grounding confused evidence can preserve the wrong identity. Our solution repairs target identity with CDCS-5 before fixed CSG constrains Qwen-TSE generation."
+            >
+              <article class="diagram-panel problem-panel deterministic-problem">
+                <h3><span>(a)</span> Deterministic waveform TSE</h3>
+                <div class="input-pair">
+                  <div class="signal-node"><span class="signal-wave mixture-wave" aria-hidden="true"></span><small>Mixture <i>y</i> · A + B + noise</small></div>
+                  <div class="condition-chip">Target enrolment <i>r</i> · speaker A</div>
+                </div>
+                <span class="flow-down" aria-hidden="true">↓</span>
+                <div class="diagram-block">Frozen waveform TSE</div>
+                <div class="outcome-pair">
+                  <div class="outcome-card"><span class="signal-wave distorted-wave" aria-hidden="true"></span><strong>Distorted target A</strong></div>
+                  <div class="outcome-card failure-outcome"><span class="signal-wave confused-wave" aria-hidden="true"></span><strong>Interferer B</strong></div>
+                </div>
+                <p class="positive-note">No autoregressive token hallucination</p>
+                <p class="warning-note">May distort speech or follow the interferer</p>
+              </article>
+
+              <article class="diagram-panel problem-panel generative-problem">
+                <h3><span>(b)</span> Ungrounded generation</h3>
+                <div class="condition-row"><span>Mixture features <i>M</i></span><span>Speaker condition <i>S</i></span></div>
+                <span class="flow-down" aria-hidden="true">↓</span>
+                <div class="diagram-block purple-block">Qwen-TSE UD</div>
+                <span class="flow-down purple-arrow" aria-hidden="true">↓</span>
+                <div class="generated-output"><span class="signal-wave generated-wave" aria-hidden="true"></span><strong>Perceptually plausible output</strong></div>
+                <p class="positive-note purple-note">Higher <em>predicted</em> naturalness</p>
+                <p class="warning-note">Content substitution / insertion · speaker drift</p>
+              </article>
+
+              <article class="diagram-panel problem-panel anchor-problem">
+                <h3><span>(c)</span> Grounding a bad anchor</h3>
+                <div class="bad-anchor-flow">
+                  <div><span class="signal-wave confused-wave compact-wave" aria-hidden="true"></span><small>Confused estimate B</small></div>
+                  <span aria-hidden="true">→</span>
+                  <div class="token-mini orange-token">z<sup>B</sup></div>
+                  <span aria-hidden="true">→</span>
+                  <div class="diagram-block compact-block">Fixed CSG</div>
+                </div>
+                <span class="flow-down" aria-hidden="true">↓</span>
+                <div class="generated-output failure-output"><span class="signal-wave confused-wave" aria-hidden="true"></span><strong>Confident wrong-speaker output B</strong></div>
+                <p class="warning-note strong-warning">Grounding can preserve a bad anchor</p>
+                <p class="neutral-note">Constraining drift does not repair identity</p>
+              </article>
+
+              <article class="diagram-panel problem-panel solution-problem">
+                <h3><span>(d)</span> Our principle</h3>
+                <div class="solution-flow">
+                  <span>Five frozen TSE candidates</span>
+                  <b aria-hidden="true">↓</b>
+                  <strong>CDCS-5</strong>
+                  <b aria-hidden="true">↓</b>
+                  <span class="repaired-chip">Target-consistent evidence <i>c</i><sup>*</sup></span>
+                </div>
+                <div class="endpoint-mini-grid">
+                  <div><strong>CDCS-5 direct</strong><small>content fidelity</small></div>
+                  <div><strong>Qwen-TSE fixed CSG</strong><small>constrained generation</small></div>
+                </div>
+                <p class="design-rule"><strong>CDCS repairs <em>who</em>;</strong><br />CSG constrains <em>what</em>.</p>
+              </article>
+            </div>
+            <figcaption>
+              <strong>Figure 1.</strong> Why repair must precede grounding. Deterministic TSE can
+              distort speech or follow the interferer; autoregressive decoding can drift in content
+              or speaker; and grounding confused evidence may reinforce the wrong identity. We therefore
+              repair evidence identity with CDCS-5 before fixed CSG constrains Qwen-TSE generation.
+            </figcaption>
+          </figure>
+
+          <p class="figure-bridge"><span>Design rule</span> Repair target identity first; ground autoregressive generation second.</p>
+
+          <figure class="figure-card academic-diagram method-overview-figure">
+            <div
+              class="method-diagram"
+              role="img"
+              aria-label="Three-panel proposed method. Panel a constructs five frozen, conditioning-diverse TSE candidates and uses a frozen ECAPA selector to obtain repaired evidence c star. Panel b tokenizes c star and uses it together with mixture and speaker conditions to ground a fixed Qwen-TSE model with code-space grounding. Panel c exposes a direct CDCS-5 output and a Qwen-TSE fixed CSG output."
+            >
+              <section class="method-panel repair-method">
+                <h3><span>(a)</span> Conditioning-diverse evidence repair</h3>
+                <div class="repair-flow">
+                  <div class="repair-inputs">
+                    <div class="signal-node"><span class="signal-wave mixture-wave" aria-hidden="true"></span><small>Mixture <i>y</i></small></div>
+                    <div class="enrolment-node">
+                      <span class="signal-wave selected-wave compact-wave" aria-hidden="true"></span>
+                      <strong>Target enrolment <i>r</i></strong>
+                      <div class="view-chips"><span>Full</span><span>First</span><span>Middle</span><span>Final</span></div>
+                      <small>deterministic high-energy views</small>
+                    </div>
+                  </div>
+                  <span class="flow-across" aria-hidden="true">→</span>
+                  <div class="expert-stack">
+                    <div class="diagram-block"><strong>Speaker-conditioned<br />TSE-BSRNN</strong><small>spk_emb_100 · frozen</small></div>
+                    <div class="diagram-block"><strong>TF-map/context<br />TSE-BSRNN</strong><small>tfmap_context_100 · frozen</small></div>
+                  </div>
+                  <span class="flow-across" aria-hidden="true">→</span>
+                  <div class="candidate-stack" aria-label="Five candidate waveforms">
+                    <div><b>c<sub>1</sub></b><span class="signal-wave candidate-wave" aria-hidden="true"></span><small>full</small></div>
+                    <div><b>c<sub>2</sub></b><span class="signal-wave candidate-wave" aria-hidden="true"></span><small>first</small></div>
+                    <div><b>c<sub>3</sub></b><span class="signal-wave candidate-wave alternate-wave" aria-hidden="true"></span><small>middle</small></div>
+                    <div><b>c<sub>4</sub></b><span class="signal-wave candidate-wave" aria-hidden="true"></span><small>final</small></div>
+                    <div><b>c<sub>5</sub></b><span class="signal-wave candidate-wave tf-wave" aria-hidden="true"></span><small>TF-map/context</small></div>
+                  </div>
+                  <span class="flow-across" aria-hidden="true">→</span>
+                  <div class="selector-stage">
+                    <div class="diagram-block selector-block"><strong>Frozen ECAPA<br />target selector</strong></div>
+                    <code>q<sub>i</sub> = cos(F<sub>spk</sub>(c<sub>i</sub>), F<sub>spk</sub>(r))</code>
+                    <code>c<sup>*</sup> = c<sub>argmax qᵢ</sub></code>
+                  </div>
+                </div>
+                <div class="selected-evidence">
+                  <span><b>Selected evidence c<sup>*</sup></b><small>target-consistent waveform</small></span>
+                  <span class="signal-wave selected-wave" aria-hidden="true"></span>
+                  <b class="continues-arrow" aria-hidden="true">→</b>
+                </div>
+                <p class="method-footnote">Training-free selection · mixture and enrolment only · no clean source, transcript, interferer, or oracle label</p>
+              </section>
+
+              <section class="method-panel generation-method">
+                <h3><span>(b)</span> Evidence-conditioned Qwen-TSE decoding</h3>
+                <div class="conditioning-paths">
+                  <div class="conditioning-path evidence-path">
+                    <span><b>c<sup>*</sup></b> repaired waveform</span><b aria-hidden="true">→</b><span class="compact-module">CosyVoice3 25-Hz<br />FSQ tokenizer <i>frozen</i></span><b aria-hidden="true">→</b><span class="token-row teal-tokens"><i>12</i><i>87</i><i>45</i><i>61</i><i>…</i><i>73</i></span><small>Evidence tokens z<sup>e</sup></small>
+                  </div>
+                  <div class="conditioning-path">
+                    <span>Mixture <i>y</i></span><b aria-hidden="true">→</b><span class="compact-module">WavLM<br /><i>frozen</i></span><b aria-hidden="true">→</b><span class="feature-row" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><small>Features <i>M</i></small>
+                  </div>
+                  <div class="conditioning-path">
+                    <span>Enrolment <i>r</i></span><b aria-hidden="true">→</b><span class="compact-module">Speaker encoder<br /><i>frozen</i></span><b aria-hidden="true">→</b><span class="feature-row" aria-hidden="true"><i></i><i></i><i></i><i></i></span><small>Condition <i>S</i></small>
+                  </div>
+                </div>
+                <div class="condition-merge"><span>z<sup>e</sup></span><span>M</span><span>S</span><b aria-hidden="true">↓</b></div>
+                <div class="diagram-block qwen-block"><strong>Qwen-TSE</strong><small>fixed Qwen2.5-0.5B checkpoint</small></div>
+                <span class="flow-down" aria-hidden="true">↓</span>
+                <div class="logit-stage"><small>Candidate-token log probabilities</small><span class="token-row purple-tokens"><i>ℓ<sub>1</sub></i><i>ℓ<sub>2</sub></i><i>ℓ<sub>3</sub></i><i>ℓ<sub>4</sub></i><i>ℓ<sub>5</sub></i><i>…</i></span></div>
+                <span class="flow-down" aria-hidden="true">↓</span>
+                <div class="diagram-block csg-block"><strong>Fixed CSG</strong><small>code-space grounded re-ranking</small><code>ẑ<sub>t</sub> = argmax<sub>v</sub> [log p<sub>t</sub>(v) − λD<sub>H</sub>(v,z<sub>t</sub><sup>e</sup>)]</code><em>λ=1 · w=0 · coordinate-wise FSQ Hamming distance</em></div>
+                <span class="flow-down" aria-hidden="true">↓</span>
+                <div class="grounded-token-stage"><span class="token-row purple-tokens"><i>41</i><i>09</i><i>63</i><i>21</i><i>78</i><i>…</i><i>36</i></span><strong>Grounded tokens ẑ</strong></div>
+              </section>
+
+              <section class="method-panel endpoint-method">
+                <h3><span>(c)</span> Two operating points</h3>
+                <article class="endpoint-card direct-endpoint">
+                  <p class="endpoint-source"><i>c</i><sup>*</sup> · direct waveform bypass</p>
+                  <span class="signal-wave selected-wave output-wave" aria-hidden="true"></span>
+                  <strong>CDCS-5 direct</strong>
+                  <small>No autoregressive decoder<br />Content-fidelity endpoint</small>
+                </article>
+                <div class="endpoint-divider"><span>or</span></div>
+                <article class="endpoint-card generated-endpoint">
+                  <p class="endpoint-source">Grounded tokens ẑ</p>
+                  <div class="diagram-block compact-block">CosyVoice3 decoder<br /><i>frozen</i></div>
+                  <span class="signal-wave generated-wave output-wave" aria-hidden="true"></span>
+                  <strong>Qwen-TSE fixed CSG</strong>
+                  <small>Autoregressive speech prior<br />Constrained generative endpoint</small>
+                </article>
+                <p class="ablation-note">UD, adaptive CSG, and GNR are evaluation ablations and are omitted from the main method path.</p>
+              </section>
+            </div>
+            <figcaption>
+              <strong>Figure 2.</strong> Proposed repair-before-grounding pipeline. CDCS-5 constructs
+              five frozen, conditioning-diverse TSE candidates and selects repaired evidence with a
+              frozen ECAPA encoder. The waveform is either returned directly or tokenized to ground
+              the fixed Qwen-TSE decoder, where CSG constrains token drift.
+            </figcaption>
+          </figure>
+        </div>
       </section>
 
       <section id="method">
@@ -86,7 +246,7 @@
           drift, but cannot repair a wrong-speaker anchor by itself.
         </p>
 
-        <h3>How grounding works</h3>
+        <h3>Token-level grounding intuition</h3>
         <p>
           The speech tokenizer represents each acoustic token with eight ternary FSQ coordinates.
           Grounding changes token selection inside Qwen-TSE; it does not change the CDCS-5 selector.
@@ -130,7 +290,7 @@
             </article>
           </div>
           <figcaption>
-            <strong>Figure 2.</strong> Illustrative token-level grounding. Fixed CSG uses
+            <strong>Figure 3.</strong> Illustrative token-level grounding. Fixed CSG uses
             λ=1, w=0. The reported adaptive noisy branch resolved to λ=.5, w=1 for every trial; GNR uses
             K=20, R=2 and is reported as a negative ablation because local code proximity did not lower WER.
           </figcaption>
@@ -412,7 +572,7 @@
         <div class="two-column">
           <figure class="plain-figure">
             <img loading="lazy" decoding="async" src="public/assets/figures/noisy/candidate-recovery-by-snr-dev.png" alt="Candidate recovery rate by SNR on Noisy DEV" />
-            <figcaption><strong>Figure 3.</strong> Candidate recovery by controlled SNR on frozen Noisy DEV.</figcaption>
+            <figcaption><strong>Figure 4.</strong> Candidate recovery by controlled SNR on frozen Noisy DEV.</figcaption>
           </figure>
           <div>
             <p>

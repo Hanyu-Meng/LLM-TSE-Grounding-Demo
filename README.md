@@ -16,7 +16,7 @@ The page presents one focused claim: reliable target-conditioned evidence must b
 - Exact definitions and decision rules for the study-defined content-switch (C-sw.) and acoustic-switch (A-sw.) diagnostics.
 - Complete Clean TEST UTMOS for every displayed row, evaluated post hoc on the unchanged frozen outputs with the audited SpeechMOS v1.2.0 model.
 - Separate controlled-SNR DEV and TEST tables (480 trials per SNR and system), never pooled into the headline natural-noise table.
-- A compact repair-before-grounding story figure plus a token-level grounding diagram.
+- A responsive problem formulation, a paper-accurate three-panel method diagram, and a token-level grounding explainer.
 - Three paged listening cases with frozen clean-reference ASR transcripts and compact, lazy-loaded 2,000-pixel spectrograms that link to their full-resolution originals.
 - Per-SNR robustness and deployment-cost summaries.
 
