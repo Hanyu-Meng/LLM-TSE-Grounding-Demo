@@ -18,9 +18,9 @@ The page presents one focused claim: reliable target-conditioned evidence must b
 - Separate controlled-SNR DEV and TEST tables (480 trials per SNR and system), never pooled into the headline natural-noise table.
 - A restrained black-and-white problem formulation and paper-accurate method diagram using amplitude-normalized traces generated from the released audio examples.
 - Self-hosted KaTeX rendering for method, grounding, WER, and speaker-confusion equations, with readable text fallbacks.
-- Four paged listening cases from the frozen 6,000-trial natural-noise TEST set, with frozen ASR-consistency transcripts and compact, lazy-loaded 2,000-pixel spectrograms that link to their full-resolution originals.
-- Mechanism-focused examples for evidence repair, speaker-collapse prevention, lexical-drift repair, and the fidelity–naturalness trade-off, selected by explicit deterministic rules rather than informal listening alone.
-- A machine-readable case record at `public/results/noisy-demo-cases.json`, including frozen trial IDs, selection rules, transcripts, and paired per-system metrics.
+- Five paged listening cases: one deterministic frozen Clean TEST opener followed by four cases from the frozen 6,000-trial natural-noise TEST set, with frozen ASR-consistency transcripts and compact, lazy-loaded 2,000-pixel spectrograms that link to their full-resolution originals.
+- A clean wrong-speaker WeSep case that isolates speaker confusion without noise, followed by noisy evidence repair, speaker-collapse prevention, lexical-drift repair, and fidelity–naturalness examples selected by explicit deterministic rules rather than informal listening alone.
+- Machine-readable case records at `public/results/clean-demo-case.json` and `public/results/noisy-demo-cases.json`, including frozen trial IDs, selection rules, transcripts, asset hashes, and paired per-system metrics.
 - Per-SNR robustness and deployment-cost summaries.
 
 No remote-machine configuration, internal agent instructions, unpublished credentials, or mutable experiment workspace files are included.
@@ -53,8 +53,9 @@ To publish it with GitHub Pages, select `main` and `/ (root)` under **Settings �
 ├── scripts/                # reproducible spectrogram and waveform renderers
 └── public/assets/
     ├── audio/noisy/       # selected frozen natural-noise TEST examples
+    ├── audio/clean/       # deterministic frozen Clean TEST examples
     ├── figures/           # spectrogram and supporting figures
     └── waveforms/         # real amplitude envelopes used in the diagrams
 ```
 
-Listening audio is derived from [LibriMix](https://github.com/JorisCos/LibriMix) natural-noise mixtures, which combine LibriSpeech speech with [WHAM!](https://wham.whisper.ai/) noise. Dataset-derived audio remains subject to the terms of its source datasets; no additional license is granted by this repository.
+Listening audio is derived from [LibriMix](https://github.com/JorisCos/LibriMix); the noisy examples use its natural-noise mixtures, which combine LibriSpeech speech with [WHAM!](https://wham.whisper.ai/) noise. Dataset-derived audio remains subject to the terms of its source datasets; no additional license is granted by this repository.

@@ -16,7 +16,8 @@ from PIL import Image, ImageDraw, ImageFont
 
 
 ROOT = Path(__file__).resolve().parents[1]
-AUDIO = ROOT / "public" / "assets" / "audio" / "noisy"
+CLEAN_AUDIO = ROOT / "public" / "assets" / "audio" / "clean"
+NOISY_AUDIO = ROOT / "public" / "assets" / "audio" / "noisy"
 FIGURES = ROOT / "public" / "assets" / "figures"
 
 WIDTH, HEIGHT = 2000, 1160
@@ -174,29 +175,35 @@ def draw_colourbar(canvas: Image.Image, draw: ImageDraw.ImageDraw) -> None:
 
 
 CASES = {
+    "clean-case-segmented.png": [
+        (CLEAN_AUDIO / "segmented" / "target.wav", "Clean target", "evaluation only", BLUE),
+        (CLEAN_AUDIO / "segmented" / "interferer.wav", "Clean interferer", "evaluation only", MUTED),
+        (CLEAN_AUDIO / "segmented" / "primary.wav", "Primary WeSep", "wrong speaker · WER 100%", MUTED),
+        (CLEAN_AUDIO / "segmented" / "pool-d.wav", "CDCS-5 direct", "middle view · WER 0%", ORANGE),
+    ],
     "noisy-case-evidence-repair.png": [
-        (AUDIO / "evidence-repair" / "target.wav", "Clean target", "evaluation only", BLUE),
-        (AUDIO / "evidence-repair" / "primary.wav", "Primary WeSep", "wrong speaker · WER 162.5%", MUTED),
-        (AUDIO / "evidence-repair" / "cdcs-5.wav", "CDCS-5 direct", "target recovered · WER 0%", ORANGE),
-        (AUDIO / "evidence-repair" / "qwen-fixed-csg.wav", "Qwen-TSE fixed CSG", "grounded output · WER 0%", GREEN),
+        (NOISY_AUDIO / "evidence-repair" / "target.wav", "Clean target", "evaluation only", BLUE),
+        (NOISY_AUDIO / "evidence-repair" / "primary.wav", "Primary WeSep", "wrong speaker · WER 162.5%", MUTED),
+        (NOISY_AUDIO / "evidence-repair" / "cdcs-5.wav", "CDCS-5 direct", "target recovered · WER 0%", ORANGE),
+        (NOISY_AUDIO / "evidence-repair" / "qwen-fixed-csg.wav", "Qwen-TSE fixed CSG", "grounded output · WER 0%", GREEN),
     ],
     "noisy-case-speaker-grounding.png": [
-        (AUDIO / "speaker-grounding" / "target.wav", "Clean target", "evaluation only", BLUE),
-        (AUDIO / "speaker-grounding" / "cdcs-5.wav", "CDCS-5 direct", "repaired evidence · WER 0%", ORANGE),
-        (AUDIO / "speaker-grounding" / "qwen-ud.wav", "Qwen-TSE UD", "speaker collapse · WER 100%", MUTED),
-        (AUDIO / "speaker-grounding" / "qwen-fixed-csg.wav", "Qwen-TSE fixed CSG", "speaker restored · WER 0%", GREEN),
+        (NOISY_AUDIO / "speaker-grounding" / "target.wav", "Clean target", "evaluation only", BLUE),
+        (NOISY_AUDIO / "speaker-grounding" / "cdcs-5.wav", "CDCS-5 direct", "repaired evidence · WER 0%", ORANGE),
+        (NOISY_AUDIO / "speaker-grounding" / "qwen-ud.wav", "Qwen-TSE UD", "speaker collapse · WER 100%", MUTED),
+        (NOISY_AUDIO / "speaker-grounding" / "qwen-fixed-csg.wav", "Qwen-TSE fixed CSG", "speaker restored · WER 0%", GREEN),
     ],
     "noisy-case-content-grounding.png": [
-        (AUDIO / "content-grounding" / "target.wav", "Clean target", "evaluation only", BLUE),
-        (AUDIO / "content-grounding" / "cdcs-5.wav", "CDCS-5 direct", "repaired evidence · WER 0%", ORANGE),
-        (AUDIO / "content-grounding" / "qwen-ud.wav", "Qwen-TSE UD", "lexical drift · WER 71.4%", MUTED),
-        (AUDIO / "content-grounding" / "qwen-fixed-csg.wav", "Qwen-TSE fixed CSG", "content restored · WER 0%", GREEN),
+        (NOISY_AUDIO / "content-grounding" / "target.wav", "Clean target", "evaluation only", BLUE),
+        (NOISY_AUDIO / "content-grounding" / "cdcs-5.wav", "CDCS-5 direct", "repaired evidence · WER 0%", ORANGE),
+        (NOISY_AUDIO / "content-grounding" / "qwen-ud.wav", "Qwen-TSE UD", "lexical drift · WER 71.4%", MUTED),
+        (NOISY_AUDIO / "content-grounding" / "qwen-fixed-csg.wav", "Qwen-TSE fixed CSG", "content restored · WER 0%", GREEN),
     ],
     "noisy-case-quality-grounding.png": [
-        (AUDIO / "quality-grounding" / "target.wav", "Clean target", "evaluation only", BLUE),
-        (AUDIO / "quality-grounding" / "cdcs-5.wav", "CDCS-5 direct", "WER 0% · UTMOS 1.31", ORANGE),
-        (AUDIO / "quality-grounding" / "qwen-ud.wav", "Qwen-TSE UD", "WER 0% · UTMOS 3.78", MUTED),
-        (AUDIO / "quality-grounding" / "qwen-fixed-csg.wav", "Qwen-TSE fixed CSG", "WER 0% · UTMOS 3.83", GREEN),
+        (NOISY_AUDIO / "quality-grounding" / "target.wav", "Clean target", "evaluation only", BLUE),
+        (NOISY_AUDIO / "quality-grounding" / "cdcs-5.wav", "CDCS-5 direct", "WER 0% · UTMOS 1.31", ORANGE),
+        (NOISY_AUDIO / "quality-grounding" / "qwen-ud.wav", "Qwen-TSE UD", "WER 0% · UTMOS 3.78", MUTED),
+        (NOISY_AUDIO / "quality-grounding" / "qwen-fixed-csg.wav", "Qwen-TSE fixed CSG", "WER 0% · UTMOS 3.83", GREEN),
     ],
 }
 

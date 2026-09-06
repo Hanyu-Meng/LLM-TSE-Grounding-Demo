@@ -1,0 +1,71 @@
+{
+  "schema_version": "1.0",
+  "condition": "clean",
+  "split": "test",
+  "split_trial_count": 6000,
+  "trial_id": "test:2830-3980-0073_2300-131720-0015:2830",
+  "case_role": "segmented-only speaker-confusion recovery",
+  "selection_rule": "Among frozen Clean TEST segmented-only recoveries, choose the trial whose WER gain is closest to that cohort's median WER gain.",
+  "selected_candidate": {
+    "public_name": "CDCS-5 direct",
+    "conditioning_view": "middle",
+    "view_duration_seconds": 2
+  },
+  "transcripts": {
+    "target": "this attitude springs from a false conception of sin the conception that sin is a small matter easily taken care of by good works that we must",
+    "interferer": "he obtained the desired speed and load with a friction brake also regulator of speed but waited for an indicator to verify it",
+    "primary_wesep": "he obtained the desired speed and load with a friction brake also it regularly matched speed but waited for an indicator to verify",
+    "cdcs_5_direct": "this attitude springs from a false conception of sin the conception that sin is a small matter easily taken care of by good works that we must"
+  },
+  "systems": {
+    "primary_wesep": {
+      "wer_percent": 100.0,
+      "content_switch": 1,
+      "acoustic_switch": 1,
+      "speaker_margin": -0.285
+    },
+    "cdcs_5_direct": {
+      "wer_percent": 0.0,
+      "content_switch": 0,
+      "acoustic_switch": 0,
+      "speaker_margin": 0.520
+    }
+  },
+  "audio_assets": [
+    {
+      "role": "target_enrollment",
+      "path": "public/assets/audio/clean/segmented/enrollment.wav",
+      "sha256": "f0173782c98316ea0fd66441547d95dd07f79bc95c57bef79aa323ea49d9199e"
+    },
+    {
+      "role": "mixture",
+      "path": "public/assets/audio/clean/segmented/mixture.wav",
+      "sha256": "8c78728f659d7f923ed3a2eaac9a9dae1886f7abf8bfd56b7fc4278fe22d36fc"
+    },
+    {
+      "role": "clean_target_evaluation_only",
+      "path": "public/assets/audio/clean/segmented/target.wav",
+      "sha256": "40b26b327bde93ffb863bb8511d761c9ef3a9c1e4f5dd2064cc53c5cd22faa62"
+    },
+    {
+      "role": "clean_interferer_evaluation_only",
+      "path": "public/assets/audio/clean/segmented/interferer.wav",
+      "sha256": "7acb7719ff80f20959ea0cf0314e779ac0730f83e03fab3a37ce967f2ec93751"
+    },
+    {
+      "role": "primary_wesep",
+      "path": "public/assets/audio/clean/segmented/primary.wav",
+      "sha256": "d41e2e295034427311aad1aff7c3a83bf43bbd6a02502488ed4e720a61e75d04"
+    },
+    {
+      "role": "cdcs_5_direct_middle_view",
+      "path": "public/assets/audio/clean/segmented/pool-d.wav",
+      "sha256": "87a9138833139e6d49cb0df640d1f5cbb92ecf70d1fffaf139108d0f34123596"
+    }
+  ],
+  "provenance_notes": [
+    "The trial, selection rule, transcripts, and metrics are copied from the frozen Clean TEST representative-case analysis.",
+    "Clean target and interferer signals are displayed for evaluation and explanation only and are not available to the deployed selector.",
+    "The case is explanatory evidence; aggregate claims are based on the complete frozen result tables."
+  ]
+}

@@ -304,9 +304,10 @@
       <section id="audio">
         <h2>Audio examples</h2>
         <p>
-          All four examples come from the completed, frozen 6,000-trial natural-noise TEST set.
-          Clean targets and interferers are provided only for interpretation; the deployed system never
-          receives them.
+          The first example is a deterministic frozen Clean TEST case that makes the wrong-speaker failure
+          easy to hear. The following four examples come from the completed, frozen 6,000-trial natural-noise
+          TEST set. Clean targets and interferers are provided only for interpretation; the deployed system
+          never receives them.
         </p>
         <div class="explanation-box listen-box">
           <strong>What to listen for:</strong> (1) whether the output follows the enrolled speaker,
@@ -316,20 +317,55 @@
 
         <div class="case-navigation" aria-label="Audio example navigation">
           <button type="button" id="case-previous" aria-label="Previous audio example">←</button>
-          <span id="case-count" aria-live="polite">Example 1 of 4</span>
+          <span id="case-count" aria-live="polite">Example 1 of 5</span>
           <button type="button" id="case-next" aria-label="Next audio example">→</button>
         </div>
 
         <div id="audio-cases">
           <article class="audio-case" data-audio-case>
-            <h3>Example 1 — WeSep extracts the wrong speaker under noise</h3>
+            <h3>Example 1 — clean WeSep wrong-speaker failure</h3>
+            <p>
+              Although the enrollment specifies the target speaker, Primary WeSep follows the interferer.
+              A complementary two-second enrollment view recovers target-consistent evidence:
+              <strong class="math-inline" data-tex="\operatorname{WER}:100\%\rightarrow0\%">WER: 100% → 0%</strong>,
+              <strong class="math-inline" data-tex="m_{\mathrm{spk}}:-0.285\rightarrow+0.520">speaker margin: −0.285 → +0.520</strong>, and
+              <strong class="math-inline" data-tex="(\mathrm{C\text{-}sw.},\mathrm{A\text{-}sw.}):(1,1)\rightarrow(0,0)">(C-sw., A-sw.): (1, 1) → (0, 0)</strong>.
+            </p>
+            <details class="input-details wide-inputs" open>
+              <summary>Hear the clean input and the speaker WeSep mistakenly follows</summary>
+              <div class="audio-grid three">
+                <div class="audio-cell"><strong>Clean mixture</strong><small>system input</small><audio controls preload="none" src="public/assets/audio/clean/segmented/mixture.wav"></audio></div>
+                <div class="audio-cell reference"><strong>Target enrollment</strong><small>speaker condition</small><audio controls preload="none" src="public/assets/audio/clean/segmented/enrollment.wav"></audio></div>
+                <div class="audio-cell reference"><strong>Clean interferer</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/clean/segmented/interferer.wav"></audio></div>
+              </div>
+            </details>
+            <div class="audio-grid three">
+              <div class="audio-cell reference"><strong>Clean target</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/clean/segmented/target.wav"></audio></div>
+              <div class="audio-cell wrong"><strong>Primary WeSep</strong><small>wrong speaker · WER 100%</small><audio controls preload="none" src="public/assets/audio/clean/segmented/primary.wav"></audio></div>
+              <div class="audio-cell ours"><strong>CDCS-5 direct</strong><small>middle view · WER 0%</small><audio controls preload="none" src="public/assets/audio/clean/segmented/pool-d.wav"></audio></div>
+            </div>
+            <div class="transcript-panel" aria-label="Transcripts for Example 1">
+              <p class="transcript-note"><strong>Frozen ASR-consistency transcript</strong> · Whisper-small.en; clean target reference used only for evaluation</p>
+              <dl>
+                <div><dt>Target</dt><dd>this attitude springs from a false conception of sin the conception that sin is a small matter easily taken care of by good works that we must</dd></div>
+                <div><dt>Interferer</dt><dd>he obtained the desired speed and load with a friction brake also regulator of speed but waited for an indicator to verify it</dd></div>
+                <div class="wrong-line"><dt>Primary ASR</dt><dd>he obtained the desired speed and load with a friction brake also it regularly matched speed but waited for an indicator to verify <span class="wer-tag">WER 100%</span></dd></div>
+                <div class="ours-line"><dt>CDCS-5 ASR</dt><dd>this attitude springs from a false conception of sin the conception that sin is a small matter easily taken care of by good works that we must <span class="wer-tag">WER 0%</span></dd></div>
+              </dl>
+              <p class="transcript-reading"><strong>Failure anatomy:</strong> clean speech rules out noise as the cause. The extracted words and voice both match the competing speaker, so this is a genuine speaker-confusion error rather than ordinary ASR corruption.</p>
+            </div>
+            <details class="spectrogram"><summary>View compact high-resolution spectrogram</summary><figure class="spectrogram-frame"><a href="public/assets/figures/clean-case-segmented.png?v=20260906-2" target="_blank" rel="noopener"><img data-src="public/assets/figures/clean-case-segmented.png?v=20260906-2" width="2000" height="1160" alt="Clean wrong-speaker WeSep and CDCS-5 recovery spectrogram comparison" /></a><figcaption>Clean target, clean interferer, wrong-speaker Primary WeSep, and the target-consistent middle-view candidate selected by CDCS-5. Select the figure for the 2,000-pixel original.</figcaption></figure></details>
+          </article>
+
+          <article class="audio-case" data-audio-case hidden>
+            <h3>Example 2 — WeSep extracts the wrong speaker under noise</h3>
             <p>
               Primary WeSep exactly follows the same-gender interferer rather than the enrolled target. CDCS-5 selects the complementary
               TF-map/context candidate, after which fixed CSG preserves the repaired target content:
               <strong class="math-inline" data-tex="\operatorname{WER}:162.5\%\rightarrow0\%">WER: 162.5% → 0%</strong> and
               <strong class="math-inline" data-tex="(\mathrm{C\text{-}sw.},\mathrm{A\text{-}sw.}):(1,1)\rightarrow(0,0)">(C-sw., A-sw.): (1, 1) → (0, 0)</strong>.
             </p>
-            <details class="input-details wide-inputs" open>
+            <details class="input-details wide-inputs">
               <summary>Hear the noisy input and the speaker WeSep mistakenly follows</summary>
               <div class="audio-grid three">
                 <div class="audio-cell"><strong>Noisy mixture</strong><small>system input</small><audio controls preload="none" src="public/assets/audio/noisy/evidence-repair/mixture.wav"></audio></div>
@@ -344,7 +380,7 @@
               <div class="audio-cell"><strong>Qwen-TSE UD</strong><small>WER 25.0%</small><audio controls preload="none" src="public/assets/audio/noisy/evidence-repair/qwen-ud.wav"></audio></div>
               <div class="audio-cell ours"><strong>Qwen-TSE fixed CSG</strong><small>grounded · WER 0%</small><audio controls preload="none" src="public/assets/audio/noisy/evidence-repair/qwen-fixed-csg.wav"></audio></div>
             </div>
-            <div class="transcript-panel" aria-label="Transcripts for Example 1">
+            <div class="transcript-panel" aria-label="Transcripts for Example 2">
               <p class="transcript-note"><strong>Frozen ASR-consistency transcript</strong> · Whisper-small.en; clean target reference used only for evaluation</p>
               <dl>
                 <div><dt>Target</dt><dd>through the black night rain he sang to</dd></div>
@@ -360,7 +396,7 @@
           </article>
 
           <article class="audio-case" data-audio-case hidden>
-            <h3>Example 2 — grounding blocks speaker collapse</h3>
+            <h3>Example 3 — grounding blocks speaker collapse</h3>
             <p>
               The repaired evidence is already correct, but ungrounded Qwen-TSE collapses to one word
               and crosses the acoustic speaker boundary. Fixed CSG restores both identity and content:
@@ -382,7 +418,7 @@
               <div class="audio-cell wrong"><strong>Qwen-TSE UD</strong><small>speaker collapse · WER 100%</small><audio controls preload="none" src="public/assets/audio/noisy/speaker-grounding/qwen-ud.wav"></audio></div>
               <div class="audio-cell ours"><strong>Qwen-TSE fixed CSG</strong><small>speaker restored · WER 0%</small><audio controls preload="none" src="public/assets/audio/noisy/speaker-grounding/qwen-fixed-csg.wav"></audio></div>
             </div>
-            <div class="transcript-panel" aria-label="Transcripts for Example 2">
+            <div class="transcript-panel" aria-label="Transcripts for Example 3">
               <p class="transcript-note"><strong>Frozen ASR-consistency transcript</strong> · Whisper-small.en; clean target reference used only for evaluation</p>
               <dl>
                 <div><dt>Target</dt><dd>she had almost forgotten that it was here within touch and sight</dd></div>
@@ -397,7 +433,7 @@
           </article>
 
           <article class="audio-case" data-audio-case hidden>
-            <h3>Example 3 — grounding repairs lexical drift</h3>
+            <h3>Example 4 — grounding repairs lexical drift</h3>
             <p>
               Here the ungrounded decoder retains the target speaker but substitutes plausible words.
               Fixed CSG restores the full target sentence:
@@ -419,7 +455,7 @@
               <div class="audio-cell wrong"><strong>Qwen-TSE UD</strong><small>lexical drift · WER 71.43%</small><audio controls preload="none" src="public/assets/audio/noisy/content-grounding/qwen-ud.wav"></audio></div>
               <div class="audio-cell ours"><strong>Qwen-TSE fixed CSG</strong><small>content restored · WER 0%</small><audio controls preload="none" src="public/assets/audio/noisy/content-grounding/qwen-fixed-csg.wav"></audio></div>
             </div>
-            <div class="transcript-panel" aria-label="Transcripts for Example 3">
+            <div class="transcript-panel" aria-label="Transcripts for Example 4">
               <p class="transcript-note"><strong>Frozen ASR-consistency transcript</strong> · Whisper-small.en; clean target reference used only for evaluation</p>
               <dl>
                 <div><dt>Target</dt><dd>in actual fact there are doubtless various</dd></div>
@@ -434,7 +470,7 @@
           </article>
 
           <article class="audio-case" data-audio-case hidden>
-            <h3>Example 4 — fidelity–naturalness operating points</h3>
+            <h3>Example 5 — fidelity–naturalness operating points</h3>
             <p>
               Both endpoints preserve the complete target transcript and speaker identity. The direct output
               retains stronger reference alignment, while grounded generation is rated substantially more natural:
@@ -457,7 +493,7 @@
               <div class="audio-cell"><strong>Qwen-TSE UD</strong><small>WER 0% · UTMOS 3.78</small><audio controls preload="none" src="public/assets/audio/noisy/quality-grounding/qwen-ud.wav"></audio></div>
               <div class="audio-cell ours"><strong>Qwen-TSE fixed CSG</strong><small>WER 0% · UTMOS 3.83</small><audio controls preload="none" src="public/assets/audio/noisy/quality-grounding/qwen-fixed-csg.wav"></audio></div>
             </div>
-            <div class="transcript-panel" aria-label="Transcripts for Example 4">
+            <div class="transcript-panel" aria-label="Transcripts for Example 5">
               <p class="transcript-note"><strong>Frozen ASR-consistency transcript</strong> · Whisper-small.en; clean target reference used only for evaluation</p>
               <dl>
                 <div><dt>Target</dt><dd>i tell him to give me some coffee if it is good</dd></div>
@@ -470,7 +506,7 @@
           </article>
         </div>
 
-        <p class="pending"><strong>Selection protocol.</strong> These are mechanism-focused examples, not aggregate evidence. After requiring natural-noise TEST membership, complete paired outputs, valid decoding, and available WAVs, each case is the top-ranked result of a fixed failure-mode rule: hardest same-gender exact-interferer recovery; shortest ungrounded acoustic-switch collapse with exact fixed-CSG recovery; largest eSTOI recovery among bounded non-switch lexical-drift cases; and largest UTMOS gain under matched zero-WER, zero-switch quality constraints. Corpus-level claims remain those in the frozen tables below. <a href="public/results/noisy-demo-cases.json">Machine-readable case record</a>.</p>
+        <p class="pending"><strong>Selection protocol.</strong> These are mechanism-focused examples, not aggregate evidence. The clean opener is the code-selected segmented-only recovery nearest that cohort's median WER gain. After requiring natural-noise TEST membership, complete paired outputs, valid decoding, and available WAVs, the four noisy cases are the top-ranked results of fixed failure-mode rules: hardest same-gender exact-interferer recovery; shortest ungrounded acoustic-switch collapse with exact fixed-CSG recovery; largest eSTOI recovery among bounded non-switch lexical-drift cases; and largest UTMOS gain under matched zero-WER, zero-switch quality constraints. Corpus-level claims remain those in the frozen tables below. <a href="public/results/clean-demo-case.json">Clean case record</a> · <a href="public/results/noisy-demo-cases.json">Noisy case record</a>.</p>
       </section>
 
       <section id="results">
