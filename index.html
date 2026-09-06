@@ -322,15 +322,15 @@
 
         <div id="audio-cases">
           <article class="audio-case" data-audio-case>
-            <h3>Example 1 — noisy speaker recovery before grounding</h3>
+            <h3>Example 1 — WeSep extracts the wrong speaker under noise</h3>
             <p>
-              The same-gender primary output exactly follows the interferer. CDCS-5 selects the complementary
+              Primary WeSep exactly follows the same-gender interferer rather than the enrolled target. CDCS-5 selects the complementary
               TF-map/context candidate, after which fixed CSG preserves the repaired target content:
               <strong class="math-inline" data-tex="\operatorname{WER}:162.5\%\rightarrow0\%">WER: 162.5% → 0%</strong> and
               <strong class="math-inline" data-tex="(\mathrm{C\text{-}sw.},\mathrm{A\text{-}sw.}):(1,1)\rightarrow(0,0)">(C-sw., A-sw.): (1, 1) → (0, 0)</strong>.
             </p>
-            <details class="input-details wide-inputs">
-              <summary>Listen to the noisy input, enrollment, and interferer</summary>
+            <details class="input-details wide-inputs" open>
+              <summary>Hear the noisy input and the speaker WeSep mistakenly follows</summary>
               <div class="audio-grid three">
                 <div class="audio-cell"><strong>Noisy mixture</strong><small>system input</small><audio controls preload="none" src="public/assets/audio/noisy/evidence-repair/mixture.wav"></audio></div>
                 <div class="audio-cell reference"><strong>Target enrollment</strong><small>speaker condition</small><audio controls preload="none" src="public/assets/audio/noisy/evidence-repair/enrollment.wav"></audio></div>
