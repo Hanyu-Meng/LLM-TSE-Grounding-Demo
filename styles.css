@@ -288,9 +288,11 @@ figcaption { margin-top: .65rem; color: #666; font-size: .86rem; line-height: 1.
 .audio-case h3 { margin-top: 0; text-align: center; }
 .audio-case > p { max-width: 950px; margin-left: auto; margin-right: auto; text-align: center; }
 .input-details { max-width: 440px; margin: .65rem auto; padding: .35rem .7rem; border: 1px solid var(--line); border-radius: 6px; background: #fafafa; }
+.input-details.wide-inputs { max-width: 760px; }
 .input-details audio { width: 100%; height: 34px; margin-top: .4rem; }
 summary { color: #275ba0; font-size: .82rem; font-weight: 600; cursor: pointer; }
 .audio-grid { display: grid; gap: .65rem; margin-top: .9rem; }
+.audio-grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .audio-grid.five { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .audio-grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .audio-cell { min-width: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 7px; background: white; text-align: center; }
@@ -574,7 +576,7 @@ th { color: var(--blue-dark); background: var(--blue-soft); }
 .result-reading { border-left-color: var(--blue); color: var(--text); background: var(--blue-soft); }
 
 @media (max-width: 1180px) {
-  .audio-grid.five, .audio-grid.four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .audio-grid.five, .audio-grid.four, .audio-grid.three { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .problem-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .problem-panel { min-height: 350px; }
   .solution-problem { grid-column: 1 / -1; min-height: 0; }
@@ -620,7 +622,7 @@ th { color: var(--blue-dark); background: var(--blue-soft); }
   .conditioning-path { grid-template-columns: minmax(45px, .72fr) auto minmax(64px, 1fr) auto minmax(66px, 1fr); }
   .endpoint-method { grid-template-columns: 1fr; }
   .endpoint-method h3, .endpoint-method .ablation-note { grid-column: auto; }
-  .audio-grid.five, .audio-grid.four { grid-template-columns: 1fr; }
+  .audio-grid.five, .audio-grid.four, .audio-grid.three { grid-template-columns: 1fr; }
   .transcript-panel dl > div { grid-template-columns: 1fr; gap: .1rem; }
   .supporting-metrics { grid-template-columns: 1fr; }
   .formula-stack { overflow-x: visible; white-space: normal; }

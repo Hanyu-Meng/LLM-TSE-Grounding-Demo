@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "split": "test",
+  "benchmark": "natural",
+  "population_trials": 6000,
+  "frozen_execution": {
+    "status": "COMPLETE",
+    "execution_count": 1,
+    "post_test_tuning": false,
+    "validation_status": "READY_TO_SHARE"
+  },
+  "metric_notes": {
+    "wer": "Uncapped utterance-level WER against the frozen Whisper-small.en transcript of the clean target; insertions can make WER exceed 100%.",
+    "c_sw": "Study-defined content-switch indicator.",
+    "a_sw": "Study-defined acoustic-switch indicator.",
+    "utmos_and_dnsmos": "Non-intrusive model estimates of perceptual quality; neither establishes target-speaker or lexical correctness.",
+    "estoi": "Intrusive intelligibility estimate against the clean target."
+  },
+  "selection_protocol": {
+    "common_filter": "Inner-join paired natural-noise TEST records; require QC pass, successful decoding, complete core metrics, and every referenced WAV.",
+    "evidence_repair": "Require Primary C-sw=A-sw=1 and its ASR to equal the interferer; require CDCS-5 direct and fixed CSG WER=0 with C-sw=A-sw=0. Of four strict matches, retain same-gender trials and rank by measured speech-to-noise RMS ratio ascending; choose the hardest.",
+    "speaker_grounding": "Require CDCS-5 direct and fixed CSG WER=0 and A-sw=0, but Qwen-TSE UD A-sw=1. Two matches; rank collapsed UD transcripts by word count ascending, then fixed-CSG UTMOS gain descending.",
+    "content_grounding": "Require Qwen-TSE UD C-sw=A-sw=0 with 50% <= raw WER < 100% and a non-empty output; require CDCS-5 direct and fixed CSG WER=0. Five matches; rank by eSTOI recovery from UD to fixed CSG descending.",
+    "quality_grounding": "Require CDCS-5 direct and fixed CSG WER=0 and C-sw=A-sw=0, fixed-CSG UTMOS gain >=1.0, DNSMOS OVRL gain >=0.5, and eSTOI loss <=0.10. Rank 86 matches by UTMOS gain, DNSMOS gain, then trial ID."
+  },
+  "cases": [
+    {
+      "slug": "evidence-repair",
+      "trial_id": "test:5142-33396-0010_8555-292519-0012:8555",
+      "target_text": "through the black night rain he sang to",
+      "interferer_text": "in the stern i carved the tail up almost as high as the head",
+      "systems": {
+        "primary_wesep": {"output_text": "in the stern i carved the tail up almost as high as the head", "wer": 1.625, "c_sw": true, "a_sw": true, "speaker_margin": -0.527178, "utmos": 3.386915, "dnsmos_ovrl": 3.010398, "estoi": -0.014471},
+        "cdcs_5_direct": {"output_text": "through the black night rain he sang to", "wer": 0.0, "c_sw": false, "a_sw": false, "speaker_margin": 0.393930, "utmos": 2.620063, "dnsmos_ovrl": 2.161375, "estoi": 0.787230},
+        "qwen_tse_ud": {"output_text": "through the black nightren he sang to", "wer": 0.25, "c_sw": false, "a_sw": false, "speaker_margin": 0.262971, "utmos": 3.425434, "dnsmos_ovrl": 3.027519, "estoi": 0.669270},
+        "qwen_tse_fixed_csg": {"output_text": "through the black night rain he sang to", "wer": 0.0, "c_sw": false, "a_sw": false, "speaker_margin": 0.249747, "utmos": 3.650644, "dnsmos_ovrl": 2.959936, "estoi": 0.692586}
+      }
+    },
+    {
+      "slug": "speaker-grounding",
+      "trial_id": "test:1995-1826-0015_908-157963-0005:1995",
+      "target_text": "she had almost forgotten that it was here within touch and sight",
+      "interferer_text": "like the doves voice like transient day",
+      "systems": {
+        "primary_wesep": {"output_text": "she had almost forgotten that it was here within touch and sight", "wer": 0.0, "c_sw": false, "a_sw": false, "speaker_margin": 0.545070, "utmos": 3.300329, "dnsmos_ovrl": 2.759279, "estoi": 0.869006},
+        "cdcs_5_direct": {"output_text": "she had almost forgotten that it was here within touch and sight", "wer": 0.0, "c_sw": false, "a_sw": false, "speaker_margin": 0.561049, "utmos": 3.324447, "dnsmos_ovrl": 2.755967, "estoi": 0.864569},
+        "qwen_tse_ud": {"output_text": "you", "wer": 1.0, "c_sw": false, "a_sw": true, "speaker_margin": -0.008244, "utmos": 2.976541, "dnsmos_ovrl": 1.922893, "estoi": 0.003788},
+        "qwen_tse_fixed_csg": {"output_text": "she had almost forgotten that it was here within touch and sight", "wer": 0.0, "c_sw": false, "a_sw": false, "speaker_margin": 0.673998, "utmos": 3.858996, "dnsmos_ovrl": 3.349729, "estoi": 0.747898}
+      }
+    },
+    {
+      "slug": "content-grounding",
+      "trial_id": "test:260-123440-0013_8230-279154-0016:8230",
+      "target_text": "in actual fact there are doubtless various",
+      "interferer_text": "i am so very tired of being all alone here",
+      "systems": {
+        "primary_wesep": {"output_text": "in actual fact there are doubtless various", "wer": 0.0, "c_sw": false, "a_sw": false, "speaker_margin": 0.477253, "utmos": 2.918162, "dnsmos_ovrl": 2.332892, "estoi": 0.647725},
+        "cdcs_5_direct": {"output_text": "in actual fact there are doubtless various", "wer": 0.0, "c_sw": false, "a_sw": false, "speaker_margin": 0.491468, "utmos": 2.922394, "dnsmos_ovrl": 2.372238, "estoi": 0.651861},
+        "qwen_tse_ud": {"output_text": "an asheville fact there are that was very", "wer": 0.714286, "c_sw": false, "a_sw": false, "speaker_margin": 0.459699, "utmos": 3.596734, "dnsmos_ovrl": 3.277292, "estoi": 0.314030},
+        "qwen_tse_fixed_csg": {"output_text": "in actual fact there are doubtless various", "wer": 0.0, "c_sw": false, "a_sw": false, "speaker_margin": 0.421932, "utmos": 3.556462, "dnsmos_ovrl": 2.968914, "estoi": 0.608632}
+      }
+    },
+    {
+      "slug": "quality-grounding",
+      "trial_id": "test:3729-6852-0019_5639-40744-0037:3729",
+      "target_text": "i tell him to give me some coffee if it is good",
+      "interferer_text": "know then son of my heart that this fainting lady",
+      "systems": {
+        "primary_wesep": {"output_text": "i tell him to give me some coffee if it is good", "wer": 0.0, "c_sw": false, "a_sw": false, "speaker_margin": 0.530555, "utmos": 1.479945, "dnsmos_ovrl": 2.320341, "estoi": 0.736379},
+        "cdcs_5_direct": {"output_text": "i tell him to give me some coffee if it is good", "wer": 0.0, "c_sw": false, "a_sw": false, "speaker_margin": 0.486536, "utmos": 1.306923, "dnsmos_ovrl": 1.269849, "estoi": 0.692086},
+        "qwen_tse_ud": {"output_text": "i tell him to give me some coffee if it is good", "wer": 0.0, "c_sw": false, "a_sw": false, "speaker_margin": 0.562963, "utmos": 3.780135, "dnsmos_ovrl": 3.390587, "estoi": 0.626619},
+        "qwen_tse_fixed_csg": {"output_text": "i tell him to give me some coffee if it is good", "wer": 0.0, "c_sw": false, "a_sw": false, "speaker_margin": 0.560803, "utmos": 3.827171, "dnsmos_ovrl": 3.170756, "estoi": 0.620886}
+      }
+    }
+  ]
+}

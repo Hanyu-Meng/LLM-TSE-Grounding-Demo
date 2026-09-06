@@ -15,7 +15,7 @@ from PIL import Image, ImageDraw
 
 
 ROOT = Path(__file__).resolve().parents[1]
-AUDIO = ROOT / "public" / "assets" / "audio" / "clean"
+AUDIO = ROOT / "public" / "assets" / "audio" / "noisy"
 OUTPUT = ROOT / "public" / "assets" / "waveforms"
 
 WIDTH, HEIGHT = 1600, 220
@@ -23,16 +23,16 @@ INK = (20, 20, 20, 255)
 ZERO = (185, 185, 185, 155)
 
 SOURCES = {
-    "mixture": AUDIO / "segmented" / "mixture.wav",
-    "enrollment": AUDIO / "segmented" / "enrollment.wav",
-    "target": AUDIO / "segmented" / "target.wav",
-    "interferer": AUDIO / "segmented" / "interferer.wav",
-    "primary": AUDIO / "segmented" / "primary.wav",
-    "repaired": AUDIO / "segmented" / "pool-d.wav",
-    "evidence": AUDIO / "csg" / "pool-d.wav",
-    "qwen-ud": AUDIO / "csg" / "ud.wav",
-    "qwen-csg": AUDIO / "csg" / "csg.wav",
-    "tfmap": AUDIO / "tfmap" / "pool-d.wav",
+    "mixture": AUDIO / "evidence-repair" / "mixture.wav",
+    "enrollment": AUDIO / "evidence-repair" / "enrollment.wav",
+    "target": AUDIO / "evidence-repair" / "target.wav",
+    "interferer": AUDIO / "evidence-repair" / "interferer.wav",
+    "primary": AUDIO / "evidence-repair" / "primary.wav",
+    "repaired": AUDIO / "evidence-repair" / "cdcs-5.wav",
+    "evidence": AUDIO / "content-grounding" / "cdcs-5.wav",
+    "qwen-ud": AUDIO / "content-grounding" / "qwen-ud.wav",
+    "qwen-csg": AUDIO / "content-grounding" / "qwen-fixed-csg.wav",
+    "tfmap": AUDIO / "evidence-repair" / "cdcs-5.wav",
 }
 
 

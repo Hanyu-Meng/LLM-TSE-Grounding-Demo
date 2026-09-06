@@ -16,7 +16,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 
 ROOT = Path(__file__).resolve().parents[1]
-AUDIO = ROOT / "public" / "assets" / "audio" / "clean"
+AUDIO = ROOT / "public" / "assets" / "audio" / "noisy"
 FIGURES = ROOT / "public" / "assets" / "figures"
 
 WIDTH, HEIGHT = 2000, 1160
@@ -174,23 +174,29 @@ def draw_colourbar(canvas: Image.Image, draw: ImageDraw.ImageDraw) -> None:
 
 
 CASES = {
-    "clean-case-segmented.png": [
-        (AUDIO / "segmented" / "target.wav", "Target reference", "evaluation only", BLUE),
-        (AUDIO / "segmented" / "interferer.wav", "Interferer reference", "evaluation only", MUTED),
-        (AUDIO / "segmented" / "primary.wav", "Primary WeSep", "wrong speaker · WER 100%", MUTED),
-        (AUDIO / "segmented" / "pool-d.wav", "CDCS-5 · middle view", "target recovered · WER 0%", ORANGE),
+    "noisy-case-evidence-repair.png": [
+        (AUDIO / "evidence-repair" / "target.wav", "Clean target", "evaluation only", BLUE),
+        (AUDIO / "evidence-repair" / "primary.wav", "Primary WeSep", "wrong speaker · WER 162.5%", MUTED),
+        (AUDIO / "evidence-repair" / "cdcs-5.wav", "CDCS-5 direct", "target recovered · WER 0%", ORANGE),
+        (AUDIO / "evidence-repair" / "qwen-fixed-csg.wav", "Qwen-TSE fixed CSG", "grounded output · WER 0%", GREEN),
     ],
-    "clean-case-tfmap.png": [
-        (AUDIO / "tfmap" / "target.wav", "Target reference", "evaluation only", BLUE),
-        (AUDIO / "tfmap" / "interferer.wav", "Interferer reference", "evaluation only", MUTED),
-        (AUDIO / "tfmap" / "primary.wav", "Primary WeSep", "wrong speaker · WER 100%", MUTED),
-        (AUDIO / "tfmap" / "pool-d.wav", "CDCS-5 · TF-map view", "target recovered · WER 0%", ORANGE),
+    "noisy-case-speaker-grounding.png": [
+        (AUDIO / "speaker-grounding" / "target.wav", "Clean target", "evaluation only", BLUE),
+        (AUDIO / "speaker-grounding" / "cdcs-5.wav", "CDCS-5 direct", "repaired evidence · WER 0%", ORANGE),
+        (AUDIO / "speaker-grounding" / "qwen-ud.wav", "Qwen-TSE UD", "speaker collapse · WER 100%", MUTED),
+        (AUDIO / "speaker-grounding" / "qwen-fixed-csg.wav", "Qwen-TSE fixed CSG", "speaker restored · WER 0%", GREEN),
     ],
-    "clean-case-csg.png": [
-        (AUDIO / "csg" / "target.wav", "Target reference", "evaluation only", BLUE),
-        (AUDIO / "csg" / "pool-d.wav", "CDCS-5 evidence", "direct WER 0%", ORANGE),
-        (AUDIO / "csg" / "ud.wav", "Qwen-TSE UD", "decoder drift · WER 27.3%", MUTED),
-        (AUDIO / "csg" / "csg.wav", "Qwen-TSE fixed CSG", "drift reduced · WER 9.1%", GREEN),
+    "noisy-case-content-grounding.png": [
+        (AUDIO / "content-grounding" / "target.wav", "Clean target", "evaluation only", BLUE),
+        (AUDIO / "content-grounding" / "cdcs-5.wav", "CDCS-5 direct", "repaired evidence · WER 0%", ORANGE),
+        (AUDIO / "content-grounding" / "qwen-ud.wav", "Qwen-TSE UD", "lexical drift · WER 71.4%", MUTED),
+        (AUDIO / "content-grounding" / "qwen-fixed-csg.wav", "Qwen-TSE fixed CSG", "content restored · WER 0%", GREEN),
+    ],
+    "noisy-case-quality-grounding.png": [
+        (AUDIO / "quality-grounding" / "target.wav", "Clean target", "evaluation only", BLUE),
+        (AUDIO / "quality-grounding" / "cdcs-5.wav", "CDCS-5 direct", "WER 0% · UTMOS 1.31", ORANGE),
+        (AUDIO / "quality-grounding" / "qwen-ud.wav", "Qwen-TSE UD", "WER 0% · UTMOS 3.78", MUTED),
+        (AUDIO / "quality-grounding" / "qwen-fixed-csg.wav", "Qwen-TSE fixed CSG", "WER 0% · UTMOS 3.83", GREEN),
     ],
 }
 
