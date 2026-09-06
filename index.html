@@ -22,7 +22,8 @@
     <meta name="twitter:card" content="summary_large_image" />
     <title>Speaker-Consistent Grounding · Audio Demo</title>
     <link rel="icon" href="public/favicon.svg" />
-    <link rel="stylesheet" href="styles.css?v=20260906-2" />
+    <link rel="stylesheet" href="public/vendor/katex/katex.min.css?v=0.18.6" />
+    <link rel="stylesheet" href="styles.css?v=20260906-3" />
   </head>
   <body>
     <a class="skip-link" href="#content">Skip to content</a>
@@ -72,14 +73,14 @@
               <article class="diagram-panel problem-panel deterministic-problem">
                 <h3><span>(a)</span> Deterministic waveform TSE</h3>
                 <div class="input-pair">
-                  <div class="signal-node"><span class="signal-wave mixture-wave" aria-hidden="true"></span><small>Mixture <i>y</i> · A + B + noise</small></div>
-                  <div class="condition-chip">Target enrolment <i>r</i> · speaker A</div>
+                  <div class="signal-node"><img class="signal-wave" src="public/assets/waveforms/mixture.png" alt="" /><small>Mixture <span class="math-inline" data-tex="y">y</span> · A + B + noise</small></div>
+                  <div class="signal-node"><img class="signal-wave compact-wave" src="public/assets/waveforms/enrollment.png" alt="" /><small>Target enrolment <span class="math-inline" data-tex="r">r</span> · speaker A</small></div>
                 </div>
                 <span class="flow-down" aria-hidden="true">↓</span>
                 <div class="diagram-block">Frozen waveform TSE</div>
                 <div class="outcome-pair">
-                  <div class="outcome-card"><span class="signal-wave distorted-wave" aria-hidden="true"></span><strong>Distorted target A</strong></div>
-                  <div class="outcome-card failure-outcome"><span class="signal-wave confused-wave" aria-hidden="true"></span><strong>Interferer B</strong></div>
+                  <div class="outcome-card"><img class="signal-wave distorted-wave" src="public/assets/waveforms/target.png" alt="" /><strong>Distorted target A</strong></div>
+                  <div class="outcome-card failure-outcome"><img class="signal-wave" src="public/assets/waveforms/interferer.png" alt="" /><strong>Interferer B</strong></div>
                 </div>
                 <p class="positive-note">No autoregressive token hallucination</p>
                 <p class="warning-note">May distort speech or follow the interferer</p>
@@ -87,11 +88,11 @@
 
               <article class="diagram-panel problem-panel generative-problem">
                 <h3><span>(b)</span> Ungrounded generation</h3>
-                <div class="condition-row"><span>Mixture features <i>M</i></span><span>Speaker condition <i>S</i></span></div>
+                <div class="condition-row"><span>Mixture features <span class="math-inline" data-tex="M">M</span></span><span>Speaker condition <span class="math-inline" data-tex="S">S</span></span></div>
                 <span class="flow-down" aria-hidden="true">↓</span>
                 <div class="diagram-block purple-block">Qwen-TSE UD</div>
                 <span class="flow-down purple-arrow" aria-hidden="true">↓</span>
-                <div class="generated-output"><span class="signal-wave generated-wave" aria-hidden="true"></span><strong>Perceptually plausible output</strong></div>
+                <div class="generated-output"><img class="signal-wave" src="public/assets/waveforms/qwen-ud.png" alt="" /><strong>Perceptually plausible output</strong></div>
                 <p class="positive-note purple-note">Higher <em>predicted</em> naturalness</p>
                 <p class="warning-note">Content substitution / insertion · speaker drift</p>
               </article>
@@ -99,14 +100,14 @@
               <article class="diagram-panel problem-panel anchor-problem">
                 <h3><span>(c)</span> Grounding a bad anchor</h3>
                 <div class="bad-anchor-flow">
-                  <div><span class="signal-wave confused-wave compact-wave" aria-hidden="true"></span><small>Confused estimate B</small></div>
+                  <div><img class="signal-wave compact-wave" src="public/assets/waveforms/primary.png" alt="" /><small>Confused estimate B</small></div>
                   <span aria-hidden="true">→</span>
-                  <div class="token-mini orange-token">z<sup>B</sup></div>
+                  <div class="token-mini orange-token math-inline" data-tex="z^{B}">zᴮ</div>
                   <span aria-hidden="true">→</span>
                   <div class="diagram-block compact-block">Fixed CSG</div>
                 </div>
                 <span class="flow-down" aria-hidden="true">↓</span>
-                <div class="generated-output failure-output"><span class="signal-wave confused-wave" aria-hidden="true"></span><strong>Confident wrong-speaker output B</strong></div>
+                <div class="generated-output failure-output"><img class="signal-wave" src="public/assets/waveforms/primary.png" alt="" /><strong>Confident wrong-speaker output B</strong></div>
                 <p class="warning-note strong-warning">Grounding can preserve a bad anchor</p>
                 <p class="neutral-note">Constraining drift does not repair identity</p>
               </article>
@@ -118,7 +119,7 @@
                   <b aria-hidden="true">↓</b>
                   <strong>CDCS-5</strong>
                   <b aria-hidden="true">↓</b>
-                  <span class="repaired-chip">Target-consistent evidence <i>c</i><sup>*</sup></span>
+                  <span class="repaired-chip">Target-consistent evidence <span class="math-inline" data-tex="c^\star">c*</span></span>
                 </div>
                 <div class="endpoint-mini-grid">
                   <div><strong>CDCS-5 direct</strong><small>content fidelity</small></div>
@@ -132,6 +133,8 @@
               distort speech or follow the interferer; autoregressive decoding can drift in content
               or speaker; and grounding confused evidence may reinforce the wrong identity. We therefore
               repair evidence identity with CDCS-5 before fixed CSG constrains Qwen-TSE generation.
+              Waveforms are amplitude-normalized traces computed from the released listening examples;
+              representative nodes need not belong to the same trial.
             </figcaption>
           </figure>
 
@@ -147,10 +150,10 @@
                 <h3><span>(a)</span> Conditioning-diverse evidence repair</h3>
                 <div class="repair-flow">
                   <div class="repair-inputs">
-                    <div class="signal-node"><span class="signal-wave mixture-wave" aria-hidden="true"></span><small>Mixture <i>y</i></small></div>
+                    <div class="signal-node"><img class="signal-wave" src="public/assets/waveforms/mixture.png" alt="" /><small>Mixture <span class="math-inline" data-tex="y">y</span></small></div>
                     <div class="enrolment-node">
-                      <span class="signal-wave selected-wave compact-wave" aria-hidden="true"></span>
-                      <strong>Target enrolment <i>r</i></strong>
+                      <img class="signal-wave compact-wave" src="public/assets/waveforms/enrollment.png" alt="" />
+                      <strong>Target enrolment <span class="math-inline" data-tex="r">r</span></strong>
                       <div class="view-chips"><span>Full</span><span>First</span><span>Middle</span><span>Final</span></div>
                       <small>deterministic high-energy views</small>
                     </div>
@@ -162,22 +165,22 @@
                   </div>
                   <span class="flow-across" aria-hidden="true">→</span>
                   <div class="candidate-stack" aria-label="Five candidate waveforms">
-                    <div><b>c<sub>1</sub></b><span class="signal-wave candidate-wave" aria-hidden="true"></span><small>full</small></div>
-                    <div><b>c<sub>2</sub></b><span class="signal-wave candidate-wave" aria-hidden="true"></span><small>first</small></div>
-                    <div><b>c<sub>3</sub></b><span class="signal-wave candidate-wave alternate-wave" aria-hidden="true"></span><small>middle</small></div>
-                    <div><b>c<sub>4</sub></b><span class="signal-wave candidate-wave" aria-hidden="true"></span><small>final</small></div>
-                    <div><b>c<sub>5</sub></b><span class="signal-wave candidate-wave tf-wave" aria-hidden="true"></span><small>TF-map/context</small></div>
+                    <div><b class="math-inline" data-tex="c_1">c₁</b><img class="signal-wave candidate-wave" src="public/assets/waveforms/primary.png" alt="" /><small>full</small></div>
+                    <div><b class="math-inline" data-tex="c_2">c₂</b><img class="signal-wave candidate-wave" src="public/assets/waveforms/primary.png" alt="" /><small>first</small></div>
+                    <div><b class="math-inline" data-tex="c_3">c₃</b><img class="signal-wave candidate-wave" src="public/assets/waveforms/repaired.png" alt="" /><small>middle</small></div>
+                    <div><b class="math-inline" data-tex="c_4">c₄</b><img class="signal-wave candidate-wave" src="public/assets/waveforms/primary.png" alt="" /><small>final</small></div>
+                    <div><b class="math-inline" data-tex="c_5">c₅</b><img class="signal-wave candidate-wave" src="public/assets/waveforms/tfmap.png" alt="" /><small>TF-map/context</small></div>
                   </div>
                   <span class="flow-across" aria-hidden="true">→</span>
                   <div class="selector-stage">
                     <div class="diagram-block selector-block"><strong>Frozen ECAPA<br />target selector</strong></div>
-                    <code>q<sub>i</sub> = cos(F<sub>spk</sub>(c<sub>i</sub>), F<sub>spk</sub>(r))</code>
-                    <code>c<sup>*</sup> = c<sub>argmax qᵢ</sub></code>
+                    <div class="math-display compact-math" data-tex="q_i=\cos\!\left(F_{\mathrm{spk}}(c_i),F_{\mathrm{spk}}(r)\right)">qᵢ = cos(Fspk(cᵢ), Fspk(r))</div>
+                    <div class="math-display compact-math" data-tex="i^\star=\operatorname*{arg\,max}_{i\in\{1,\ldots,5\}}q_i,\quad c^\star=c_{i^\star}">i* = arg maxᵢ qᵢ, c* = cᵢ*</div>
                   </div>
                 </div>
                 <div class="selected-evidence">
-                  <span><b>Selected evidence c<sup>*</sup></b><small>target-consistent waveform</small></span>
-                  <span class="signal-wave selected-wave" aria-hidden="true"></span>
+                  <span><b>Selected evidence <span class="math-inline" data-tex="c^\star">c*</span></b><small>target-consistent waveform</small></span>
+                  <img class="signal-wave" src="public/assets/waveforms/evidence.png" alt="" />
                   <b class="continues-arrow" aria-hidden="true">→</b>
                 </div>
                 <p class="method-footnote">Training-free selection · mixture and enrolment only · no clean source, transcript, interferer, or oracle label</p>
@@ -187,38 +190,38 @@
                 <h3><span>(b)</span> Evidence-conditioned Qwen-TSE decoding</h3>
                 <div class="conditioning-paths">
                   <div class="conditioning-path evidence-path">
-                    <span><b>c<sup>*</sup></b> repaired waveform</span><b aria-hidden="true">→</b><span class="compact-module">CosyVoice3 25-Hz<br />FSQ tokenizer <i>frozen</i></span><b aria-hidden="true">→</b><span class="token-row teal-tokens"><i>12</i><i>87</i><i>45</i><i>61</i><i>…</i><i>73</i></span><small>Evidence tokens z<sup>e</sup></small>
+                    <span><b class="math-inline" data-tex="c^\star">c*</b> repaired waveform</span><b aria-hidden="true">→</b><span class="compact-module">CosyVoice3 25-Hz<br />FSQ tokenizer <i>frozen</i></span><b aria-hidden="true">→</b><span class="token-row teal-tokens"><i>12</i><i>87</i><i>45</i><i>61</i><i>…</i><i>73</i></span><small>Evidence tokens <span class="math-inline" data-tex="z^e">zᵉ</span></small>
                   </div>
                   <div class="conditioning-path">
-                    <span>Mixture <i>y</i></span><b aria-hidden="true">→</b><span class="compact-module">WavLM<br /><i>frozen</i></span><b aria-hidden="true">→</b><span class="feature-row" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><small>Features <i>M</i></small>
+                    <span>Mixture <span class="math-inline" data-tex="y">y</span></span><b aria-hidden="true">→</b><span class="compact-module">WavLM<br /><i>frozen</i></span><b aria-hidden="true">→</b><span class="feature-row" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><small>Features <span class="math-inline" data-tex="M">M</span></small>
                   </div>
                   <div class="conditioning-path">
-                    <span>Enrolment <i>r</i></span><b aria-hidden="true">→</b><span class="compact-module">Speaker encoder<br /><i>frozen</i></span><b aria-hidden="true">→</b><span class="feature-row" aria-hidden="true"><i></i><i></i><i></i><i></i></span><small>Condition <i>S</i></small>
+                    <span>Enrolment <span class="math-inline" data-tex="r">r</span></span><b aria-hidden="true">→</b><span class="compact-module">Speaker encoder<br /><i>frozen</i></span><b aria-hidden="true">→</b><span class="feature-row" aria-hidden="true"><i></i><i></i><i></i><i></i></span><small>Condition <span class="math-inline" data-tex="S">S</span></small>
                   </div>
                 </div>
-                <div class="condition-merge"><span>z<sup>e</sup></span><span>M</span><span>S</span><b aria-hidden="true">↓</b></div>
+                <div class="condition-merge"><span class="math-inline" data-tex="z^e">zᵉ</span><span class="math-inline" data-tex="M">M</span><span class="math-inline" data-tex="S">S</span><b aria-hidden="true">↓</b></div>
                 <div class="diagram-block qwen-block"><strong>Qwen-TSE</strong><small>fixed Qwen2.5-0.5B checkpoint</small></div>
                 <span class="flow-down" aria-hidden="true">↓</span>
-                <div class="logit-stage"><small>Candidate-token log probabilities</small><span class="token-row purple-tokens"><i>ℓ<sub>1</sub></i><i>ℓ<sub>2</sub></i><i>ℓ<sub>3</sub></i><i>ℓ<sub>4</sub></i><i>ℓ<sub>5</sub></i><i>…</i></span></div>
+                <div class="logit-stage"><small>Candidate-token log probabilities</small><span class="token-row purple-tokens"><i class="math-inline" data-tex="\ell_1">ℓ₁</i><i class="math-inline" data-tex="\ell_2">ℓ₂</i><i class="math-inline" data-tex="\ell_3">ℓ₃</i><i class="math-inline" data-tex="\ell_4">ℓ₄</i><i class="math-inline" data-tex="\ell_5">ℓ₅</i><i>…</i></span></div>
                 <span class="flow-down" aria-hidden="true">↓</span>
-                <div class="diagram-block csg-block"><strong>Fixed CSG</strong><small>code-space grounded re-ranking</small><code>ẑ<sub>t</sub> = argmax<sub>v</sub> [log p<sub>t</sub>(v) − λD<sub>H</sub>(v,z<sub>t</sub><sup>e</sup>)]</code><em>λ=1 · w=0 · coordinate-wise FSQ Hamming distance</em></div>
+                <div class="diagram-block csg-block"><strong>Fixed CSG</strong><small>code-space grounded re-ranking</small><div class="math-display compact-equation" data-tex="\hat z_t=\operatorname*{arg\,max}_{v\in\mathcal V}\!\left[\log p_t(v)-\lambda\min_{|\delta|\le w}d_H\!\left(v,z^e_{t+\delta}\right)\right]">ẑₜ = arg maxᵥ [log pₜ(v) − λ min dH(v,zᵉₜ₊δ)]</div><em><span class="math-inline" data-tex="\lambda=1,\;w=0">λ = 1, w = 0</span> · coordinate-wise FSQ Hamming distance</em></div>
                 <span class="flow-down" aria-hidden="true">↓</span>
-                <div class="grounded-token-stage"><span class="token-row purple-tokens"><i>41</i><i>09</i><i>63</i><i>21</i><i>78</i><i>…</i><i>36</i></span><strong>Grounded tokens ẑ</strong></div>
+                <div class="grounded-token-stage"><span class="token-row purple-tokens"><i>41</i><i>09</i><i>63</i><i>21</i><i>78</i><i>…</i><i>36</i></span><strong>Grounded tokens <span class="math-inline" data-tex="\hat z">ẑ</span></strong></div>
               </section>
 
               <section class="method-panel endpoint-method">
                 <h3><span>(c)</span> Two operating points</h3>
                 <article class="endpoint-card direct-endpoint">
-                  <p class="endpoint-source"><i>c</i><sup>*</sup> · direct waveform bypass</p>
-                  <span class="signal-wave selected-wave output-wave" aria-hidden="true"></span>
+                  <p class="endpoint-source"><span class="math-inline" data-tex="c^\star">c*</span> · direct waveform bypass</p>
+                  <img class="signal-wave output-wave" src="public/assets/waveforms/evidence.png" alt="" />
                   <strong>CDCS-5 direct</strong>
                   <small>No autoregressive decoder<br />Content-fidelity endpoint</small>
                 </article>
                 <div class="endpoint-divider"><span>or</span></div>
                 <article class="endpoint-card generated-endpoint">
-                  <p class="endpoint-source">Grounded tokens ẑ</p>
+                  <p class="endpoint-source">Grounded tokens <span class="math-inline" data-tex="\hat z">ẑ</span></p>
                   <div class="diagram-block compact-block">CosyVoice3 decoder<br /><i>frozen</i></div>
-                  <span class="signal-wave generated-wave output-wave" aria-hidden="true"></span>
+                  <img class="signal-wave output-wave" src="public/assets/waveforms/qwen-csg.png" alt="" />
                   <strong>Qwen-TSE fixed CSG</strong>
                   <small>Autoregressive speech prior<br />Constrained generative endpoint</small>
                 </article>
@@ -229,7 +232,8 @@
               <strong>Figure 2.</strong> Proposed repair-before-grounding pipeline. CDCS-5 constructs
               five frozen, conditioning-diverse TSE candidates and selects repaired evidence with a
               frozen ECAPA encoder. The waveform is either returned directly or tokenized to ground
-              the fixed Qwen-TSE decoder, where CSG constrains token drift.
+              the fixed Qwen-TSE decoder, where CSG constrains token drift. Candidate thumbnails are
+              representative real traces; independent first/final-view candidate audio is not publicly exposed.
             </figcaption>
           </figure>
         </div>
@@ -269,9 +273,8 @@
               <span class="step-number">2</span>
               <h4>CSG constrains</h4>
               <p>Hamming-distant candidates receive a larger penalty, pulling generation toward nearby evidence.</p>
-              <div class="equation">
-                <span>s<sub>CSG</sub>(v,t) = s<sub>LLM</sub>(v,t)</span>
-                <span>− λ min<sub>|δ|≤w</sub> d<sub>H</sub>(v,e<sub>t+δ</sub>)</span>
+              <div class="equation math-display" data-tex="s_{\mathrm{CSG}}(v,t)=s_{\mathrm{LLM}}(v,t)-\lambda\min_{|\delta|\le w}d_H\!\left(v,z^e_{t+\delta}\right)">
+                sCSG(v,t) = sLLM(v,t) − λ min dH(v,zᵉt+δ)
               </div>
               <div class="distance-key"><span><i class="near"></i>near: small penalty</span><span><i class="far"></i>far: large penalty</span></div>
             </article>
@@ -281,18 +284,19 @@
               <h4>GNR optionally refines</h4>
               <p>Top-20 proposals are intersected with a radius-2 Hamming ball around the immutable CSG anchor.</p>
               <div class="neighbor-row">
-                <span class="anchor-choice">anchor<br /><small>d=0</small></span>
-                <span class="accepted-choice">p₁ ✓<br /><small>d=1</small></span>
-                <span>p₂<br /><small>d=2</small></span>
-                <span class="rejected-choice">p₃ ✕<br /><small>d=4</small></span>
+                <span class="anchor-choice">anchor<br /><small class="math-inline" data-tex="d=0">d = 0</small></span>
+                <span class="accepted-choice"><span class="math-inline" data-tex="p_1">p₁</span> ✓<br /><small class="math-inline" data-tex="d=1">d = 1</small></span>
+                <span><span class="math-inline" data-tex="p_2">p₂</span><br /><small class="math-inline" data-tex="d=2">d = 2</small></span>
+                <span class="rejected-choice"><span class="math-inline" data-tex="p_3">p₃</span> ✕<br /><small class="math-inline" data-tex="d=4">d = 4</small></span>
               </div>
               <small class="no-feedback">No feedback: accepted edits do not alter later token history.</small>
             </article>
           </div>
           <figcaption>
             <strong>Figure 3.</strong> Illustrative token-level grounding. Fixed CSG uses
-            λ=1, w=0. The reported adaptive noisy branch resolved to λ=.5, w=1 for every trial; GNR uses
-            K=20, R=2 and is reported as a negative ablation because local code proximity did not lower WER.
+            <span class="math-inline" data-tex="\lambda=1,\;w=0">λ = 1, w = 0</span>. The reported adaptive noisy branch resolved to
+            <span class="math-inline" data-tex="\lambda=0.5,\;w=1">λ = 0.5, w = 1</span> for every trial; GNR uses
+            <span class="math-inline" data-tex="K=20,\;R=2">K = 20, R = 2</span> and is reported as a negative ablation because local code proximity did not lower WER.
           </figcaption>
         </figure>
       </section>
@@ -319,8 +323,8 @@
             <h3>Example 1 — recovery from an enrollment view</h3>
             <p>
               The primary follows the interferer. A deterministic two-second enrollment view produces
-              target-consistent evidence. WER: <strong>100% → 0%</strong>; speaker margin:
-              <strong>−.285 → +.520</strong>.
+              target-consistent evidence. <strong class="math-inline" data-tex="\operatorname{WER}:100\%\rightarrow0\%">WER: 100% → 0%</strong>; speaker margin:
+              <strong class="math-inline" data-tex="m_{\mathrm{spk}}:-0.285\rightarrow+0.520">mspk: −0.285 → +0.520</strong>.
             </p>
             <details class="input-details">
               <summary>Listen to the target enrollment</summary>
@@ -349,8 +353,8 @@
             <h3>Example 2 — complementary TF-map/context evidence</h3>
             <p>
               The speaker-vector candidates fail, but the alternative conditioning expert recovers the
-              target. WER: <strong>100% → 0%</strong>; speaker margin:
-              <strong>−.543 → +.505</strong>.
+              target. <strong class="math-inline" data-tex="\operatorname{WER}:100\%\rightarrow0\%">WER: 100% → 0%</strong>; speaker margin:
+              <strong class="math-inline" data-tex="m_{\mathrm{spk}}:-0.543\rightarrow+0.505">mspk: −0.543 → +0.505</strong>.
             </p>
             <details class="input-details">
               <summary>Listen to the target enrollment</summary>
@@ -379,8 +383,10 @@
             <h3>Example 3 — constrained LLM grounding</h3>
             <p>
               The same repaired evidence enters Qwen-TSE. CSG reduces decoder drift, although the direct
-              waveform remains strongest: <strong>UD 27.3%</strong>, <strong>CSG 9.1%</strong>,
-              <strong>CDCS-5 direct 0% WER</strong>.
+              waveform remains strongest:
+              <strong class="math-inline" data-tex="\operatorname{WER}_{\mathrm{UD}}=27.3\%">UD WER = 27.3%</strong>,
+              <strong class="math-inline" data-tex="\operatorname{WER}_{\mathrm{CSG}}=9.1\%">CSG WER = 9.1%</strong>, and
+              <strong class="math-inline" data-tex="\operatorname{WER}_{\mathrm{direct}}=0\%">CDCS-5 direct WER = 0%</strong>.
             </p>
             <div class="audio-grid four">
               <div class="audio-cell reference"><strong>Clean target</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/clean/csg/target.wav"></audio></div>
@@ -440,8 +446,8 @@
                 WER to the clean interferer transcript than to the clean target transcript. Ties are
                 not switches.
               </p>
-              <div class="metric-formula" aria-label="The content-switch indicator is one when output WER to the interferer is lower than output WER to the target.">
-                c<sub>sw</sub> = 1[ WER(τ<sub>I</sub>, τ̂) &lt; WER(τ<sub>T</sub>, τ̂) ]
+              <div class="metric-formula math-display" data-tex="c_{\mathrm{sw},n}=\mathbf{1}\!\left[\operatorname{WER}(\tau_{I,n},\hat\tau_n)&lt;\operatorname{WER}(\tau_{T,n},\hat\tau_n)\right]">
+                csw,n = 1[WER(τI,n, τ̂n) &lt; WER(τT,n, τ̂n)]
               </div>
             </article>
 
@@ -452,17 +458,17 @@
                 A frozen CosyVoice CAMPPlus evaluator flags a trial when the output is more
                 cosine-similar to the clean interferer than to the clean target. Ties are not switches.
               </p>
-              <div class="metric-formula formula-stack" aria-label="Speaker margin equals output similarity to the target minus output similarity to the interferer; the acoustic-switch indicator is one when this margin is negative.">
-                <span>m<sub>spk</sub> = cos(f(s<sub>T</sub>), f(ŝ)) − cos(f(s<sub>I</sub>), f(ŝ))</span>
-                <span>a<sub>sw</sub> = 1[m<sub>spk</sub> &lt; 0]</span>
+              <div class="metric-formula formula-stack">
+                <span class="math-display" data-tex="\begin{aligned}m_{\mathrm{spk},n}&amp;=\cos\!\left(f(s_{T,n}),f(\hat s_n)\right)\\&amp;\quad-\cos\!\left(f(s_{I,n}),f(\hat s_n)\right)\end{aligned}">mspk,n = cos(f(sT,n), f(ŝn)) − cos(f(sI,n), f(ŝn))</span>
+                <span class="math-display" data-tex="a_{\mathrm{sw},n}=\mathbf{1}\!\left[m_{\mathrm{spk},n}&lt;0\right]">asw,n = 1[mspk,n &lt; 0]</span>
               </div>
             </article>
           </div>
 
-          <div class="rate-formula" aria-label="Content-switch and acoustic-switch rates are the percentage of evaluated trials whose corresponding indicator equals one.">
-            <span class="rate-expression">C-sw. = 100/N Σ c<sub>sw,n</sub></span>
+          <div class="rate-formula">
+            <span class="rate-expression math-display" data-tex="\mathrm{C\text{-}sw.}=\frac{100\%}{N}\sum_{n=1}^{N}c_{\mathrm{sw},n}">C-sw. = 100%/N Σ csw,n</span>
             <span class="rate-divider" aria-hidden="true">·</span>
-            <span class="rate-expression">A-sw. = 100/N Σ a<sub>sw,n</sub></span>
+            <span class="rate-expression math-display" data-tex="\mathrm{A\text{-}sw.}=\frac{100\%}{N}\sum_{n=1}^{N}a_{\mathrm{sw},n}">A-sw. = 100%/N Σ asw,n</span>
           </div>
           <p class="metric-caveat">
             These are study-defined operational diagnostics, not standardized perceptual metrics or
@@ -473,7 +479,7 @@
         </aside>
 
         <dl class="supporting-metrics" aria-label="Supporting metric definitions">
-          <div><dt>WER ↓</dt><dd>Uncapped utterance-mean ASR consistency against a same-ASR clean-target transcript.</dd></div>
+          <div><dt>WER ↓</dt><dd><span class="math-inline" data-tex="\operatorname{WER}=\frac{S+D+I}{N_{\mathrm{ref}}}\times100\%">WER = (S + D + I) / Nref × 100%</span>. Reported as the uncapped utterance mean against a same-ASR clean-target transcript.</dd></div>
           <div><dt>Spk. margin ↑</dt><dd>Target-minus-interferer CAMPPlus cosine similarity; a negative value triggers A-sw.</dd></div>
           <div><dt>DNSMOS ↑</dt><dd>Predicted P.808 quality for clean speech and P.835 OVRL for noisy speech.</dd></div>
           <div><dt>UTMOS ↑</dt><dd>Reference-free predicted naturalness; it does not establish content or speaker identity.</dd></div>
@@ -588,7 +594,7 @@
         <div class="result-group" id="controlled-snr">
           <p class="split-label">CONTROLLED NOISE · DEV AND TEST</p>
           <h3>Performance by SNR</h3>
-          <p class="table-note">Each cell reports <strong>raw WER / A-sw.</strong> in percent; 480 trials per SNR and system. Raw WER may exceed 100% because ASR insertions are not capped. Every Qwen-TSE row uses CDCS-5 grounding evidence; GNR uses K=20, R=2.</p>
+          <p class="table-note">Each cell reports <strong>raw WER / A-sw.</strong> in percent; 480 trials per SNR and system. Raw WER may exceed 100% because ASR insertions are not capped. Every Qwen-TSE row uses CDCS-5 grounding evidence; GNR uses <span class="math-inline" data-tex="K=20,\;R=2">K = 20, R = 2</span>.</p>
 
           <h4>Controlled-SNR DEV</h4>
           <div class="table-scroll compact-table">
@@ -677,7 +683,8 @@
       </footer>
     </main>
 
+    <script src="public/vendor/katex/katex.min.js?v=0.18.6"></script>
     <script src="frozen-noisy-test.js?v=20260905-3"></script>
-    <script src="app.js?v=20260906-1"></script>
+    <script src="app.js?v=20260906-2"></script>
   </body>
 </html>

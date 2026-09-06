@@ -98,3 +98,27 @@ if (audioCases.length && previousCase && nextCase) {
   previousCase.addEventListener("click", () => showAudioCase(activeCase - 1));
   nextCase.addEventListener("click", () => showAudioCase(activeCase + 1));
 }
+
+function renderMath(root = document) {
+  if (!window.katex) return;
+
+  root.querySelectorAll("[data-tex]:not([data-math-rendered])").forEach((node) => {
+    const staging = document.createElement("span");
+
+    try {
+      window.katex.render(node.dataset.tex, staging, {
+        displayMode: node.classList.contains("math-display"),
+        output: "htmlAndMathml",
+        trust: false,
+        throwOnError: true,
+        strict: "warn",
+      });
+      node.replaceChildren(staging.firstElementChild);
+      node.dataset.mathRendered = "true";
+    } catch (error) {
+      console.warn("KaTeX fallback retained:", node.dataset.tex, error);
+    }
+  });
+}
+
+renderMath();

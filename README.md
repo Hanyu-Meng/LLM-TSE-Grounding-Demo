@@ -16,7 +16,8 @@ The page presents one focused claim: reliable target-conditioned evidence must b
 - Exact definitions and decision rules for the study-defined content-switch (C-sw.) and acoustic-switch (A-sw.) diagnostics.
 - Complete Clean TEST UTMOS for every displayed row, evaluated post hoc on the unchanged frozen outputs with the audited SpeechMOS v1.2.0 model.
 - Separate controlled-SNR DEV and TEST tables (480 trials per SNR and system), never pooled into the headline natural-noise table.
-- A responsive problem formulation, a paper-accurate three-panel method diagram, and a token-level grounding explainer.
+- A restrained black-and-white problem formulation and paper-accurate method diagram using amplitude-normalized traces generated from the released audio examples.
+- Self-hosted KaTeX rendering for method, grounding, WER, and speaker-confusion equations, with readable text fallbacks.
 - Three paged listening cases with frozen clean-reference ASR transcripts and compact, lazy-loaded 2,000-pixel spectrograms that link to their full-resolution originals.
 - Per-SNR robustness and deployment-cost summaries.
 
@@ -46,10 +47,12 @@ To publish it with GitHub Pages, select `main` and `/ (root)` under **Settings �
 ├── app.js                 # explainer, frozen-result, and audio interaction
 ├── frozen-noisy-test.js   # validated frozen Noisy TEST payload
 ├── public/results/         # compact result/provenance manifests
-├── scripts/                # reproducible compact-spectrogram renderer
+├── public/vendor/katex/    # pinned local mathematical typesetter
+├── scripts/                # reproducible spectrogram and waveform renderers
 └── public/assets/
     ├── audio/clean/       # selected listening examples
-    └── figures/           # spectrogram and supporting figures
+    ├── figures/           # spectrogram and supporting figures
+    └── waveforms/         # real amplitude envelopes used in the diagrams
 ```
 
 Dataset-derived audio remains subject to the terms of its source datasets. No additional license is granted by this repository.
