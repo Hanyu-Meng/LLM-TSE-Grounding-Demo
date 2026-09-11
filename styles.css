@@ -575,6 +575,46 @@ th { color: var(--blue-dark); background: var(--blue-soft); }
 .key-row td:first-child { box-shadow: inset 3px 0 0 var(--green); }
 .result-reading { border-left-color: var(--blue); color: var(--text); background: var(--blue-soft); }
 
+/* Natural Noisy DEV limitation audit. Keep these cards visually separate from
+   the success-oriented listening carousel above. */
+.failure-section-heading { max-width: 900px; margin-bottom: 1rem; }
+.failure-section-heading h2 { margin: .3rem 0 .45rem; }
+.failure-section-heading > p:last-child { margin: 0; color: var(--muted); }
+.failure-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .85rem; align-items: start; }
+.failure-card {
+  min-width: 0;
+  padding: .9rem;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--red);
+  border-radius: 4px;
+  background: var(--paper);
+}
+.failure-card h3 { margin: .45rem 0 .35rem; font-size: 1.02rem; }
+.failure-card > p { margin: 0; color: #526071; font-size: .77rem; line-height: 1.58; }
+.failure-label { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .35rem; }
+.failure-label span { color: #8c3f47; font-size: .61rem; font-weight: 780; letter-spacing: .08em; text-transform: uppercase; }
+.failure-label strong { padding: .12rem .42rem; border-radius: 999px; color: #7b343b; background: var(--red-soft); font-size: .62rem; }
+.failure-metrics { display: flex; flex-wrap: wrap; gap: .35rem; margin: .7rem 0 .2rem; }
+.failure-metrics span { padding: .2rem .42rem; border: 1px solid var(--line); border-radius: 4px; color: #4f5c6d; background: #fafafa; font-size: .63rem; }
+.failure-metrics span:last-child { border-color: #ddaeb3; color: #7b343b; background: var(--red-soft); }
+.audio-grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.failure-inputs { max-width: none; margin: .65rem 0 0; }
+.failure-inputs .audio-grid { margin-top: .55rem; }
+.failure-audio-grid { margin-top: .65rem; }
+.audio-cell.evidence { border-color: #9ccbc2; background: var(--accent-soft); }
+.audio-cell.evidence > strong { color: #256b50; }
+.audio-cell.failure-output { border-color: #ddaeb3; border-style: dashed; background: var(--red-soft); }
+.audio-cell.failure-output > strong { color: #913f47; }
+.failure-transcripts { margin-top: .65rem; }
+.failure-card .transcript-panel { margin-top: .45rem; padding: .65rem .7rem; }
+.failure-card .transcript-panel dl > div { grid-template-columns: 100px minmax(0, 1fr); }
+.failure-protocol { margin-top: .85rem; padding: .7rem .85rem; border-left: 3px solid var(--red); color: #536173; background: #faf7f7; font-size: .72rem; line-height: 1.58; }
+.failure-protocol code { font-size: .68rem; }
+
+@media (max-width: 920px) {
+  .failure-grid { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 1180px) {
   .audio-grid.five, .audio-grid.four, .audio-grid.three { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .problem-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -622,7 +662,7 @@ th { color: var(--blue-dark); background: var(--blue-soft); }
   .conditioning-path { grid-template-columns: minmax(45px, .72fr) auto minmax(64px, 1fr) auto minmax(66px, 1fr); }
   .endpoint-method { grid-template-columns: 1fr; }
   .endpoint-method h3, .endpoint-method .ablation-note { grid-column: auto; }
-  .audio-grid.five, .audio-grid.four, .audio-grid.three { grid-template-columns: 1fr; }
+  .audio-grid.five, .audio-grid.four, .audio-grid.three, .audio-grid.two { grid-template-columns: 1fr; }
   .transcript-panel dl > div { grid-template-columns: 1fr; gap: .1rem; }
   .supporting-metrics { grid-template-columns: 1fr; }
   .formula-stack { overflow-x: visible; white-space: normal; }

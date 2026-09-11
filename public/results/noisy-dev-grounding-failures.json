@@ -1,0 +1,372 @@
+{
+  "schema_version": 1,
+  "title": "Natural Noisy DEV grounding-failure listening audit",
+  "scope": {
+    "split": "Natural Noisy DEV",
+    "trial_count": 6000,
+    "test_used": false,
+    "decode_status": "ok",
+    "qc_status": "PASS",
+    "asr": "Whisper-small.en",
+    "selection": "Deterministic post-hoc qualitative audit; these cases are not prevalence estimates and were not used to alter Frozen TEST.",
+    "audio_terms": "See AUDIO_ATTRIBUTION.md."
+  },
+  "cases": [
+    {
+      "id": "asr-repetition",
+      "trial_id": "dev:174-84280-0001_7976-105575-0008:174",
+      "split": "dev",
+      "test_used": false,
+      "decode_status": "ok",
+      "qc_status": "PASS",
+      "failure_mode": "ASR repetition burst",
+      "selection_rule": "Rank natural DEV trials by Fixed-CSG minus CDCS-5 WER after requiring CDCS-5 and UD WER <= 10%, no C-sw./A-sw. for either, and no Fixed-CSG A-sw.; select rank 1.",
+      "target_text": "it seems to me more and more as i live longer that most poetry and most literature and",
+      "interferer_text": "with a few lanterns our men then went about and tried to gather up the wounded the dead were left till morning",
+      "systems": {
+        "primary_wesep": {
+          "label": "Primary WeSep",
+          "asr_text": "it seems to me more and more as i live longer but most poetry and most literature and",
+          "wer_percent": 5.555556,
+          "content_switch": false,
+          "acoustic_switch": false,
+          "speaker_margin": 0.500354
+        },
+        "cdcs_5_direct": {
+          "label": "CDCS-5 direct",
+          "asr_text": "it seems to me more and more as i live longer but most poetry and most literature and",
+          "wer_percent": 5.555556,
+          "content_switch": false,
+          "acoustic_switch": false,
+          "speaker_margin": 0.501939,
+          "selected_evidence": "middle enrollment view"
+        },
+        "qwen_tse_ud": {
+          "label": "Qwen-TSE UD",
+          "asr_text": "it seems to me more and more as i live longer but most poetry and most literature and",
+          "wer_percent": 5.555556,
+          "content_switch": false,
+          "acoustic_switch": false,
+          "speaker_margin": 0.496002
+        },
+        "qwen_tse_fixed_csg": {
+          "label": "Qwen-TSE fixed CSG",
+          "asr_text": "but most poetry and most literature and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry and poetry poetry and poetry and poetry and poetry poetry and poetry and poetry poetry and poetry and poetry poetry and poetry and poetry poetry and poetry poetry",
+          "wer_percent": 1622.222222,
+          "content_switch": true,
+          "acoustic_switch": false,
+          "speaker_margin": 0.484815,
+          "unrelated_short_output": false
+        }
+      },
+      "audio": {
+        "target": {
+          "path": "public/assets/audio/noisy-dev-failures/asr-repetition/target.wav",
+          "sha256": "35ce8cc178c2bdf9de1e274eb301b4514bca3e6de13eded9d38b5e4e26760bc4",
+          "sample_rate_hz": 16000,
+          "duration_seconds": 7.19
+        },
+        "interferer": {
+          "path": "public/assets/audio/noisy-dev-failures/asr-repetition/interferer.wav",
+          "sha256": "14277d94c415336a5c1eed2ba70b0c54f745476dbd9adbcca9365226c64a5a07",
+          "sample_rate_hz": 16000,
+          "duration_seconds": 7.19
+        },
+        "mixture": {
+          "path": "public/assets/audio/noisy-dev-failures/asr-repetition/mixture.wav",
+          "sha256": "0206208985f1904f957e3ff216781b9bfcf496317518e71a5f4429d14af50357",
+          "sample_rate_hz": 16000,
+          "duration_seconds": 7.19
+        },
+        "cdcs-5": {
+          "path": "public/assets/audio/noisy-dev-failures/asr-repetition/cdcs-5.wav",
+          "sha256": "4bed43cf6a5719896382ac91546f87c3bddba0ee5eb3c9f2782c9807322f11d9",
+          "sample_rate_hz": 16000,
+          "duration_seconds": 7.184
+        },
+        "qwen-ud": {
+          "path": "public/assets/audio/noisy-dev-failures/asr-repetition/qwen-ud.wav",
+          "sha256": "50d4dc4b2cefd0c09686791195942e893551276dbb73bb8ebc07700823a25229",
+          "sample_rate_hz": 24000,
+          "duration_seconds": 7.2
+        },
+        "qwen-fixed-csg": {
+          "path": "public/assets/audio/noisy-dev-failures/asr-repetition/qwen-fixed-csg.wav",
+          "sha256": "39c87b70ae2a4840ed413a71adeeff133b3b9c4241e056371f78b75504965fc0",
+          "sample_rate_hz": 24000,
+          "duration_seconds": 7.2
+        }
+      }
+    },
+    {
+      "id": "short-collapse",
+      "trial_id": "dev:2035-152373-0002_1919-142785-0017:1919",
+      "split": "dev",
+      "test_used": false,
+      "decode_status": "ok",
+      "qc_status": "PASS",
+      "failure_mode": "premature output collapse",
+      "selection_rule": "Among natural DEV trials with CDCS-5 WER <= 10%, UD WER <= 15%, correct CDCS-5 content/acoustic identity, and the Fixed-CSG unrelated-short-output flag, select the sole eligible trial.",
+      "target_text": "the lemon this fruit is a native of asia and is mentioned by virgil as an antidote to poison",
+      "interferer_text": "it is pretty clear also that the last rally of druidism against christianity took place behind his",
+      "systems": {
+        "primary_wesep": {
+          "label": "Primary WeSep",
+          "asr_text": "the lemon this fruit is a native of asia and is mentioned by virgil as an antidote to poison",
+          "wer_percent": 0.0,
+          "content_switch": false,
+          "acoustic_switch": false,
+          "speaker_margin": 0.426485
+        },
+        "cdcs_5_direct": {
+          "label": "CDCS-5 direct",
+          "asr_text": "the lemon this fruit is a native of asia and is mentioned by virgil as an antidote to poison",
+          "wer_percent": 0.0,
+          "content_switch": false,
+          "acoustic_switch": false,
+          "speaker_margin": 0.426526,
+          "selected_evidence": "first enrollment view"
+        },
+        "qwen_tse_ud": {
+          "label": "Qwen-TSE UD",
+          "asr_text": "this fruit is a native of asia and is mentioned by virgil as an antidote to poison",
+          "wer_percent": 10.526316,
+          "content_switch": false,
+          "acoustic_switch": false,
+          "speaker_margin": 0.441431
+        },
+        "qwen_tse_fixed_csg": {
+          "label": "Qwen-TSE fixed CSG",
+          "asr_text": "the line",
+          "wer_percent": 94.736842,
+          "content_switch": true,
+          "acoustic_switch": false,
+          "speaker_margin": 0.440172,
+          "unrelated_short_output": true
+        }
+      },
+      "audio": {
+        "target": {
+          "path": "public/assets/audio/noisy-dev-failures/short-collapse/target.wav",
+          "sha256": "dbb69e9642f353fc472f7f42576faf144e2925730621e027fec4ed7f09d23520",
+          "sample_rate_hz": 16000,
+          "duration_seconds": 7.105
+        },
+        "interferer": {
+          "path": "public/assets/audio/noisy-dev-failures/short-collapse/interferer.wav",
+          "sha256": "7320bf777b8f3eaa93e0a90115869382beee521db814f0c22c1a272cc01fc94f",
+          "sample_rate_hz": 16000,
+          "duration_seconds": 7.105
+        },
+        "mixture": {
+          "path": "public/assets/audio/noisy-dev-failures/short-collapse/mixture.wav",
+          "sha256": "a61ebee6eb9568cf1e717fd6fac50e9a1561f4558313cb9b30b702b1c3da1b48",
+          "sample_rate_hz": 16000,
+          "duration_seconds": 7.105
+        },
+        "cdcs-5": {
+          "path": "public/assets/audio/noisy-dev-failures/short-collapse/cdcs-5.wav",
+          "sha256": "8cde63e0e27c0d1f4de31a2ac1eb636e1a8ddf1aa067b46ef5d81cf8ab0310b6",
+          "sample_rate_hz": 16000,
+          "duration_seconds": 7.104
+        },
+        "qwen-ud": {
+          "path": "public/assets/audio/noisy-dev-failures/short-collapse/qwen-ud.wav",
+          "sha256": "fbeacaedf399fe09ce5c36b0d7f4e75806fa59833c1b6740b896d560efb8c6f0",
+          "sample_rate_hz": 24000,
+          "duration_seconds": 7.12
+        },
+        "qwen-fixed-csg": {
+          "path": "public/assets/audio/noisy-dev-failures/short-collapse/qwen-fixed-csg.wav",
+          "sha256": "fd5c6a25be01de04e369e964f2f250de32d8b205fa55fe09734f6be1bd291514",
+          "sample_rate_hz": 24000,
+          "duration_seconds": 7.12
+        }
+      }
+    },
+    {
+      "id": "lexical-drift",
+      "trial_id": "dev:2086-149214-0002_7976-110124-0023:2086",
+      "split": "dev",
+      "test_used": false,
+      "decode_status": "ok",
+      "qc_status": "PASS",
+      "failure_mode": "lexical drift without a speaker switch",
+      "selection_rule": "Rank natural DEV trials by Fixed-CSG minus CDCS-5 WER after requiring CDCS-5 WER <= 15%, no C-sw./A-sw. for CDCS-5 or Fixed CSG, and no short-output flag; select rank 1.",
+      "target_text": "the author has considered it hardly worth his while therefore",
+      "interferer_text": "the cries and curses of the robbers filled the air",
+      "systems": {
+        "primary_wesep": {
+          "label": "Primary WeSep",
+          "asr_text": "the author has considered it hardly worth his while therefore",
+          "wer_percent": 0.0,
+          "content_switch": false,
+          "acoustic_switch": false,
+          "speaker_margin": 0.467117
+        },
+        "cdcs_5_direct": {
+          "label": "CDCS-5 direct",
+          "asr_text": "the author has considered it hardly worth his while therefore",
+          "wer_percent": 0.0,
+          "content_switch": false,
+          "acoustic_switch": false,
+          "speaker_margin": 0.467117,
+          "selected_evidence": "full enrollment"
+        },
+        "qwen_tse_ud": {
+          "label": "Qwen-TSE UD",
+          "asr_text": "the author has considered it hard to avoid his wilder war",
+          "wer_percent": 50.0,
+          "content_switch": false,
+          "acoustic_switch": false,
+          "speaker_margin": 0.417329
+        },
+        "qwen_tse_fixed_csg": {
+          "label": "Qwen-TSE fixed CSG",
+          "asr_text": "they often have to do it hard to work just while them or",
+          "wer_percent": 110.0,
+          "content_switch": false,
+          "acoustic_switch": false,
+          "speaker_margin": 0.39273,
+          "unrelated_short_output": false
+        }
+      },
+      "audio": {
+        "target": {
+          "path": "public/assets/audio/noisy-dev-failures/lexical-drift/target.wav",
+          "sha256": "a5bac4ad837d01461550c9421c15b0420662c695b7f87eb1ae7c061650f7f223",
+          "sample_rate_hz": 16000,
+          "duration_seconds": 3.44
+        },
+        "interferer": {
+          "path": "public/assets/audio/noisy-dev-failures/lexical-drift/interferer.wav",
+          "sha256": "bc499f51e99eead0d664506b7a650798968142ff85ab1fd929bba3d219c1c6d7",
+          "sample_rate_hz": 16000,
+          "duration_seconds": 3.44
+        },
+        "mixture": {
+          "path": "public/assets/audio/noisy-dev-failures/lexical-drift/mixture.wav",
+          "sha256": "5ba9e4c4f545a65a45408257454a87cf0f8950f9c1f869fed83ebd030ba9d719",
+          "sample_rate_hz": 16000,
+          "duration_seconds": 3.44
+        },
+        "cdcs-5": {
+          "path": "public/assets/audio/noisy-dev-failures/lexical-drift/cdcs-5.wav",
+          "sha256": "68250d192ccf9b2819e0e129d60d0ce09e83f39f406e6f31189d173c6a61af01",
+          "sample_rate_hz": 16000,
+          "duration_seconds": 3.44
+        },
+        "qwen-ud": {
+          "path": "public/assets/audio/noisy-dev-failures/lexical-drift/qwen-ud.wav",
+          "sha256": "ebd9e333cc66e97462d5eb14f3ac1d33cc532f46ec2e18a39fc804cc43bab37d",
+          "sample_rate_hz": 24000,
+          "duration_seconds": 3.44
+        },
+        "qwen-fixed-csg": {
+          "path": "public/assets/audio/noisy-dev-failures/lexical-drift/qwen-fixed-csg.wav",
+          "sha256": "e29d6e09254ca698d419b440540d03fecd77fb16ab1ac9c41e96f3f75b3615fd",
+          "sample_rate_hz": 24000,
+          "duration_seconds": 3.44
+        }
+      }
+    },
+    {
+      "id": "wrong-evidence",
+      "trial_id": "dev:2277-149897-0029_6319-57405-0001:6319",
+      "split": "dev",
+      "test_used": false,
+      "decode_status": "ok",
+      "qc_status": "PASS",
+      "failure_mode": "wrong grounding evidence propagated downstream",
+      "selection_rule": "Use the upstream-evidence-failure representative from the deterministic Natural Noisy DEV case-study audit: every one of the five available candidates has a negative target-versus-interferer SI-SDR margin, so no target-correct candidate is available.",
+      "target_text": "after jupiter had bound prometheus on mount caucasus and had sent diseases and cares into the world",
+      "interferer_text": "he did manage to bring himself into the mood to go out to carry but when he got in ogden place he thought he saw a man watching him and went away",
+      "systems": {
+        "primary_wesep": {
+          "label": "Primary WeSep",
+          "asr_text": "he did manage to bring himself into the movie to go out and carry him but when he got him on showcase he got to start him and washing him and went away",
+          "wer_percent": 182.352941,
+          "content_switch": true,
+          "acoustic_switch": true,
+          "speaker_margin": -0.230836
+        },
+        "cdcs_5_direct": {
+          "label": "CDCS-5 direct",
+          "asr_text": "he did manage to bring himself into the mood to go out on carrie crocker but when he got him on showcase thats the thought of him watching him and went away",
+          "wer_percent": 176.470588,
+          "content_switch": true,
+          "acoustic_switch": true,
+          "speaker_margin": -0.219968,
+          "selected_evidence": "middle enrollment view"
+        },
+        "qwen_tse_ud": {
+          "label": "Qwen-TSE UD",
+          "asr_text": "the dead man is to freak but sound into the mood who still acts like carrie oconc but when hes at him odds are raised and the bats are slightly laughing at him and then to weigh",
+          "wer_percent": 211.764706,
+          "content_switch": true,
+          "acoustic_switch": false,
+          "speaker_margin": 0.228738
+        },
+        "qwen_tse_fixed_csg": {
+          "label": "Qwen-TSE fixed CSG",
+          "asr_text": "he did manage to freak the ks out into the new refilled out zone carry a cock for when he that in odd sense bats ks out and then fluffing him and then to way",
+          "wer_percent": 200.0,
+          "content_switch": true,
+          "acoustic_switch": false,
+          "speaker_margin": 0.226708,
+          "unrelated_short_output": false
+        }
+      },
+      "audio": {
+        "target": {
+          "path": "public/assets/audio/noisy-dev-failures/wrong-evidence/target.wav",
+          "sha256": "3a843428a636b7d21ef14016cab7c08b34a0872db06970a1736dab88ab5bb051",
+          "sample_rate_hz": 16000,
+          "duration_seconds": 7.645
+        },
+        "interferer": {
+          "path": "public/assets/audio/noisy-dev-failures/wrong-evidence/interferer.wav",
+          "sha256": "d210b5358625ac7cdce0d820bffaa93f3f18e57112dac03449092722f71c9a20",
+          "sample_rate_hz": 16000,
+          "duration_seconds": 7.645
+        },
+        "mixture": {
+          "path": "public/assets/audio/noisy-dev-failures/wrong-evidence/mixture.wav",
+          "sha256": "9ae17976da456244fb9c53bb170bbad38453ad5d2ad1d137d58d49034a23bda7",
+          "sample_rate_hz": 16000,
+          "duration_seconds": 7.645
+        },
+        "cdcs-5": {
+          "path": "public/assets/audio/noisy-dev-failures/wrong-evidence/cdcs-5.wav",
+          "sha256": "bb26793bbd25dae29c52007b9fafaf67b1bb7a214f297f99f6876863a49eefd2",
+          "sample_rate_hz": 16000,
+          "duration_seconds": 7.64
+        },
+        "qwen-ud": {
+          "path": "public/assets/audio/noisy-dev-failures/wrong-evidence/qwen-ud.wav",
+          "sha256": "40642418b3b9e2ed421c174a9e0c180e820ab97555b1eca99c60cffb7229f3b7",
+          "sample_rate_hz": 24000,
+          "duration_seconds": 7.68
+        },
+        "qwen-fixed-csg": {
+          "path": "public/assets/audio/noisy-dev-failures/wrong-evidence/qwen-fixed-csg.wav",
+          "sha256": "ac9b5414754bfd811667211629237b46ad57bdf6f6d52a984aed70c97e4376bc",
+          "sample_rate_hz": 24000,
+          "duration_seconds": 7.68
+        }
+      },
+      "evidence_audit": {
+        "oracle_available": false,
+        "selected_candidate_target_correct": false,
+        "candidate_target_minus_interferer_si_sdr_db": {
+          "full": -24.44,
+          "first": -22.92,
+          "middle": -22.36,
+          "final": -24.1,
+          "tf_map_context": -15.68
+        },
+        "fixed_csg_token_flip_rate_vs_evidence_percent": 1.5625
+      }
+    }
+  ]
+}

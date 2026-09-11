@@ -23,7 +23,7 @@
     <title>Speaker-Consistent Grounding · Audio Demo</title>
     <link rel="icon" href="public/favicon.svg" />
     <link rel="stylesheet" href="public/vendor/katex/katex.min.css?v=0.18.6" />
-    <link rel="stylesheet" href="styles.css?v=20260906-5" />
+    <link rel="stylesheet" href="styles.css?v=20260911-1" />
   </head>
   <body>
     <a class="skip-link" href="#content">Skip to content</a>
@@ -35,6 +35,7 @@
         <p class="tagline">Repair the target-speaker evidence first; then constrain the optional LLM speech generator.</p>
         <div class="paper-links" aria-label="Project links">
           <a href="#audio">Audio examples</a>
+          <a href="#grounding-failures">Grounding limits</a>
           <a href="#metrics">Metrics</a>
           <a href="#results">Results</a>
           <a href="https://github.com/Hanyu-Meng/LLM-TSE-Grounding-Demo">GitHub</a>
@@ -509,6 +510,175 @@
         <p class="pending"><strong>Selection protocol.</strong> These are mechanism-focused examples, not aggregate evidence. The clean opener is the code-selected segmented-only recovery nearest that cohort's median WER gain. After requiring natural-noise TEST membership, complete paired outputs, valid decoding, and available WAVs, the four noisy cases are the top-ranked results of fixed failure-mode rules: hardest same-gender exact-interferer recovery; shortest ungrounded acoustic-switch collapse with exact fixed-CSG recovery; largest eSTOI recovery among bounded non-switch lexical-drift cases; and largest UTMOS gain under matched zero-WER, zero-switch quality constraints. Corpus-level claims remain those in the frozen tables below. <a href="public/results/clean-demo-case.json">Clean case record</a> · <a href="public/results/noisy-demo-cases.json">Noisy case record</a>.</p>
       </section>
 
+      <section id="grounding-failures" aria-labelledby="grounding-failures-title">
+        <div class="failure-section-heading">
+          <p class="split-label">Natural Noisy DEV · 6,000 trials · TEST not used</p>
+          <h2 id="grounding-failures-title">Where grounding still fails</h2>
+          <p>
+            Fixed CSG improves the aggregate generative result, but it is not a guarantee. These four
+            deterministic post-hoc audit cases expose distinct residual failures. They are qualitative
+            DEV diagnostics, not prevalence estimates and not additional TEST evidence.
+          </p>
+        </div>
+
+        <div class="failure-grid">
+          <article class="failure-card">
+            <div class="failure-label"><span>Limit 01</span><strong>ASR repetition burst</strong></div>
+            <h3>A 7.2-second output produces an extreme repeated transcript</h3>
+            <p>
+              CDCS-5 and UD remain near the reference, whereas frozen Whisper-small.en repeatedly emits
+              “poetry and” for the Fixed-CSG waveform. This is an ASR/generation-interface anomaly: the
+              transcript alone cannot establish whether the repetition is audible, so the waveform is released for inspection.
+            </p>
+            <div class="failure-metrics" aria-label="Same-ASR WER comparison">
+              <span>CDCS-5 <b>5.56%</b></span><span>UD <b>5.56%</b></span><span>Fixed CSG <b>1,622.22%</b></span>
+            </div>
+            <details class="input-details failure-inputs">
+              <summary>Listen to the noisy input and clean interferer</summary>
+              <div class="audio-grid two">
+                <div class="audio-cell"><strong>Noisy mixture</strong><small>system input</small><audio controls preload="none" src="public/assets/audio/noisy-dev-failures/asr-repetition/mixture.wav"></audio></div>
+                <div class="audio-cell reference"><strong>Clean interferer</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/noisy-dev-failures/asr-repetition/interferer.wav"></audio></div>
+              </div>
+            </details>
+            <div class="audio-grid two failure-audio-grid">
+              <div class="audio-cell reference"><strong>Clean target</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/noisy-dev-failures/asr-repetition/target.wav"></audio></div>
+              <div class="audio-cell evidence"><strong>CDCS-5 direct</strong><small>middle-view evidence</small><audio controls preload="none" src="public/assets/audio/noisy-dev-failures/asr-repetition/cdcs-5.wav"></audio></div>
+              <div class="audio-cell"><strong>Qwen-TSE UD</strong><small>WER 5.56%</small><audio controls preload="none" src="public/assets/audio/noisy-dev-failures/asr-repetition/qwen-ud.wav"></audio></div>
+              <div class="audio-cell failure-output"><strong>Qwen-TSE fixed CSG</strong><small>ASR repetition · WER 1,622.22%</small><audio controls preload="none" src="public/assets/audio/noisy-dev-failures/asr-repetition/qwen-fixed-csg.wav"></audio></div>
+            </div>
+            <details class="failure-transcripts">
+              <summary>Compare frozen ASR transcripts</summary>
+              <div class="transcript-panel">
+                <dl>
+                  <div><dt>Target</dt><dd>it seems to me more and more as i live longer that most poetry and most literature and</dd></div>
+                  <div><dt>CDCS-5 / UD</dt><dd>it seems to me more and more as i live longer but most poetry and most literature and</dd></div>
+                  <div class="wrong-line"><dt>Fixed CSG</dt><dd>but most poetry and most literature and poetry and poetry and … <span class="wer-tag">repeated to WER 1,622.22%</span></dd></div>
+                </dl>
+                <p class="transcript-reading">The exact unabridged transcript is retained in the machine-readable audit record.</p>
+              </div>
+            </details>
+          </article>
+
+          <article class="failure-card">
+            <div class="failure-label"><span>Limit 02</span><strong>Premature collapse</strong></div>
+            <h3>Correct grounding evidence collapses to two ASR words</h3>
+            <p>
+              CDCS-5 preserves all 19 reference words and UD only drops the opening phrase. Fixed CSG is
+              instead transcribed as “the line” and triggers the frozen unrelated-short-output flag,
+              despite retaining the target speaker acoustically.
+            </p>
+            <div class="failure-metrics" aria-label="Same-ASR WER comparison">
+              <span>CDCS-5 <b>0.00%</b></span><span>UD <b>10.53%</b></span><span>Fixed CSG <b>94.74%</b></span>
+            </div>
+            <details class="input-details failure-inputs">
+              <summary>Listen to the noisy input and clean interferer</summary>
+              <div class="audio-grid two">
+                <div class="audio-cell"><strong>Noisy mixture</strong><small>system input</small><audio controls preload="none" src="public/assets/audio/noisy-dev-failures/short-collapse/mixture.wav"></audio></div>
+                <div class="audio-cell reference"><strong>Clean interferer</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/noisy-dev-failures/short-collapse/interferer.wav"></audio></div>
+              </div>
+            </details>
+            <div class="audio-grid two failure-audio-grid">
+              <div class="audio-cell reference"><strong>Clean target</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/noisy-dev-failures/short-collapse/target.wav"></audio></div>
+              <div class="audio-cell evidence"><strong>CDCS-5 direct</strong><small>first-view evidence · WER 0%</small><audio controls preload="none" src="public/assets/audio/noisy-dev-failures/short-collapse/cdcs-5.wav"></audio></div>
+              <div class="audio-cell"><strong>Qwen-TSE UD</strong><small>WER 10.53%</small><audio controls preload="none" src="public/assets/audio/noisy-dev-failures/short-collapse/qwen-ud.wav"></audio></div>
+              <div class="audio-cell failure-output"><strong>Qwen-TSE fixed CSG</strong><small>short collapse · WER 94.74%</small><audio controls preload="none" src="public/assets/audio/noisy-dev-failures/short-collapse/qwen-fixed-csg.wav"></audio></div>
+            </div>
+            <details class="failure-transcripts">
+              <summary>Compare frozen ASR transcripts</summary>
+              <div class="transcript-panel">
+                <dl>
+                  <div><dt>Target / CDCS-5</dt><dd>the lemon this fruit is a native of asia and is mentioned by virgil as an antidote to poison</dd></div>
+                  <div><dt>UD</dt><dd>this fruit is a native of asia and is mentioned by virgil as an antidote to poison</dd></div>
+                  <div class="wrong-line"><dt>Fixed CSG</dt><dd>the line <span class="wer-tag">WER 94.74%</span></dd></div>
+                </dl>
+              </div>
+            </details>
+          </article>
+
+          <article class="failure-card">
+            <div class="failure-label"><span>Limit 03</span><strong>Lexical drift</strong></div>
+            <h3>Speaker identity is correct, but the words drift</h3>
+            <p>
+              Neither C-sw. nor A-sw. fires for Fixed CSG, yet its same-ASR WER reaches 110%. This case
+              shows why the switch diagnostics cannot replace word accuracy: grounding can preserve
+              identity while still changing most of the utterance.
+            </p>
+            <div class="failure-metrics" aria-label="Same-ASR WER comparison">
+              <span>CDCS-5 <b>0.00%</b></span><span>UD <b>50.00%</b></span><span>Fixed CSG <b>110.00%</b></span>
+            </div>
+            <details class="input-details failure-inputs">
+              <summary>Listen to the noisy input and clean interferer</summary>
+              <div class="audio-grid two">
+                <div class="audio-cell"><strong>Noisy mixture</strong><small>system input</small><audio controls preload="none" src="public/assets/audio/noisy-dev-failures/lexical-drift/mixture.wav"></audio></div>
+                <div class="audio-cell reference"><strong>Clean interferer</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/noisy-dev-failures/lexical-drift/interferer.wav"></audio></div>
+              </div>
+            </details>
+            <div class="audio-grid two failure-audio-grid">
+              <div class="audio-cell reference"><strong>Clean target</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/noisy-dev-failures/lexical-drift/target.wav"></audio></div>
+              <div class="audio-cell evidence"><strong>CDCS-5 direct</strong><small>full-view evidence · WER 0%</small><audio controls preload="none" src="public/assets/audio/noisy-dev-failures/lexical-drift/cdcs-5.wav"></audio></div>
+              <div class="audio-cell"><strong>Qwen-TSE UD</strong><small>WER 50.00%</small><audio controls preload="none" src="public/assets/audio/noisy-dev-failures/lexical-drift/qwen-ud.wav"></audio></div>
+              <div class="audio-cell failure-output"><strong>Qwen-TSE fixed CSG</strong><small>lexical drift · WER 110.00%</small><audio controls preload="none" src="public/assets/audio/noisy-dev-failures/lexical-drift/qwen-fixed-csg.wav"></audio></div>
+            </div>
+            <details class="failure-transcripts">
+              <summary>Compare frozen ASR transcripts</summary>
+              <div class="transcript-panel">
+                <dl>
+                  <div><dt>Target / CDCS-5</dt><dd>the author has considered it hardly worth his while therefore</dd></div>
+                  <div><dt>UD</dt><dd>the author has considered it hard to avoid his wilder war</dd></div>
+                  <div class="wrong-line"><dt>Fixed CSG</dt><dd>they often have to do it hard to work just while them or <span class="wer-tag">WER 110.00%</span></dd></div>
+                </dl>
+                <p class="transcript-reading">Fixed CSG remains target-like acoustically (speaker margin +0.393) even though the recognized content is largely different.</p>
+              </div>
+            </details>
+          </article>
+
+          <article class="failure-card">
+            <div class="failure-label"><span>Limit 04</span><strong>Wrong evidence</strong></div>
+            <h3>Strong grounding cannot recover information absent upstream</h3>
+            <p>
+              All five candidate waveforms favor the interferer under the evaluation-only SI-SDR audit;
+              no target-correct candidate is available. Fixed CSG changes only 1.56% of evidence tokens,
+              so it faithfully resynthesizes the wrong lexical evidence rather than reconstructing the missing target.
+            </p>
+            <div class="failure-metrics" aria-label="Same-ASR WER comparison">
+              <span>CDCS-5 <b>176.47%</b></span><span>UD <b>211.76%</b></span><span>Fixed CSG <b>200.00%</b></span>
+            </div>
+            <details class="input-details failure-inputs" open>
+              <summary>Listen to the noisy input and clean interferer</summary>
+              <div class="audio-grid two">
+                <div class="audio-cell"><strong>Noisy mixture</strong><small>system input</small><audio controls preload="none" src="public/assets/audio/noisy-dev-failures/wrong-evidence/mixture.wav"></audio></div>
+                <div class="audio-cell reference"><strong>Clean interferer</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/noisy-dev-failures/wrong-evidence/interferer.wav"></audio></div>
+              </div>
+            </details>
+            <div class="audio-grid two failure-audio-grid">
+              <div class="audio-cell reference"><strong>Clean target</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/noisy-dev-failures/wrong-evidence/target.wav"></audio></div>
+              <div class="audio-cell failure-output"><strong>CDCS-5 direct</strong><small>wrong evidence · WER 176.47%</small><audio controls preload="none" src="public/assets/audio/noisy-dev-failures/wrong-evidence/cdcs-5.wav"></audio></div>
+              <div class="audio-cell failure-output"><strong>Qwen-TSE UD</strong><small>content-switched · WER 211.76%</small><audio controls preload="none" src="public/assets/audio/noisy-dev-failures/wrong-evidence/qwen-ud.wav"></audio></div>
+              <div class="audio-cell failure-output"><strong>Qwen-TSE fixed CSG</strong><small>content-switched · WER 200.00%</small><audio controls preload="none" src="public/assets/audio/noisy-dev-failures/wrong-evidence/qwen-fixed-csg.wav"></audio></div>
+            </div>
+            <details class="failure-transcripts">
+              <summary>Compare frozen ASR transcripts</summary>
+              <div class="transcript-panel">
+                <dl>
+                  <div><dt>Target</dt><dd>after jupiter had bound prometheus on mount caucasus and had sent diseases and cares into the world</dd></div>
+                  <div><dt>Interferer</dt><dd>he did manage to bring himself into the mood to go out to carry but when he got in ogden place he thought he saw a man watching him and went away</dd></div>
+                  <div class="wrong-line"><dt>CDCS-5</dt><dd>he did manage to bring himself into the mood to go out on carrie crocker but when he got him on showcase thats the thought of him watching him and went away</dd></div>
+                  <div class="wrong-line"><dt>Fixed CSG</dt><dd>he did manage to freak the ks out into the new refilled out zone carry a cock for when he that in odd sense bats ks out and then fluffing him and then to way <span class="wer-tag">WER 200.00%</span></dd></div>
+                </dl>
+              </div>
+            </details>
+          </article>
+        </div>
+
+        <p class="failure-protocol">
+          Every displayed record has <code>split=dev</code>, <code>test_used=false</code>,
+          <code>decode_status=ok</code>, and <code>qc_status=PASS</code>. Exact transcripts,
+          selection rules, metrics, durations, and SHA-256 hashes are in the
+          <a href="public/results/noisy-dev-grounding-failures.json">machine-readable audit record</a>.
+          Audio licensing and transformations are documented in <a href="AUDIO_ATTRIBUTION.md">Audio attribution</a>.
+        </p>
+      </section>
+
       <section id="results">
         <h2>Results</h2>
         <p>
@@ -776,6 +946,7 @@
 
       <footer>
         <p>Speaker-Consistent Grounding · research demo · audio derived from <a href="https://github.com/JorisCos/LibriMix">LibriMix</a> with <a href="https://wham.whisper.ai/">WHAM!</a> noise</p>
+        <p>Noisy audio is provided for non-commercial research demonstration; <a href="AUDIO_ATTRIBUTION.md">see audio attribution and upstream terms</a>.</p>
         <p><a href="#top">Back to top</a> · <a href="https://github.com/Hanyu-Meng/LLM-TSE-Grounding-Demo">Source and reproducibility notes</a></p>
       </footer>
     </main>
