@@ -1,34 +1,31 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "condition": "clean",
   "split": "test",
   "split_trial_count": 6000,
   "trial_id": "test:2830-3980-0073_2300-131720-0015:2830",
   "case_role": "segmented-only speaker-confusion recovery",
-  "selection_rule": "Among frozen Clean TEST segmented-only recoveries, choose the trial whose WER gain is closest to that cohort's median WER gain.",
+  "selection_rule": "Frozen case identity retained from the segmented-only recovery selection; displayed transcripts and WER are re-audited consistently with Whisper large-v3.",
   "selected_candidate": {
     "public_name": "CDCS-5 direct",
     "conditioning_view": "middle",
     "view_duration_seconds": 2
   },
   "transcripts": {
-    "target": "this attitude springs from a false conception of sin the conception that sin is a small matter easily taken care of by good works that we must",
-    "interferer": "he obtained the desired speed and load with a friction brake also regulator of speed but waited for an indicator to verify it",
-    "primary_wesep": "he obtained the desired speed and load with a friction brake also it regularly matched speed but waited for an indicator to verify",
-    "cdcs_5_direct": "this attitude springs from a false conception of sin the conception that sin is a small matter easily taken care of by good works that we must"
+    "target": "this attitude springs from a false conception of sin the conception that sin is a small matter easily taken care of by good works",
+    "primary_wesep": "he obtained the desired speed and load with a friction brake also regulated speed but waited for an indicator to verify it",
+    "cdcs_5_direct": "this attitude springs from a false conception of sin the conception that sin is a small matter easily taken care of by good works"
   },
   "systems": {
     "primary_wesep": {
-      "wer_percent": 100.0,
-      "content_switch": 1,
+      "wer_percent": 100,
       "acoustic_switch": 1,
       "speaker_margin": -0.285
     },
     "cdcs_5_direct": {
-      "wer_percent": 0.0,
-      "content_switch": 0,
+      "wer_percent": 0,
       "acoustic_switch": 0,
-      "speaker_margin": 0.520
+      "speaker_margin": 0.52
     }
   },
   "audio_assets": [
@@ -64,8 +61,17 @@
     }
   ],
   "provenance_notes": [
-    "The trial, selection rule, transcripts, and metrics are copied from the frozen Clean TEST representative-case analysis.",
+    "The trial and system metrics come from the frozen Clean TEST analysis; displayed transcripts and WER use the completed post-hoc Whisper large-v3 audit of unchanged waveforms.",
     "Clean target and interferer signals are displayed for evaluation and explanation only and are not available to the deployed selector.",
     "The case is explanatory evidence; aggregate claims are based on the complete frozen result tables."
-  ]
+  ],
+  "asr": {
+    "model": "openai/whisper-large-v3",
+    "revision": "06f233fe06e710322aca913c1bc4249a0d71fce1",
+    "task": "English/transcribe",
+    "decoding": "greedy",
+    "repetition_penalty": 1.1,
+    "batch_size": 32
+  },
+  "reference_protocol": "Config-consistent WER against the clean-target transcript produced by the same Whisper large-v3 configuration."
 }

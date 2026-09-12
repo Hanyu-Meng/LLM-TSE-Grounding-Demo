@@ -1,6 +1,6 @@
 {
-  "schema_version": 2,
-  "title": "Natural Noisy TEST LLM-WER listening case study",
+  "schema_version": 3,
+  "title": "Natural Noisy TEST LLM-WER listening case study — Whisper large-v3",
   "scope": {
     "split": "Natural Noisy TEST",
     "trial_count": 6000,
@@ -10,15 +10,6 @@
     "does_not_replace_frozen_test_metrics": true,
     "human_adjudication": false,
     "interpretation": "Illustrative listening cases, not prevalence estimates. High WER alone is not labelled as an audible waveform error.",
-    "canonical_asr": "Whisper-small.en frozen ASR-consistency protocol",
-    "audit_asr": {
-      "model": "openai/whisper-large-v3",
-      "revision": "06f233fe06e710322aca913c1bc4249a0d71fce1",
-      "task": "English/transcribe",
-      "decoding": "greedy",
-      "repetition_penalty": 1.1,
-      "batch_size": 32
-    },
     "audit_completion": {
       "unique_transcripts": 57578,
       "metrics_rows": 50400,
@@ -28,50 +19,57 @@
       "failures": 0,
       "merge_validation": "PASS"
     },
-    "audio_terms": "See AUDIO_ATTRIBUTION.md."
+    "audio_terms": "See AUDIO_ATTRIBUTION.md.",
+    "asr": {
+      "model": "openai/whisper-large-v3",
+      "revision": "06f233fe06e710322aca913c1bc4249a0d71fce1",
+      "task": "English/transcribe",
+      "decoding": "greedy",
+      "repetition_penalty": 1.1,
+      "batch_size": 32
+    },
+    "reference_protocol": "Config-consistent WER: each system output is scored against the clean-target transcript produced by the same Whisper large-v3 configuration."
   },
   "cases": [
     {
-      "id": "asr-sensitive-ud",
-      "title": "One waveform, two radically different ASR verdicts",
-      "failure_mode": "ASR-sensitive transcription",
-      "selection_rule": "UD has the largest canonical-small.en to large-v3 WER reduction among complete Natural Noisy TEST pairs, while fixed/adaptive/GNR are exact under both ASRs.",
-      "listening_note": "The canonical ASR loops on a phrase, whereas large-v3 returns a near-reference sentence. Listen to the full UD waveform before deciding whether the repetition is acoustic or measurement-side.",
+      "id": "grounding-repair-ud",
+      "title": "Grounding removes residual UD lexical drift",
+      "failure_mode": "UD lexical drift repaired by grounding",
+      "selection_rule": "Illustrative complete Natural Noisy TEST trial in which large-v3 measures 26.67% WER for UD and 0% for fixed, adaptive, and GNR grounding.",
+      "listening_note": "The UD waveform remains intelligible but lexically imperfect; compare it with the target-exact grounded outputs.",
       "target_text": "he was like unto my father in a way and yet was not my father",
-      "interferer_text": "nothing can exceed the beauty or art of the introduction",
       "systems": {
         "cdcs_direct": {
           "label": "CDCS-5 direct",
-          "canonical_small_en": {
-            "wer_percent": 0.0,
-            "text": "he was like unto my father in a way and yet was not my father"
+          "acoustic_speaker_switch": false,
+          "speaker_margin": 0.614222,
+          "audio": {
+            "path": "public/assets/audio/noisy-llm-case-study/grounding-repair-ud/cdcs-5.wav",
+            "sha256": "1d5aa02de6ea8b212b41de517962decb2ac83287b53bd9312daf1ae697a47ca9",
+            "sample_rate_hz": 16000,
+            "duration_seconds": 4.312
           },
-          "posthoc_large_v3_rp1p10": {
-            "wer_percent": 0.0,
+          "whisper_large_v3_rp1p10": {
+            "wer_percent": 0,
             "substitutions": 0,
             "deletions": 0,
             "insertions": 0,
             "reference_words": 15,
             "text": "he was like unto my father in a way and yet was not my father",
             "hard_limit_proxy": false
-          },
-          "canonical_content_switch": false,
-          "acoustic_speaker_switch": false,
-          "speaker_margin": 0.614222,
-          "audio": {
-            "path": "public/assets/audio/noisy-llm-case-study/asr-sensitive-ud/cdcs-5.wav",
-            "sha256": "1d5aa02de6ea8b212b41de517962decb2ac83287b53bd9312daf1ae697a47ca9",
-            "sample_rate_hz": 16000,
-            "duration_seconds": 4.312
           }
         },
         "qwen_tse_ud": {
           "label": "Qwen-TSE UD",
-          "canonical_small_en": {
-            "wer_percent": 2953.333333,
-            "text": "he was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was the one who was"
+          "acoustic_speaker_switch": false,
+          "speaker_margin": 0.472376,
+          "audio": {
+            "path": "public/assets/audio/noisy-llm-case-study/grounding-repair-ud/qwen-ud.wav",
+            "sha256": "b7ac3eb494eb2f4bc10c9e5c60162596710f9625f5fb7b67b1ae7fd37a563f89",
+            "sample_rate_hz": 24000,
+            "duration_seconds": 4.32
           },
-          "posthoc_large_v3_rp1p10": {
+          "whisper_large_v3_rp1p10": {
             "wer_percent": 26.666667,
             "substitutions": 3,
             "deletions": 0,
@@ -79,108 +77,84 @@
             "reference_words": 15,
             "text": "she was reckoned to be my father in a way and yet was not my father",
             "hard_limit_proxy": false
-          },
-          "canonical_content_switch": false,
-          "acoustic_speaker_switch": false,
-          "speaker_margin": 0.472376,
-          "audio": {
-            "path": "public/assets/audio/noisy-llm-case-study/asr-sensitive-ud/qwen-ud.wav",
-            "sha256": "b7ac3eb494eb2f4bc10c9e5c60162596710f9625f5fb7b67b1ae7fd37a563f89",
-            "sample_rate_hz": 24000,
-            "duration_seconds": 4.32
           }
         },
         "fixed_csg": {
           "label": "Qwen-TSE fixed CSG",
-          "canonical_small_en": {
-            "wer_percent": 0.0,
-            "text": "he was like unto my father in a way and yet was not my father"
+          "acoustic_speaker_switch": false,
+          "speaker_margin": 0.457797,
+          "audio": {
+            "path": "public/assets/audio/noisy-llm-case-study/grounding-repair-ud/qwen-fixed-csg.wav",
+            "sha256": "7b338f86410a8a32aa0d65b1a3bfb4b458933a762af195bd7e32c072d90a089c",
+            "sample_rate_hz": 24000,
+            "duration_seconds": 4.32
           },
-          "posthoc_large_v3_rp1p10": {
-            "wer_percent": 0.0,
+          "whisper_large_v3_rp1p10": {
+            "wer_percent": 0,
             "substitutions": 0,
             "deletions": 0,
             "insertions": 0,
             "reference_words": 15,
             "text": "he was like unto my father in a way and yet was not my father",
             "hard_limit_proxy": false
-          },
-          "canonical_content_switch": false,
-          "acoustic_speaker_switch": false,
-          "speaker_margin": 0.457797,
-          "audio": {
-            "path": "public/assets/audio/noisy-llm-case-study/asr-sensitive-ud/qwen-fixed-csg.wav",
-            "sha256": "7b338f86410a8a32aa0d65b1a3bfb4b458933a762af195bd7e32c072d90a089c",
-            "sample_rate_hz": 24000,
-            "duration_seconds": 4.32
           }
         },
         "adaptive_csg": {
           "label": "Qwen-TSE adaptive CSG",
-          "canonical_small_en": {
-            "wer_percent": 0.0,
-            "text": "he was like unto my father in a way and yet was not my father"
+          "acoustic_speaker_switch": false,
+          "speaker_margin": 0.46717,
+          "audio": {
+            "path": "public/assets/audio/noisy-llm-case-study/grounding-repair-ud/qwen-adaptive-csg.wav",
+            "sha256": "5776a99cdfbf64953b9841e670310586504634785132dc4af1144dbb63add3e0",
+            "sample_rate_hz": 24000,
+            "duration_seconds": 4.32
           },
-          "posthoc_large_v3_rp1p10": {
-            "wer_percent": 0.0,
+          "whisper_large_v3_rp1p10": {
+            "wer_percent": 0,
             "substitutions": 0,
             "deletions": 0,
             "insertions": 0,
             "reference_words": 15,
             "text": "he was like unto my father in a way and yet was not my father",
             "hard_limit_proxy": false
-          },
-          "canonical_content_switch": false,
-          "acoustic_speaker_switch": false,
-          "speaker_margin": 0.46717,
-          "audio": {
-            "path": "public/assets/audio/noisy-llm-case-study/asr-sensitive-ud/qwen-adaptive-csg.wav",
-            "sha256": "5776a99cdfbf64953b9841e670310586504634785132dc4af1144dbb63add3e0",
-            "sample_rate_hz": 24000,
-            "duration_seconds": 4.32
           }
         },
         "adaptive_csg_gnr": {
           "label": "Qwen-TSE adaptive CSG+GNR",
-          "canonical_small_en": {
-            "wer_percent": 0.0,
-            "text": "he was like unto my father in a way and yet was not my father"
+          "acoustic_speaker_switch": false,
+          "speaker_margin": 0.494469,
+          "audio": {
+            "path": "public/assets/audio/noisy-llm-case-study/grounding-repair-ud/qwen-adaptive-csg-gnr.wav",
+            "sha256": "ef30385afd6cf23c76c267cf9db17316f300665c7a1231ee631ff7524e7740fd",
+            "sample_rate_hz": 24000,
+            "duration_seconds": 4.32
           },
-          "posthoc_large_v3_rp1p10": {
-            "wer_percent": 0.0,
+          "whisper_large_v3_rp1p10": {
+            "wer_percent": 0,
             "substitutions": 0,
             "deletions": 0,
             "insertions": 0,
             "reference_words": 15,
             "text": "he was like unto my father in a way and yet was not my father",
             "hard_limit_proxy": false
-          },
-          "canonical_content_switch": false,
-          "acoustic_speaker_switch": false,
-          "speaker_margin": 0.494469,
-          "audio": {
-            "path": "public/assets/audio/noisy-llm-case-study/asr-sensitive-ud/qwen-adaptive-csg-gnr.wav",
-            "sha256": "ef30385afd6cf23c76c267cf9db17316f300665c7a1231ee631ff7524e7740fd",
-            "sample_rate_hz": 24000,
-            "duration_seconds": 4.32
           }
         }
       },
       "audio": {
         "mixture": {
-          "path": "public/assets/audio/noisy-llm-case-study/asr-sensitive-ud/mixture.wav",
+          "path": "public/assets/audio/noisy-llm-case-study/grounding-repair-ud/mixture.wav",
           "sha256": "17782ea8be0b731ed63b8d5f2c90b222d5a27da376c119ab8c2800b8740219ba",
           "sample_rate_hz": 16000,
           "duration_seconds": 4.315
         },
         "target": {
-          "path": "public/assets/audio/noisy-llm-case-study/asr-sensitive-ud/target.wav",
+          "path": "public/assets/audio/noisy-llm-case-study/grounding-repair-ud/target.wav",
           "sha256": "7140c034ff9edb842c22f9ef5850bd006835aa27c21fc9210b856edc07bea6cc",
           "sample_rate_hz": 16000,
           "duration_seconds": 4.315
         },
         "interferer": {
-          "path": "public/assets/audio/noisy-llm-case-study/asr-sensitive-ud/interferer.wav",
+          "path": "public/assets/audio/noisy-llm-case-study/grounding-repair-ud/interferer.wav",
           "sha256": "d786a435a82cf1205f6098e8ca0c1fd1507de8414a0b09b37793ee8bb9c796fe",
           "sample_rate_hz": 16000,
           "duration_seconds": 4.315
@@ -189,29 +163,14 @@
     },
     {
       "id": "largev3-runaway",
-      "title": "The larger ASR can also enter a decoding loop",
-      "failure_mode": "Reverse ASR sensitivity",
-      "selection_rule": "Largest large-v3 insertion count among complete Natural Noisy TEST outputs; the same UD waveform is not a repetition outlier under canonical small.en.",
-      "listening_note": "Large-v3 inserts 419 repeated tokens while small.en does not. This counterexample prevents treating either Whisper configuration as human ground truth.",
+      "title": "Whisper large-v3 can enter a decoding loop",
+      "failure_mode": "Large-v3 decoding runaway",
+      "selection_rule": "Largest large-v3 insertion count among complete Natural Noisy TEST outputs.",
+      "listening_note": "Large-v3 inserts 419 repeated tokens. Listen to the complete waveform to judge whether that repetition is acoustic or measurement-side.",
       "target_text": "alexander paced up and down the hallway buttoning and unbuttoning his overcoat until she returned and took him up to hildas living room",
-      "interferer_text": "then the republic of britain eula was to be declared as nonexistent and the british flag was to be exalted",
       "systems": {
         "cdcs_direct": {
           "label": "CDCS-5 direct",
-          "canonical_small_en": {
-            "wer_percent": 17.391304,
-            "text": "alexander paced up and down the hallway buttoning and unbuttoning his overcoat until she returned into the house to hildas living room"
-          },
-          "posthoc_large_v3_rp1p10": {
-            "wer_percent": 8.695652,
-            "substitutions": 1,
-            "deletions": 1,
-            "insertions": 0,
-            "reference_words": 23,
-            "text": "alexander paced up and down the hallway buttoning and unbuttoning his overcoat until she returned and took off to hildas living room",
-            "hard_limit_proxy": false
-          },
-          "canonical_content_switch": false,
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.547999,
           "audio": {
@@ -219,24 +178,19 @@
             "sha256": "6d5d8100f82d0a11ca6b42cc242cce7ce44caa0022213d68ac3ad9c645f801a4",
             "sample_rate_hz": 16000,
             "duration_seconds": 7.672
+          },
+          "whisper_large_v3_rp1p10": {
+            "wer_percent": 8.695652,
+            "substitutions": 1,
+            "deletions": 1,
+            "insertions": 0,
+            "reference_words": 23,
+            "text": "alexander paced up and down the hallway buttoning and unbuttoning his overcoat until she returned and took off to hildas living room",
+            "hard_limit_proxy": false
           }
         },
         "qwen_tse_ud": {
           "label": "Qwen-TSE UD",
-          "canonical_small_en": {
-            "wer_percent": 47.826087,
-            "text": "alexander paced up and down the hallway footnaying into unfootnaying his overcoat until she returned into the most hellvisiting"
-          },
-          "posthoc_large_v3_rp1p10": {
-            "wer_percent": 1895.652174,
-            "substitutions": 17,
-            "deletions": 0,
-            "insertions": 419,
-            "reference_words": 23,
-            "text": "out zander paced up and down the hallway f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f",
-            "hard_limit_proxy": false
-          },
-          "canonical_content_switch": false,
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.466915,
           "audio": {
@@ -244,24 +198,19 @@
             "sha256": "b19c1c7080b94ff075f11d81bdba91627c07b9cf548134d3ceceb36d8d6a755d",
             "sample_rate_hz": 24000,
             "duration_seconds": 7.68
+          },
+          "whisper_large_v3_rp1p10": {
+            "wer_percent": 1895.652174,
+            "substitutions": 17,
+            "deletions": 0,
+            "insertions": 419,
+            "reference_words": 23,
+            "text": "out zander paced up and down the hallway f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f",
+            "hard_limit_proxy": false
           }
         },
         "fixed_csg": {
           "label": "Qwen-TSE fixed CSG",
-          "canonical_small_en": {
-            "wer_percent": 30.434783,
-            "text": "alexander paced up and down the hallway buttoning into unbuttoning his overcoat until she returned into the north tail of his living room"
-          },
-          "posthoc_large_v3_rp1p10": {
-            "wer_percent": 34.782609,
-            "substitutions": 5,
-            "deletions": 3,
-            "insertions": 0,
-            "reference_words": 23,
-            "text": "alexander paced up and down the hallway buttoning and unbuttoning his overcoat until she returned into the hotel of his",
-            "hard_limit_proxy": false
-          },
-          "canonical_content_switch": false,
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.485288,
           "audio": {
@@ -269,24 +218,19 @@
             "sha256": "725d1971ddfb47ae891447a5f06d62264bcfc6f1fe0cad8133f1cfeb8999fe1d",
             "sample_rate_hz": 24000,
             "duration_seconds": 7.68
-          }
-        },
-        "adaptive_csg": {
-          "label": "Qwen-TSE adaptive CSG",
-          "canonical_small_en": {
-            "wer_percent": 30.434783,
-            "text": "alexander paced up and down the hallway buttoning into unbuttoning his overcoat until she returned into the most hell of his living room"
           },
-          "posthoc_large_v3_rp1p10": {
+          "whisper_large_v3_rp1p10": {
             "wer_percent": 34.782609,
             "substitutions": 5,
             "deletions": 3,
             "insertions": 0,
             "reference_words": 23,
-            "text": "alexander paced up and down the hallway buttoning and unbuttoning his overcoat until she returned into the tail of his",
+            "text": "alexander paced up and down the hallway buttoning and unbuttoning his overcoat until she returned into the hotel of his",
             "hard_limit_proxy": false
-          },
-          "canonical_content_switch": false,
+          }
+        },
+        "adaptive_csg": {
+          "label": "Qwen-TSE adaptive CSG",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.477791,
           "audio": {
@@ -294,15 +238,8 @@
             "sha256": "8753a6aa73968efbf21ba6f88a3fbad7c054c9217186e1a20852f30b9e6c61f6",
             "sample_rate_hz": 24000,
             "duration_seconds": 7.68
-          }
-        },
-        "adaptive_csg_gnr": {
-          "label": "Qwen-TSE adaptive CSG+GNR",
-          "canonical_small_en": {
-            "wer_percent": 30.434783,
-            "text": "alexander paced up and down the hallway buttoning into unbuttoning his overcoat until she returned into the most hell of his living room"
           },
-          "posthoc_large_v3_rp1p10": {
+          "whisper_large_v3_rp1p10": {
             "wer_percent": 34.782609,
             "substitutions": 5,
             "deletions": 3,
@@ -310,8 +247,10 @@
             "reference_words": 23,
             "text": "alexander paced up and down the hallway buttoning and unbuttoning his overcoat until she returned into the tail of his",
             "hard_limit_proxy": false
-          },
-          "canonical_content_switch": false,
+          }
+        },
+        "adaptive_csg_gnr": {
+          "label": "Qwen-TSE adaptive CSG+GNR",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.483429,
           "audio": {
@@ -319,6 +258,15 @@
             "sha256": "6a771cc38da272ff7d8b58d592003a489ec53d424140c3f9b647a0f5498f9c32",
             "sample_rate_hz": 24000,
             "duration_seconds": 7.68
+          },
+          "whisper_large_v3_rp1p10": {
+            "wer_percent": 34.782609,
+            "substitutions": 5,
+            "deletions": 3,
+            "insertions": 0,
+            "reference_words": 23,
+            "text": "alexander paced up and down the hallway buttoning and unbuttoning his overcoat until she returned into the tail of his",
+            "hard_limit_proxy": false
           }
         }
       },
@@ -345,29 +293,14 @@
     },
     {
       "id": "ud-collapse",
-      "title": "Both ASRs hear no lexical content from UD",
-      "failure_mode": "Likely waveform-content failure",
-      "selection_rule": "Complete paired trial with an empty UD transcript and 100% deletion WER under both ASR configurations.",
-      "listening_note": "The UD file has normal nominal duration, but both ASRs return an empty transcript. Listen for silence, nonspeech, or speech too degraded to recover.",
+      "title": "Large-v3 hears no lexical content from UD",
+      "failure_mode": "UD waveform-content collapse",
+      "selection_rule": "Complete Natural Noisy TEST trial with an empty large-v3 UD transcript and 100% deletion WER.",
+      "listening_note": "The UD file has normal nominal duration, but large-v3 returns an empty transcript. Listen for silence, nonspeech, or speech too degraded to recover.",
       "target_text": "steam up and canvas spread the schooner started eastwards",
-      "interferer_text": "but john theres no society just elementary",
       "systems": {
         "cdcs_direct": {
           "label": "CDCS-5 direct",
-          "canonical_small_en": {
-            "wer_percent": 88.888889,
-            "text": "the scooner started to lose"
-          },
-          "posthoc_large_v3_rp1p10": {
-            "wer_percent": 55.555556,
-            "substitutions": 4,
-            "deletions": 0,
-            "insertions": 1,
-            "reference_words": 9,
-            "text": "theme of the canvas spread the schooner started to lose",
-            "hard_limit_proxy": false
-          },
-          "canonical_content_switch": false,
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.442696,
           "audio": {
@@ -375,40 +308,48 @@
             "sha256": "da925367ddb469048caf9a095e33f308a27bc78de9c9e6fd2f379d762804dfa3",
             "sample_rate_hz": 16000,
             "duration_seconds": 3.976
+          },
+          "whisper_large_v3_rp1p10": {
+            "wer_percent": 55.555556,
+            "substitutions": 4,
+            "deletions": 0,
+            "insertions": 1,
+            "reference_words": 9,
+            "text": "theme of the canvas spread the schooner started to lose",
+            "hard_limit_proxy": false
           }
         },
         "qwen_tse_ud": {
           "label": "Qwen-TSE UD",
-          "canonical_small_en": {
-            "wer_percent": 100.0,
-            "text": ""
-          },
-          "posthoc_large_v3_rp1p10": {
-            "wer_percent": 100.0,
-            "substitutions": 0,
-            "deletions": 9,
-            "insertions": 0,
-            "reference_words": 9,
-            "text": "",
-            "hard_limit_proxy": false
-          },
-          "canonical_content_switch": false,
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.057863,
           "audio": {
             "path": "public/assets/audio/noisy-llm-case-study/ud-collapse/qwen-ud.wav",
             "sha256": "cc619cd20e12b0393f07fa7d8eb6078a814ed185d4c50afd2f99d877ddc03bf4",
             "sample_rate_hz": 24000,
-            "duration_seconds": 4.0
+            "duration_seconds": 4
+          },
+          "whisper_large_v3_rp1p10": {
+            "wer_percent": 100,
+            "substitutions": 0,
+            "deletions": 9,
+            "insertions": 0,
+            "reference_words": 9,
+            "text": "",
+            "hard_limit_proxy": false
           }
         },
         "fixed_csg": {
           "label": "Qwen-TSE fixed CSG",
-          "canonical_small_en": {
-            "wer_percent": 88.888889,
-            "text": "theba kanhos brand the schooner started in the woods"
+          "acoustic_speaker_switch": false,
+          "speaker_margin": 0.534271,
+          "audio": {
+            "path": "public/assets/audio/noisy-llm-case-study/ud-collapse/qwen-fixed-csg.wav",
+            "sha256": "7fa3240f2c08b8d1550d73535a2057a9e6c6ed968145d8f7cf9f808cae8d3f0a",
+            "sample_rate_hz": 24000,
+            "duration_seconds": 4
           },
-          "posthoc_large_v3_rp1p10": {
+          "whisper_large_v3_rp1p10": {
             "wer_percent": 66.666667,
             "substitutions": 4,
             "deletions": 2,
@@ -416,24 +357,19 @@
             "reference_words": 9,
             "text": "theba cant spread the schooner starting to",
             "hard_limit_proxy": false
-          },
-          "canonical_content_switch": false,
-          "acoustic_speaker_switch": false,
-          "speaker_margin": 0.534271,
-          "audio": {
-            "path": "public/assets/audio/noisy-llm-case-study/ud-collapse/qwen-fixed-csg.wav",
-            "sha256": "7fa3240f2c08b8d1550d73535a2057a9e6c6ed968145d8f7cf9f808cae8d3f0a",
-            "sample_rate_hz": 24000,
-            "duration_seconds": 4.0
           }
         },
         "adaptive_csg": {
           "label": "Qwen-TSE adaptive CSG",
-          "canonical_small_en": {
-            "wer_percent": 88.888889,
-            "text": "theobab a canvas brand the schooner starred in the woods"
+          "acoustic_speaker_switch": false,
+          "speaker_margin": 0.525914,
+          "audio": {
+            "path": "public/assets/audio/noisy-llm-case-study/ud-collapse/qwen-adaptive-csg.wav",
+            "sha256": "9b20ed462ff44cb003a56dc8b60d60825f4124530ccc03796c0480a1df2d5373",
+            "sample_rate_hz": 24000,
+            "duration_seconds": 4
           },
-          "posthoc_large_v3_rp1p10": {
+          "whisper_large_v3_rp1p10": {
             "wer_percent": 88.888889,
             "substitutions": 5,
             "deletions": 1,
@@ -441,40 +377,26 @@
             "reference_words": 9,
             "text": "thebop cant let spread the schooner start in the woods",
             "hard_limit_proxy": false
-          },
-          "canonical_content_switch": false,
-          "acoustic_speaker_switch": false,
-          "speaker_margin": 0.525914,
-          "audio": {
-            "path": "public/assets/audio/noisy-llm-case-study/ud-collapse/qwen-adaptive-csg.wav",
-            "sha256": "9b20ed462ff44cb003a56dc8b60d60825f4124530ccc03796c0480a1df2d5373",
-            "sample_rate_hz": 24000,
-            "duration_seconds": 4.0
           }
         },
         "adaptive_csg_gnr": {
           "label": "Qwen-TSE adaptive CSG+GNR",
-          "canonical_small_en": {
-            "wer_percent": 88.888889,
-            "text": "theobab a canvas brand the schooner starred in the woods"
-          },
-          "posthoc_large_v3_rp1p10": {
-            "wer_percent": 100.0,
-            "substitutions": 8,
-            "deletions": 0,
-            "insertions": 1,
-            "reference_words": 9,
-            "text": "thebop cant whisper and the schooner starts in the woods",
-            "hard_limit_proxy": false
-          },
-          "canonical_content_switch": false,
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.528047,
           "audio": {
             "path": "public/assets/audio/noisy-llm-case-study/ud-collapse/qwen-adaptive-csg-gnr.wav",
             "sha256": "0797713a8fd0efe5e498153f2dd5dc41fc3488226fe45e1323f8b3da797fbfa3",
             "sample_rate_hz": 24000,
-            "duration_seconds": 4.0
+            "duration_seconds": 4
+          },
+          "whisper_large_v3_rp1p10": {
+            "wer_percent": 100,
+            "substitutions": 8,
+            "deletions": 0,
+            "insertions": 1,
+            "reference_words": 9,
+            "text": "thebop cant whisper and the schooner starts in the woods",
+            "hard_limit_proxy": false
           }
         }
       },
@@ -501,54 +423,34 @@
     },
     {
       "id": "identity-content-drift",
-      "title": "Target-like voice, interferer-like words",
-      "failure_mode": "Content drift without acoustic switch",
-      "selection_rule": "High WER and canonical content switch under both ASR readings, while every LLM arm retains a positive acoustic speaker margin.",
-      "listening_note": "The output remains target-like according to the speaker encoder, but both ASRs agree that its fluent sentence follows the competing content rather than the eight-word target.",
-      "target_text": "ill gladly do that promised the new boomeroo",
-      "interferer_text": "of course he did not realize that it was i who was knocking but nonetheless his conduct was very uncurdious and indeed under the circumstances rather suspicious",
+      "title": "Target-like voice, target-inconsistent words",
+      "failure_mode": "Acoustic identity/content separation",
+      "selection_rule": "High config-consistent large-v3 WER across all LLM arms while every LLM arm retains a positive speaker margin and no acoustic speaker switch.",
+      "listening_note": "The output remains target-like according to the speaker encoder, but its fluent sentence is far from the 25-word large-v3 target reference.",
+      "target_text": "ill gladly do that promised the new boolaroo and ill feed the honourable goat all the shavings and leather and tin cans he can eat",
       "systems": {
         "cdcs_direct": {
           "label": "CDCS-5 direct",
-          "canonical_small_en": {
-            "wer_percent": 337.5,
-            "text": "of course he did not realize that it was i who was knocking but nonetheless his conduct was very uncurdious and indeed out of certain stances rather suspicious"
-          },
-          "posthoc_large_v3_rp1p10": {
-            "wer_percent": 325.0,
-            "substitutions": 6,
-            "deletions": 0,
-            "insertions": 20,
-            "reference_words": 8,
-            "text": "of course he did not realize that it was i who was knocking but nonetheless his conduct was very uncourteous and indeed under the circumstances rather suspicious sigh",
-            "hard_limit_proxy": false
-          },
-          "canonical_content_switch": true,
           "acoustic_speaker_switch": true,
           "speaker_margin": -0.317458,
           "audio": {
             "path": "public/assets/audio/noisy-llm-case-study/identity-content-drift/cdcs-5.wav",
             "sha256": "a12a5d2013e93af931574f3833a48cc4d4d5edadcd30830dadef01e38779f2eb",
             "sample_rate_hz": 16000,
-            "duration_seconds": 9.0
+            "duration_seconds": 9
+          },
+          "whisper_large_v3_rp1p10": {
+            "wer_percent": 104,
+            "substitutions": 23,
+            "deletions": 0,
+            "insertions": 3,
+            "reference_words": 25,
+            "text": "of course he did not realize that it was i who was knocking but nonetheless his conduct was very uncourteous and indeed under the circumstances rather suspicious sigh",
+            "hard_limit_proxy": false
           }
         },
         "qwen_tse_ud": {
           "label": "Qwen-TSE UD",
-          "canonical_small_en": {
-            "wer_percent": 400.0,
-            "text": "of course he did not realize that it was i who was nodding but nonetheless his conduct was very uncurdious so he did indeed not have a circumstance in general or suspicious fine"
-          },
-          "posthoc_large_v3_rp1p10": {
-            "wer_percent": 387.5,
-            "substitutions": 6,
-            "deletions": 0,
-            "insertions": 25,
-            "reference_words": 8,
-            "text": "of course he did not realize that it was i who was nodding but none the less his conduct was very uncourteous i need a deed out of circumstance drillers suspicion was fine",
-            "hard_limit_proxy": false
-          },
-          "canonical_content_switch": true,
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.107256,
           "audio": {
@@ -556,24 +458,19 @@
             "sha256": "4a2910c1d0c48f8c32a7a06ad8534a3eeb5511bbeb04d176ff46762c7842b375",
             "sample_rate_hz": 24000,
             "duration_seconds": 9.04
+          },
+          "whisper_large_v3_rp1p10": {
+            "wer_percent": 124,
+            "substitutions": 23,
+            "deletions": 0,
+            "insertions": 8,
+            "reference_words": 25,
+            "text": "of course he did not realize that it was i who was nodding but none the less his conduct was very uncourteous i need a deed out of circumstance drillers suspicion was fine",
+            "hard_limit_proxy": false
           }
         },
         "fixed_csg": {
           "label": "Qwen-TSE fixed CSG",
-          "canonical_small_en": {
-            "wer_percent": 362.5,
-            "text": "of course he did not realize that it was i who was nodding but nonetheless his conduct was very uncurdious and indeed i dont know the circumstance the other officials find"
-          },
-          "posthoc_large_v3_rp1p10": {
-            "wer_percent": 362.5,
-            "substitutions": 6,
-            "deletions": 0,
-            "insertions": 23,
-            "reference_words": 8,
-            "text": "of course he did not realize that it was i who was nodding but nonetheless his conduct was very uncourteous and indeed out of the circumstance he was rather suspicious fine",
-            "hard_limit_proxy": false
-          },
-          "canonical_content_switch": true,
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.137775,
           "audio": {
@@ -581,24 +478,19 @@
             "sha256": "ce77c1331a769251c423ee0bbddef9ba00a4e6e3c49e93e63c9205e4df9fca07",
             "sample_rate_hz": 24000,
             "duration_seconds": 9.04
+          },
+          "whisper_large_v3_rp1p10": {
+            "wer_percent": 112,
+            "substitutions": 22,
+            "deletions": 0,
+            "insertions": 6,
+            "reference_words": 25,
+            "text": "of course he did not realize that it was i who was nodding but nonetheless his conduct was very uncourteous and indeed out of the circumstance he was rather suspicious fine",
+            "hard_limit_proxy": false
           }
         },
         "adaptive_csg": {
           "label": "Qwen-TSE adaptive CSG",
-          "canonical_small_en": {
-            "wer_percent": 337.5,
-            "text": "of course he did not realize that it was i who was nodding but nonetheless his conduct was very uncurdious and indeed under the circumstances the other officials find"
-          },
-          "posthoc_large_v3_rp1p10": {
-            "wer_percent": 362.5,
-            "substitutions": 6,
-            "deletions": 0,
-            "insertions": 23,
-            "reference_words": 8,
-            "text": "of course he did not realize that it was i who was nodding but nonetheless his conduct was very uncourteous and indeed out of the circumstance he was rather suspicious fine",
-            "hard_limit_proxy": false
-          },
-          "canonical_content_switch": true,
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.132823,
           "audio": {
@@ -606,24 +498,19 @@
             "sha256": "fe6906d2e712b273830723a6a3eed20bd35df77c5c4736dd25178bfa95227a3d",
             "sample_rate_hz": 24000,
             "duration_seconds": 9.04
+          },
+          "whisper_large_v3_rp1p10": {
+            "wer_percent": 112,
+            "substitutions": 22,
+            "deletions": 0,
+            "insertions": 6,
+            "reference_words": 25,
+            "text": "of course he did not realize that it was i who was nodding but nonetheless his conduct was very uncourteous and indeed out of the circumstance he was rather suspicious fine",
+            "hard_limit_proxy": false
           }
         },
         "adaptive_csg_gnr": {
           "label": "Qwen-TSE adaptive CSG+GNR",
-          "canonical_small_en": {
-            "wer_percent": 337.5,
-            "text": "of course he did not realize that it was i who was nodding but nonetheless his conduct was very uncurdious and indeed under the circumstances the other officials find"
-          },
-          "posthoc_large_v3_rp1p10": {
-            "wer_percent": 362.5,
-            "substitutions": 6,
-            "deletions": 0,
-            "insertions": 23,
-            "reference_words": 8,
-            "text": "of course he did not realize that it was i who was nodding but nonetheless his conduct was very uncourteous and indeed out of the circumstance he was rather suspicious fine",
-            "hard_limit_proxy": false
-          },
-          "canonical_content_switch": true,
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.132823,
           "audio": {
@@ -631,6 +518,15 @@
             "sha256": "fe6906d2e712b273830723a6a3eed20bd35df77c5c4736dd25178bfa95227a3d",
             "sample_rate_hz": 24000,
             "duration_seconds": 9.04
+          },
+          "whisper_large_v3_rp1p10": {
+            "wer_percent": 112,
+            "substitutions": 22,
+            "deletions": 0,
+            "insertions": 6,
+            "reference_words": 25,
+            "text": "of course he did not realize that it was i who was nodding but nonetheless his conduct was very uncourteous and indeed out of the circumstance he was rather suspicious fine",
+            "hard_limit_proxy": false
           }
         }
       },
@@ -658,28 +554,13 @@
     {
       "id": "fixed-csg-repair",
       "title": "Fixed CSG repairs an UD identity/content collapse",
-      "failure_mode": "Grounding success",
-      "selection_rule": "UD has 100% WER and a negative speaker margin, while fixed CSG is exact under both ASRs and restores a positive margin.",
-      "listening_note": "UD is reduced to “thank you”; fixed CSG restores the complete target sentence and the target speaker identity.",
+      "failure_mode": "Grounding repair",
+      "selection_rule": "UD has 100% config-consistent large-v3 WER and a negative speaker margin, while fixed CSG is exact and restores a positive margin.",
+      "listening_note": "Large-v3 transcribes UD as ‘thank you’; fixed CSG restores the complete target sentence and target-side speaker identity.",
       "target_text": "suddenly the ichthyosaurus and the plesiosaurus disappear below",
-      "interferer_text": "sit down please said gates in a cheerful and pleasant voice theres a bench here",
       "systems": {
         "cdcs_direct": {
           "label": "CDCS-5 direct",
-          "canonical_small_en": {
-            "wer_percent": 12.5,
-            "text": "suddenly the ichthyosaurus and the plessiosaurus disappear below"
-          },
-          "posthoc_large_v3_rp1p10": {
-            "wer_percent": 0.0,
-            "substitutions": 0,
-            "deletions": 0,
-            "insertions": 0,
-            "reference_words": 8,
-            "text": "suddenly the ichthyosaurus and the plesiosaurus disappear below",
-            "hard_limit_proxy": false
-          },
-          "canonical_content_switch": false,
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.621726,
           "audio": {
@@ -687,24 +568,19 @@
             "sha256": "8fd9211f6c05e2233c99917d7f5d5eb59e4ce64658dc20d3a530ebe5cff689d6",
             "sample_rate_hz": 16000,
             "duration_seconds": 5.12
+          },
+          "whisper_large_v3_rp1p10": {
+            "wer_percent": 0,
+            "substitutions": 0,
+            "deletions": 0,
+            "insertions": 0,
+            "reference_words": 8,
+            "text": "suddenly the ichthyosaurus and the plesiosaurus disappear below",
+            "hard_limit_proxy": false
           }
         },
         "qwen_tse_ud": {
           "label": "Qwen-TSE UD",
-          "canonical_small_en": {
-            "wer_percent": 100.0,
-            "text": "thank you"
-          },
-          "posthoc_large_v3_rp1p10": {
-            "wer_percent": 100.0,
-            "substitutions": 2,
-            "deletions": 6,
-            "insertions": 0,
-            "reference_words": 8,
-            "text": "thank you",
-            "hard_limit_proxy": false
-          },
-          "canonical_content_switch": false,
           "acoustic_speaker_switch": true,
           "speaker_margin": -0.03911,
           "audio": {
@@ -712,24 +588,19 @@
             "sha256": "21e9b86006dfed8ed9b57b8a2fa8beb605a65d8a1683eab08ed84373bd9aad0c",
             "sample_rate_hz": 24000,
             "duration_seconds": 5.16
+          },
+          "whisper_large_v3_rp1p10": {
+            "wer_percent": 100,
+            "substitutions": 2,
+            "deletions": 6,
+            "insertions": 0,
+            "reference_words": 8,
+            "text": "thank you",
+            "hard_limit_proxy": false
           }
         },
         "fixed_csg": {
           "label": "Qwen-TSE fixed CSG",
-          "canonical_small_en": {
-            "wer_percent": 0.0,
-            "text": "suddenly the ichthyosaurus and the plesiosaurus disappear below"
-          },
-          "posthoc_large_v3_rp1p10": {
-            "wer_percent": 0.0,
-            "substitutions": 0,
-            "deletions": 0,
-            "insertions": 0,
-            "reference_words": 8,
-            "text": "suddenly the ichthyosaurus and the plesiosaurus disappear below",
-            "hard_limit_proxy": false
-          },
-          "canonical_content_switch": false,
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.396871,
           "audio": {
@@ -737,24 +608,19 @@
             "sha256": "0ff592779cb5055023d2bdd5a17790e1663a019b47a86078439df8b21cba1482",
             "sample_rate_hz": 24000,
             "duration_seconds": 5.16
-          }
-        },
-        "adaptive_csg": {
-          "label": "Qwen-TSE adaptive CSG",
-          "canonical_small_en": {
-            "wer_percent": 12.5,
-            "text": "suddenly the ichthyosaurus and the plessosaurus disappear below"
           },
-          "posthoc_large_v3_rp1p10": {
-            "wer_percent": 0.0,
+          "whisper_large_v3_rp1p10": {
+            "wer_percent": 0,
             "substitutions": 0,
             "deletions": 0,
             "insertions": 0,
             "reference_words": 8,
             "text": "suddenly the ichthyosaurus and the plesiosaurus disappear below",
             "hard_limit_proxy": false
-          },
-          "canonical_content_switch": false,
+          }
+        },
+        "adaptive_csg": {
+          "label": "Qwen-TSE adaptive CSG",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.401422,
           "audio": {
@@ -762,24 +628,19 @@
             "sha256": "5b9e052828c3fb942a80c14764d4f88b2dd3e28ad86303fe76d7cb8cd8605c43",
             "sample_rate_hz": 24000,
             "duration_seconds": 5.16
-          }
-        },
-        "adaptive_csg_gnr": {
-          "label": "Qwen-TSE adaptive CSG+GNR",
-          "canonical_small_en": {
-            "wer_percent": 12.5,
-            "text": "suddenly the ichthyosaurus and the plessosaurus disappear below"
           },
-          "posthoc_large_v3_rp1p10": {
-            "wer_percent": 0.0,
+          "whisper_large_v3_rp1p10": {
+            "wer_percent": 0,
             "substitutions": 0,
             "deletions": 0,
             "insertions": 0,
             "reference_words": 8,
             "text": "suddenly the ichthyosaurus and the plesiosaurus disappear below",
             "hard_limit_proxy": false
-          },
-          "canonical_content_switch": false,
+          }
+        },
+        "adaptive_csg_gnr": {
+          "label": "Qwen-TSE adaptive CSG+GNR",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.356903,
           "audio": {
@@ -787,6 +648,15 @@
             "sha256": "b2235458628490cafe3bee34207f9d804300353da975647a46f589d8ce611551",
             "sample_rate_hz": 24000,
             "duration_seconds": 5.16
+          },
+          "whisper_large_v3_rp1p10": {
+            "wer_percent": 0,
+            "substitutions": 0,
+            "deletions": 0,
+            "insertions": 0,
+            "reference_words": 8,
+            "text": "suddenly the ichthyosaurus and the plesiosaurus disappear below",
+            "hard_limit_proxy": false
           }
         }
       },
@@ -815,27 +685,12 @@
       "id": "fixed-csg-regression",
       "title": "A counterexample: fixed CSG invents fluent unrelated speech",
       "failure_mode": "Grounding regression",
-      "selection_rule": "Paired Natural Noisy TEST regression where fixed CSG worsens the large-v3 WER and introduces both canonical acoustic and content switches.",
+      "selection_rule": "Natural Noisy TEST regression where fixed CSG worsens config-consistent large-v3 WER and introduces an acoustic speaker switch.",
       "listening_note": "UD is nearly empty, but fixed CSG replaces it with fluent unrelated content and moves the acoustic speaker margin below zero.",
-      "target_text": "sometime you tell me please wont you",
-      "interferer_text": "to do so is to lose god altogether because god becomes",
+      "target_text": "sometime youll tell me please wont you",
       "systems": {
         "cdcs_direct": {
           "label": "CDCS-5 direct",
-          "canonical_small_en": {
-            "wer_percent": 100.0,
-            "text": "together"
-          },
-          "posthoc_large_v3_rp1p10": {
-            "wer_percent": 214.285714,
-            "substitutions": 7,
-            "deletions": 0,
-            "insertions": 8,
-            "reference_words": 7,
-            "text": "i used to have an advantage on putting them together but now im a chico",
-            "hard_limit_proxy": false
-          },
-          "canonical_content_switch": false,
           "acoustic_speaker_switch": true,
           "speaker_margin": -0.083588,
           "audio": {
@@ -843,24 +698,19 @@
             "sha256": "3bc13ce77c0b2ae463e531febe568cdc60e606d2baa562383f08b2e63af88162",
             "sample_rate_hz": 16000,
             "duration_seconds": 3.288
+          },
+          "whisper_large_v3_rp1p10": {
+            "wer_percent": 214.285714,
+            "substitutions": 7,
+            "deletions": 0,
+            "insertions": 8,
+            "reference_words": 7,
+            "text": "i used to have an advantage on putting them together but now im a chico",
+            "hard_limit_proxy": false
           }
         },
         "qwen_tse_ud": {
           "label": "Qwen-TSE UD",
-          "canonical_small_en": {
-            "wer_percent": 100.0,
-            "text": ""
-          },
-          "posthoc_large_v3_rp1p10": {
-            "wer_percent": 85.714286,
-            "substitutions": 0,
-            "deletions": 6,
-            "insertions": 0,
-            "reference_words": 7,
-            "text": "you",
-            "hard_limit_proxy": false
-          },
-          "canonical_content_switch": false,
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.033917,
           "audio": {
@@ -868,24 +718,19 @@
             "sha256": "a8158d190c3b8e396d3a3b1f7abe18ec631794b84bccf840bf10d9539504cbf1",
             "sample_rate_hz": 24000,
             "duration_seconds": 3.32
+          },
+          "whisper_large_v3_rp1p10": {
+            "wer_percent": 85.714286,
+            "substitutions": 0,
+            "deletions": 6,
+            "insertions": 0,
+            "reference_words": 7,
+            "text": "you",
+            "hard_limit_proxy": false
           }
         },
         "fixed_csg": {
           "label": "Qwen-TSE fixed CSG",
-          "canonical_small_en": {
-            "wer_percent": 157.142857,
-            "text": "for now im going to add some lemons to the chicken"
-          },
-          "posthoc_large_v3_rp1p10": {
-            "wer_percent": 128.571429,
-            "substitutions": 7,
-            "deletions": 0,
-            "insertions": 2,
-            "reference_words": 7,
-            "text": "for me i was just like oh my god",
-            "hard_limit_proxy": false
-          },
-          "canonical_content_switch": true,
           "acoustic_speaker_switch": true,
           "speaker_margin": -0.035985,
           "audio": {
@@ -893,24 +738,19 @@
             "sha256": "172fdaf8d09c06256b8f8519a55a5f4779aefeb8a32eba43355fdf19f9053308",
             "sample_rate_hz": 24000,
             "duration_seconds": 3.32
+          },
+          "whisper_large_v3_rp1p10": {
+            "wer_percent": 128.571429,
+            "substitutions": 7,
+            "deletions": 0,
+            "insertions": 2,
+            "reference_words": 7,
+            "text": "for me i was just like oh my god",
+            "hard_limit_proxy": false
           }
         },
         "adaptive_csg": {
           "label": "Qwen-TSE adaptive CSG",
-          "canonical_small_en": {
-            "wer_percent": 128.571429,
-            "text": "im going to put the link in the description"
-          },
-          "posthoc_large_v3_rp1p10": {
-            "wer_percent": 185.714286,
-            "substitutions": 7,
-            "deletions": 0,
-            "insertions": 6,
-            "reference_words": 7,
-            "text": "for me it was the yeah it was a gap oh my chicken",
-            "hard_limit_proxy": false
-          },
-          "canonical_content_switch": true,
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.009156,
           "audio": {
@@ -918,24 +758,19 @@
             "sha256": "85b4c609cd6c11d40b30caeced20c1bd2cd1f4bcbe5e36bb60a6d12138dece01",
             "sample_rate_hz": 24000,
             "duration_seconds": 3.32
-          }
-        },
-        "adaptive_csg_gnr": {
-          "label": "Qwen-TSE adaptive CSG+GNR",
-          "canonical_small_en": {
-            "wer_percent": 100.0,
-            "text": "im going to eat chicken"
           },
-          "posthoc_large_v3_rp1p10": {
+          "whisper_large_v3_rp1p10": {
             "wer_percent": 185.714286,
             "substitutions": 7,
             "deletions": 0,
             "insertions": 6,
             "reference_words": 7,
-            "text": "for me it was just a little music id be like oh chicken",
+            "text": "for me it was the yeah it was a gap oh my chicken",
             "hard_limit_proxy": false
-          },
-          "canonical_content_switch": true,
+          }
+        },
+        "adaptive_csg_gnr": {
+          "label": "Qwen-TSE adaptive CSG+GNR",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.0027,
           "audio": {
@@ -943,6 +778,15 @@
             "sha256": "1517658747b66ca9325fd8ddb27683b317b30eef989bb23bcfa8174f2109dec7",
             "sample_rate_hz": 24000,
             "duration_seconds": 3.32
+          },
+          "whisper_large_v3_rp1p10": {
+            "wer_percent": 185.714286,
+            "substitutions": 7,
+            "deletions": 0,
+            "insertions": 6,
+            "reference_words": 7,
+            "text": "for me it was just a little music id be like oh chicken",
+            "hard_limit_proxy": false
           }
         }
       },

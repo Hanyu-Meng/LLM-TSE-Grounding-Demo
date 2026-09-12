@@ -23,12 +23,14 @@ terms of their upstream sources.
 
 Depending on the player, audio was mixed, resampled, normalized, separated by
 frozen target-speaker extraction systems, selected by CDCS-5, tokenized, and/or
-neurally resynthesized by Qwen-TSE. Transcripts were produced or evaluated with
-the frozen ASR-consistency protocol. The examples were selected for research
-explanation; no endorsement by the source authors or speakers is implied.
+neurally resynthesized by Qwen-TSE. Transcripts and WER shown in the listening
+cases use the completed, config-consistent Whisper large-v3 audit; aggregate
+frozen metrics retain their separately documented evaluation protocol. The
+examples were selected for research explanation; no endorsement by the source
+authors or speakers is implied.
 
 The frozen Natural Noisy TEST listening-audit manifest records hashed public
-case IDs, selection rules, player roles, paired ASR outputs, metrics, durations,
+case IDs, selection rules, player roles, Whisper large-v3 outputs, metrics, durations,
 and per-asset SHA-256 hashes at
 [`public/results/noisy-llm-case-study.json`](public/results/noisy-llm-case-study.json).
 It contains no enrolment audio. The post-hoc large-v3 measurements audit
