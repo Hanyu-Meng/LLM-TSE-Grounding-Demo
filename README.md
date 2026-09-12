@@ -19,9 +19,9 @@ The page presents one focused claim: reliable target-conditioned evidence must b
 - A restrained black-and-white problem formulation and paper-accurate method diagram using amplitude-normalized traces generated from the released audio examples.
 - Self-hosted KaTeX rendering for method, grounding, WER, and speaker-confusion equations, with readable text fallbacks.
 - Five paged listening cases: one deterministic frozen Clean TEST opener followed by four cases from the frozen 6,000-trial natural-noise TEST set, with frozen ASR-consistency transcripts and compact, lazy-loaded 2,000-pixel spectrograms that link to their full-resolution originals.
-- A separate four-case Natural Noisy DEV limitation audit covering an ASR repetition outlier, premature collapse, lexical drift without a speaker switch, and propagation of wrong upstream evidence. These DEV examples are explicitly excluded from TEST claims.
+- A six-case frozen Natural Noisy TEST listening audit that separates cross-ASR sensitivity, UD collapse, target-voice/interferer-content drift, fixed-CSG repair, and a fixed-CSG regression. Every player uses the complete waveform; the listening labels remain provisional rather than human-adjudicated.
 - A clean wrong-speaker WeSep case that isolates speaker confusion without noise, followed by noisy evidence repair, speaker-collapse prevention, lexical-drift repair, and fidelity–naturalness examples selected by explicit deterministic rules rather than informal listening alone.
-- Machine-readable case records at `public/results/clean-demo-case.json`, `public/results/noisy-demo-cases.json`, and `public/results/noisy-dev-grounding-failures.json`, with trial IDs, selection rules, transcripts, and paired per-system metrics. The DEV audit additionally records per-asset SHA-256 hashes.
+- Machine-readable case records at `public/results/clean-demo-case.json`, `public/results/noisy-demo-cases.json`, and `public/results/noisy-llm-case-study.json`, with selection rules, paired small.en/large-v3 transcripts, per-system metrics, and per-asset SHA-256 hashes. The public audit uses descriptive case labels rather than corpus trial identifiers.
 - Per-SNR robustness and deployment-cost summaries.
 
 No remote-machine configuration, internal agent instructions, unpublished credentials, or mutable experiment workspace files are included.
@@ -39,6 +39,7 @@ To publish it with GitHub Pages, select `main` and `/ (root)` under **Settings �
 - The published Noisy TEST block was imported only after the frozen ledger reported `COMPLETE`, `execution_count = 1`, and `post_test_tuning = false`.
 - The Clean GNR row was added only after its K=20/R=2 protocol and summary both reported `COMPLETE`, with 6,000/6,000 decoded and zero failures.
 - Clean UTMOS is explicitly labelled post hoc: all displayed systems have 6,000/6,000 scores and zero failures, and no decoding, system choice, or threshold was changed.
+- The large-v3/RP=1.10 comparison in the LLM-WER case study is a post-hoc ASR audit of unchanged TEST waveforms; it does not replace the preregistered frozen TEST metrics.
 - References shown in listening examples are for evaluation and explanation only; the deployed selector does not use them.
 
 ## Repository layout
@@ -54,7 +55,7 @@ To publish it with GitHub Pages, select `main` and `/ (root)` under **Settings �
 ├── scripts/                # reproducible spectrogram and waveform renderers
 └── public/assets/
     ├── audio/noisy/       # selected frozen natural-noise TEST examples
-    ├── audio/noisy-dev-failures/ # Natural Noisy DEV limitation audit
+    ├── audio/noisy-llm-case-study/ # Frozen Natural Noisy TEST listening audit
     ├── audio/clean/       # deterministic frozen Clean TEST examples
     ├── figures/           # spectrogram and supporting figures
     └── waveforms/         # real amplitude envelopes used in the diagrams

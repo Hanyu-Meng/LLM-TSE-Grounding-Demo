@@ -27,11 +27,13 @@ neurally resynthesized by Qwen-TSE. Transcripts were produced or evaluated with
 the frozen ASR-consistency protocol. The examples were selected for research
 explanation; no endorsement by the source authors or speakers is implied.
 
-The Natural Noisy DEV manifest records trial identifiers, DEV/TEST-use status,
-player roles, metrics, durations, and per-asset SHA-256 hashes at
-[`public/results/noisy-dev-grounding-failures.json`](public/results/noisy-dev-grounding-failures.json).
-The transformations are summarized above; other listening-case records are
-available under [`public/results`](public/results/).
+The frozen Natural Noisy TEST listening-audit manifest records hashed public
+case IDs, selection rules, player roles, paired ASR outputs, metrics, durations,
+and per-asset SHA-256 hashes at
+[`public/results/noisy-llm-case-study.json`](public/results/noisy-llm-case-study.json).
+It contains no enrolment audio. The post-hoc large-v3 measurements audit
+unchanged waveforms and do not replace the frozen TEST metrics. Other
+listening-case records are available under [`public/results`](public/results/).
 
 ## References
 
