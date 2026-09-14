@@ -19,7 +19,6 @@ The page presents one focused claim: reliable target-conditioned evidence must b
 - A six-case frozen Natural Noisy TEST listening audit, scored consistently with Whisper large-v3, that separates decoding runaway, UD collapse, target-voice/target-inconsistent lexical drift, fixed-CSG repair, and a fixed-CSG regression. Every player uses the complete waveform; the listening labels remain provisional rather than human-adjudicated.
 - A clean wrong-speaker WeSep case that isolates speaker confusion without noise, followed by noisy evidence repair, speaker-collapse prevention, lexical-drift repair, and fidelity–naturalness examples selected by explicit deterministic rules rather than informal listening alone.
 - Machine-readable case records at `public/results/clean-demo-case.json`, `public/results/noisy-demo-cases.json`, and `public/results/noisy-llm-case-study.json`, with selection rules, Whisper large-v3 transcripts, per-system metrics, and per-asset SHA-256 hashes. The public audit uses descriptive case labels rather than corpus trial identifiers.
-- A compact robustness figure and machine-readable result/provenance records, while the public page remains focused on listening examples rather than aggregate result tables.
 
 No remote-machine configuration, internal agent instructions, unpublished credentials, or mutable experiment workspace files are included.
 
