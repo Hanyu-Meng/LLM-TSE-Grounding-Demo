@@ -843,21 +843,6 @@
         </dl>
       </section>
 
-      <section id="protocol">
-        <h2>Evaluation protocol</h2>
-        <ul class="protocol-list">
-          <li>Candidate pools, thresholds, CSG, and GNR settings are selected on DEV.</li>
-          <li>Noisy TEST was executed once with hash-checked code, models, and inputs.</li>
-          <li>Audio cases follow a deterministic selection rule rather than manual cherry-picking.</li>
-          <li>WER, DNSMOS, and UTMOS are complementary proxies and do not replace listening tests.</li>
-        </ul>
-        <div class="explanation-box claim-box">
-          <strong>Claim boundary.</strong> The main claim is that target-consistent candidate selection
-          repairs many wrong-speaker TSE failures. The optional LLM branch studies grounding and drift;
-          it does not achieve the best WER, and GNR is retained as a negative ablation.
-        </div>
-      </section>
-
       <footer>
         <p>Speaker-Consistent Grounding · research demo · audio derived from <a href="https://github.com/JorisCos/LibriMix">LibriMix</a> with <a href="https://wham.whisper.ai/">WHAM!</a> noise</p>
         <p>Noisy audio is provided for non-commercial research demonstration; <a href="AUDIO_ATTRIBUTION.md">see audio attribution and upstream terms</a>.</p>

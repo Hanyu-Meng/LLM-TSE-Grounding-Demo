@@ -435,10 +435,6 @@ tbody tr:nth-child(even) { background: #fafafa; }
 .two-column { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(260px, .65fr); gap: 1.4rem; align-items: center; }
 .plain-figure { margin: 0; }
 .plain-figure img { display: block; border: 1px solid var(--line); border-radius: 8px; background: white; }
-.protocol-list { padding-left: 1.25rem; }
-.protocol-list li { margin: .4rem 0; padding-left: .2rem; }
-.claim-box { margin-top: 1.2rem; }
-
 footer { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2.2rem; padding: 1.2rem 0 2.5rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .78rem; }
 footer p { margin: 0; }
 
