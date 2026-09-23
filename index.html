@@ -23,7 +23,7 @@
     <title>Speaker-Consistent Grounding · Audio Demo</title>
     <link rel="icon" href="public/favicon.svg" />
     <link rel="stylesheet" href="public/vendor/katex/katex.min.css?v=0.18.6" />
-    <link rel="stylesheet" href="styles.css?v=20260923-diagrams-1" />
+    <link rel="stylesheet" href="styles.css?v=20260923-adaptive-csg-1" />
   </head>
   <body>
     <a class="skip-link" href="#content">Skip to content</a>
@@ -68,7 +68,7 @@
             <div
               class="problem-grid"
               role="img"
-              aria-label="The paper addresses three connected failures: deterministic target speech extraction can distort speech or follow the interferer; ungrounded Qwen-TSE can drift in content or speaker; and grounding confused evidence can preserve the wrong identity. Our solution repairs target identity with CDCS-5 before fixed CSG constrains Qwen-TSE generation."
+              aria-label="The paper addresses three connected failures: deterministic target speech extraction can distort speech or follow the interferer; ungrounded Qwen-TSE can drift in content or speaker; and grounding confused evidence can preserve the wrong identity. Our solution repairs target identity with CDCS-5 before fixed or adaptive CSG constrains Qwen-TSE generation."
             >
               <article class="diagram-panel problem-panel deterministic-problem">
                 <h3><span>(a)</span> Deterministic waveform TSE</h3>
@@ -104,7 +104,7 @@
                   <span aria-hidden="true">→</span>
                   <div class="token-mini orange-token math-inline" data-tex="z^{B}">zᴮ</div>
                   <span aria-hidden="true">→</span>
-                  <div class="diagram-block compact-block">Fixed CSG</div>
+                  <div class="diagram-block compact-block">CSG</div>
                 </div>
                 <span class="flow-down" aria-hidden="true">↓</span>
                 <div class="generated-output failure-output"><img class="signal-wave" src="public/assets/waveforms/primary.png" alt="" /><strong>Confident wrong-speaker output B</strong></div>
@@ -123,7 +123,7 @@
                 </div>
                 <div class="endpoint-mini-grid">
                   <div><strong>CDCS-5 direct</strong><small>content fidelity</small></div>
-                  <div><strong>Qwen-TSE fixed CSG</strong><small>constrained generation</small></div>
+                  <div><strong>Qwen-TSE + CSG</strong><small>fixed / adaptive grounding</small></div>
                 </div>
                 <p class="design-rule"><strong>CDCS repairs <em>who</em>;</strong><br />CSG constrains <em>what</em>.</p>
               </article>
@@ -132,7 +132,7 @@
               <strong>Figure 1.</strong> Why repair must precede grounding. Deterministic TSE can
               distort speech or follow the interferer; autoregressive decoding can drift in content
               or speaker; and grounding confused evidence may reinforce the wrong identity. We therefore
-              repair evidence identity with CDCS-5 before fixed CSG constrains Qwen-TSE generation.
+              repair evidence identity with CDCS-5 before fixed or adaptive CSG constrains Qwen-TSE generation.
               Waveforms are amplitude-normalized traces computed from the released listening examples;
               representative nodes need not belong to the same trial.
             </figcaption>
@@ -144,7 +144,7 @@
             <div
               class="method-diagram"
               role="img"
-              aria-label="Three-panel proposed method. Panel a constructs five frozen, conditioning-diverse TSE candidates and uses a frozen ECAPA selector to obtain repaired evidence c star. Panel b tokenizes c star and uses it together with mixture and speaker conditions to ground a fixed Qwen-TSE model with code-space grounding. Panel c exposes a direct CDCS-5 output and a Qwen-TSE fixed CSG output."
+              aria-label="Three-panel proposed method. Panel a constructs five frozen, conditioning-diverse TSE candidates and uses a frozen ECAPA selector to obtain repaired evidence c star. Panel b tokenizes c star and uses it together with mixture and speaker conditions to ground a fixed Qwen-TSE model. Fixed CSG uses lambda one and window zero; adaptive CSG estimates utterance difficulty from the mixture and repaired evidence, applies a DEV-frozen strength, and uses window one. Panel c exposes direct, fixed-CSG, and adaptive-CSG operating points."
             >
               <section class="method-panel repair-method">
                 <h3><span>(a)</span> Conditioning-diverse evidence repair</h3>
@@ -204,13 +204,26 @@
                 <span class="flow-down" aria-hidden="true">↓</span>
                 <div class="logit-stage"><small>Candidate-token log probabilities</small><span class="token-row purple-tokens"><i class="math-inline" data-tex="\ell_1">ℓ₁</i><i class="math-inline" data-tex="\ell_2">ℓ₂</i><i class="math-inline" data-tex="\ell_3">ℓ₃</i><i class="math-inline" data-tex="\ell_4">ℓ₄</i><i class="math-inline" data-tex="\ell_5">ℓ₅</i><i>…</i></span></div>
                 <span class="flow-down" aria-hidden="true">↓</span>
-                <div class="diagram-block csg-block"><strong>Fixed CSG</strong><small>code-space grounded re-ranking</small><div class="math-display compact-equation" data-tex="\hat z_t=\operatorname*{arg\,max}_{v\in\mathcal V}\!\left[\log p_t(v)-\lambda\min_{|\delta|\le w}d_H\!\left(v,z^e_{t+\delta}\right)\right]">ẑₜ = arg maxᵥ [log pₜ(v) − λ min dH(v,zᵉₜ₊δ)]</div><em><span class="math-inline" data-tex="\lambda=1,\;w=0">λ = 1, w = 0</span> · coordinate-wise FSQ Hamming distance</em></div>
+                <div class="diagram-block csg-block">
+                  <strong>Code-Space Grounding (CSG)</strong>
+                  <small>shared grounded token re-ranking</small>
+                  <div class="math-display compact-equation" data-tex="\hat z_t=\operatorname*{arg\,max}_{v\in\mathcal V}\!\left[\log p_t(v)-\lambda\min_{|\delta|\le w}d_H\!\left(v,z^e_{t+\delta}\right)\right]">ẑₜ = arg maxᵥ [log pₜ(v) − λ min dH(v,zᵉₜ₊δ)]</div>
+                  <div class="csg-modes" aria-label="Fixed and adaptive CSG settings">
+                    <span><b>Fixed</b><i class="math-inline" data-tex="\lambda=1,\;w=0">λ = 1, w = 0</i></span>
+                    <span><b>Adaptive</b><i class="math-inline" data-tex="\lambda=g(\xi),\;w=1">λ = g(ξ), w = 1</i></span>
+                  </div>
+                  <div class="adaptive-route">
+                    <span><span class="math-inline" data-tex="y">y</span> + <span class="math-inline" data-tex="c^\star">c*</span></span><b aria-hidden="true">→</b><span>difficulty <span class="math-inline" data-tex="\xi">ξ</span></span><b aria-hidden="true">→</b><span>DEV-frozen <span class="math-inline" data-tex="g(\xi)">g(ξ)</span></span>
+                    <small>one grounding strength per utterance · held fixed during decoding</small>
+                  </div>
+                  <em>Coordinate-wise FSQ Hamming distance; no oracle information or model update</em>
+                </div>
                 <span class="flow-down" aria-hidden="true">↓</span>
                 <div class="grounded-token-stage"><span class="token-row purple-tokens"><i>41</i><i>09</i><i>63</i><i>21</i><i>78</i><i>…</i><i>36</i></span><strong>Grounded tokens <span class="math-inline" data-tex="\hat z">ẑ</span></strong></div>
               </section>
 
               <section class="method-panel endpoint-method">
-                <h3><span>(c)</span> Two operating points</h3>
+                <h3><span>(c)</span> Three operating points</h3>
                 <article class="endpoint-card direct-endpoint">
                   <p class="endpoint-source"><span class="math-inline" data-tex="c^\star">c*</span> · direct waveform bypass</p>
                   <img class="signal-wave output-wave" src="public/assets/waveforms/evidence.png" alt="" />
@@ -222,17 +235,23 @@
                   <p class="endpoint-source">Grounded tokens <span class="math-inline" data-tex="\hat z">ẑ</span></p>
                   <div class="diagram-block compact-block">CosyVoice3 decoder<br /><i>frozen</i></div>
                   <img class="signal-wave output-wave" src="public/assets/waveforms/qwen-csg.png" alt="" />
-                  <strong>Qwen-TSE fixed CSG</strong>
-                  <small>Autoregressive speech prior<br />Constrained generative endpoint</small>
+                  <strong>Qwen-TSE + CSG</strong>
+                  <small>Autoregressive speech prior<br />Two grounded generative endpoints</small>
+                  <div class="endpoint-modes">
+                    <span><b>Fixed CSG</b><small><span class="math-inline" data-tex="\lambda=1,\;w=0">λ = 1, w = 0</span></small></span>
+                    <span><b>Adaptive CSG</b><small><span class="math-inline" data-tex="\lambda=g(\xi),\;w=1">λ = g(ξ), w = 1</span></small></span>
+                  </div>
                 </article>
-                <p class="ablation-note">UD, adaptive CSG, and GNR are evaluation ablations and are omitted from the main method path.</p>
+                <p class="ablation-note">Fixed CSG favors the lowest switch/error rates; adaptive CSG provides a second reliability–quality operating point. UD and GNR remain evaluation ablations.</p>
               </section>
             </div>
             <figcaption>
               <strong>Figure 2.</strong> Proposed repair-before-grounding pipeline. CDCS-5 constructs
               five frozen, conditioning-diverse TSE candidates and selects repaired evidence with a
               frozen ECAPA encoder. The waveform is either returned directly or tokenized to ground
-              the fixed Qwen-TSE decoder, where CSG constrains token drift. Candidate thumbnails are
+              the fixed Qwen-TSE decoder, where either fixed or adaptive CSG constrains token drift.
+              Adaptive CSG derives one utterance-level grounding strength from the mixture and repaired
+              evidence using a DEV-frozen rule. Candidate thumbnails are
               representative real traces; independent first/final-view candidate audio is not publicly exposed.
             </figcaption>
           </figure>
@@ -245,8 +264,13 @@
           Conditioning-diverse candidate selection (CDCS-5) selects the most enrollment-consistent
           waveform from five frozen TSE candidates. It can be returned directly as the content-fidelity
           endpoint, or tokenized as evidence for Qwen-TSE. The Qwen-TSE speech prior supplies the
-          estimated-quality gain; CSG keeps its
-          next-token choices close to the repaired evidence. This ordering matters: CSG limits generation
+          estimated-quality gain; CSG keeps its next-token choices close to the repaired evidence.
+          <strong>Fixed CSG</strong> uses <span class="math-inline" data-tex="(\lambda,w)=(1,0)">(λ, w) = (1, 0)</span>.
+          <strong>Adaptive CSG</strong> estimates utterance difficulty from the mixture and repaired evidence,
+          applies a DEV-frozen decreasing map <span class="math-inline" data-tex="\lambda=g(\xi)">λ = g(ξ)</span>,
+          and uses <span class="math-inline" data-tex="w=1">w = 1</span>; the selected strength is held fixed
+          throughout that utterance. Neither mode uses a clean target, transcript, oracle label, or model update.
+          This ordering matters: CSG limits generation
           drift, but cannot repair a wrong-speaker anchor by itself.
         </p>
 
@@ -276,27 +300,36 @@
               <div class="equation math-display" data-tex="s_{\mathrm{CSG}}(v,t)=s_{\mathrm{LLM}}(v,t)-\lambda\min_{|\delta|\le w}d_H\!\left(v,z^e_{t+\delta}\right)">
                 sCSG(v,t) = sLLM(v,t) − λ min dH(v,zᵉt+δ)
               </div>
+              <div class="mode-compare">
+                <span><b>Fixed</b><small class="math-inline" data-tex="\lambda=1,\;w=0">λ = 1, w = 0</small></span>
+                <span><b>Adaptive</b><small class="math-inline" data-tex="\lambda=g(\xi),\;w=1">λ = g(ξ), w = 1</small></span>
+              </div>
               <div class="distance-key"><span><i class="near"></i>near: small penalty</span><span><i class="far"></i>far: large penalty</span></div>
             </article>
 
-            <article class="grounding-step">
+            <article class="grounding-step adaptive-step">
               <span class="step-number">3</span>
-              <h4>GNR optionally refines</h4>
-              <p>Top-20 proposals are intersected with a radius-2 Hamming ball around the immutable CSG anchor.</p>
-              <div class="neighbor-row">
-                <span class="anchor-choice">anchor<br /><small class="math-inline" data-tex="d=0">d = 0</small></span>
-                <span class="accepted-choice"><span class="math-inline" data-tex="p_1">p₁</span> ✓<br /><small class="math-inline" data-tex="d=1">d = 1</small></span>
-                <span><span class="math-inline" data-tex="p_2">p₂</span><br /><small class="math-inline" data-tex="d=2">d = 2</small></span>
-                <span class="rejected-choice"><span class="math-inline" data-tex="p_3">p₃</span> ✕<br /><small class="math-inline" data-tex="d=4">d = 4</small></span>
+              <h4>Adaptive CSG sets strength</h4>
+              <p>Projection of the mixture onto repaired evidence gives an utterance-level difficulty score; a DEV-frozen decreasing map chooses one grounding strength for the whole decode.</p>
+              <div class="difficulty-formula math-display" data-tex="\xi(y,c^\star)=10\log_{10}\!\frac{\lVert\alpha^\star c^\star\rVert_2^2+\epsilon}{\lVert y-\alpha^\star c^\star\rVert_2^2+\epsilon}">
+                ξ(y,c*) = 10 log₁₀ (projected evidence / residual)
               </div>
-              <small class="no-feedback">No feedback: accepted edits do not alter later token history.</small>
+              <div class="difficulty-map" aria-label="Lower difficulty score receives stronger grounding and higher difficulty score receives weaker grounding">
+                <span><small>lower <span class="math-inline" data-tex="\xi">ξ</span></small><b>stronger grounding</b></span>
+                <i aria-hidden="true">→</i>
+                <span><small>higher <span class="math-inline" data-tex="\xi">ξ</span></small><b>weaker grounding</b></span>
+              </div>
+              <small class="no-feedback">One <span class="math-inline" data-tex="\lambda">λ</span> per utterance · no token-level adaptation</small>
             </article>
           </div>
           <figcaption>
-            <strong>Figure 3.</strong> Illustrative token-level grounding. Fixed CSG uses
-            <span class="math-inline" data-tex="\lambda=1,\;w=0">λ = 1, w = 0</span>. The reported adaptive noisy branch resolved to
-            <span class="math-inline" data-tex="\lambda=0.5,\;w=1">λ = 0.5, w = 1</span> for every trial; GNR uses
-            <span class="math-inline" data-tex="K=20,\;R=2">K = 20, R = 2</span> and is reported as a negative ablation because local code proximity did not lower WER.
+            <strong>Figure 3.</strong> Fixed and adaptive CSG share the same grounded token-selection
+            rule. Fixed CSG uses <span class="math-inline" data-tex="\lambda=1,\;w=0">λ = 1, w = 0</span>;
+            adaptive CSG uses a DEV-frozen utterance-level policy
+            <span class="math-inline" data-tex="\lambda=g(\xi),\;w=1">λ = g(ξ), w = 1</span> and keeps
+            <span class="math-inline" data-tex="\lambda">λ</span> unchanged during decoding. Transparently, on the
+            reported noisy evaluation this frozen rule selected
+            <span class="math-inline" data-tex="\lambda=0.5">λ = 0.5</span> for every trial.
           </figcaption>
         </figure>
       </section>
@@ -314,6 +347,7 @@
           (2) missing, substituted, or invented words, and (3) the fidelity–naturalness trade-off
           between direct evidence and grounded generation.
         </div>
+        <p class="adaptive-audio-link"><a href="#grounding-failures">Hear Fixed and Adaptive CSG side by side in the six Grounding limits cases ↓</a></p>
 
         <div class="case-navigation" aria-label="Audio example navigation">
           <button type="button" id="case-previous" aria-label="Previous audio example">←</button>
