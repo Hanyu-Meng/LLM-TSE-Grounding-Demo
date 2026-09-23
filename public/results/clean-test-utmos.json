@@ -16,11 +16,11 @@
     "weight_sha256": "38aa51ab79e2a4e09a1449758a4b37e9cbb2e8235a49662a732d33a9ba1e9bff"
   },
   "systems": [
-    {"id": "primary_wesep", "display_name": "Primary WeSep", "completed": 6000, "utmos": 3.606285262883},
-    {"id": "tfmap_context_single", "display_name": "TF-map/context WeSep", "completed": 6000, "utmos": 3.702206565738},
-    {"id": "pool_d_selected", "display_name": "Pool D direct", "completed": 6000, "utmos": 3.647283282598},
-    {"id": "pool_d_qfull_ud", "display_name": "Pool D to Q-Full UD", "completed": 6000, "utmos": 3.913620667716},
-    {"id": "pool_d_qfull_csg", "display_name": "Pool D to fixed CSG", "completed": 6000, "utmos": 3.909825650215},
-    {"id": "pool_d_qfull_csg_gnr_k20_r2", "display_name": "Pool D to fixed CSG to GNR (K20/R2)", "completed": 6000, "utmos": 3.914867912730}
+    {"id": "bsrnn_tse", "display_name": "BSRNN-TSE", "completed": 6000, "utmos": 3.606285262883},
+    {"id": "bsrnn_tse_tf_context", "display_name": "BSRNN-TSE (TF-context checkpoint)", "completed": 6000, "utmos": 3.702206565738},
+    {"id": "bsrnn_tse_cdcs_5", "display_name": "BSRNN-TSE-CDCS-5", "completed": 6000, "utmos": 3.647283282598},
+    {"id": "qwen_tse_ud", "display_name": "Qwen-TSE-UD", "completed": 6000, "utmos": 3.913620667716},
+    {"id": "qwen_tse_fixed_csg", "display_name": "Qwen-TSE-fixed-CSG", "completed": 6000, "utmos": 3.909825650215},
+    {"id": "qwen_tse_fixed_csg_gnr_k20_r2", "display_name": "Qwen-TSE-fixed-CSG+GNR (supplementary; K20/R2)", "completed": 6000, "utmos": 3.914867912730}
   ]
 }

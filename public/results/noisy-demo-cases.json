@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "split": "test",
   "benchmark": "natural",
   "population_trials": 6000,
@@ -12,12 +12,13 @@
   "metric_notes": {
     "wer": "Uncapped utterance-level config-consistent Whisper large-v3 WER; insertions can make WER exceed 100%.",
     "a_sw": "Study-defined acoustic-switch indicator.",
-    "utmos_and_dnsmos": "Non-intrusive model estimates of perceptual quality; neither establishes target-speaker or lexical correctness.",
+    "utmos": "Non-intrusive predicted naturalness; it does not establish target-speaker or lexical correctness.",
+    "dnsmos_p808": "DNSMOS P.808 is reported only at corpus level because no per-case P.808 values are available for these examples.",
     "estoi": "Intrusive intelligibility estimate against the clean target."
   },
   "selection_protocol": {
     "common_filter": "Trial identities and waveforms are unchanged from the frozen listening-case selection; displayed transcripts and WER are re-audited consistently with Whisper large-v3.",
-    "evidence_repair": "Wrong-speaker Primary case retained to expose candidate repair; large-v3 scores Primary/CDCS-5/fixed CSG at 144.44/11.11/0% WER.",
+    "evidence_repair": "Wrong-speaker BSRNN-TSE case retained to expose candidate repair; large-v3 scores BSRNN-TSE/BSRNN-TSE-CDCS-5/Qwen-TSE-fixed-CSG at 144.44/11.11/0% WER.",
     "speaker_grounding": "Ungrounded acoustic-switch collapse retained; fixed CSG restores target-side speaker identity and lowers large-v3 WER from 100% to 25%.",
     "content_grounding": "Former lexical-drift player set retained as a listening control because large-v3 assigns every displayed output the exact target transcript.",
     "quality_grounding": "Matched 0%-WER outputs retained to expose the fidelity–predicted-naturalness operating-point difference."
@@ -28,22 +29,20 @@
       "trial_id": "test:5142-33396-0010_8555-292519-0012:8555",
       "target_text": "through the black night rain he sang to me",
       "systems": {
-        "primary_wesep": {
+        "bsrnn_tse": {
           "output_text": "in the stern i carved the tail up almost as high as the head",
           "wer": 1.444444,
           "a_sw": true,
           "speaker_margin": -0.527178,
           "utmos": 3.386915,
-          "dnsmos_ovrl": 3.010398,
           "estoi": -0.014471
         },
-        "cdcs_5_direct": {
+        "bsrnn_tse_cdcs_5": {
           "output_text": "through the black night rain he sang to",
           "wer": 0.111111,
           "a_sw": false,
           "speaker_margin": 0.39393,
           "utmos": 2.620063,
-          "dnsmos_ovrl": 2.161375,
           "estoi": 0.78723
         },
         "qwen_tse_ud": {
@@ -52,7 +51,6 @@
           "a_sw": false,
           "speaker_margin": 0.262971,
           "utmos": 3.425434,
-          "dnsmos_ovrl": 3.027519,
           "estoi": 0.66927
         },
         "qwen_tse_fixed_csg": {
@@ -61,7 +59,6 @@
           "a_sw": false,
           "speaker_margin": 0.249747,
           "utmos": 3.650644,
-          "dnsmos_ovrl": 2.959936,
           "estoi": 0.692586
         }
       }
@@ -71,22 +68,20 @@
       "trial_id": "test:1995-1826-0015_908-157963-0005:1995",
       "target_text": "she had almost forgotten that it was here within touch and sight",
       "systems": {
-        "primary_wesep": {
+        "bsrnn_tse": {
           "output_text": "she had almost forgotten that it was here within touch and sight",
           "wer": 0,
           "a_sw": false,
           "speaker_margin": 0.54507,
           "utmos": 3.300329,
-          "dnsmos_ovrl": 2.759279,
           "estoi": 0.869006
         },
-        "cdcs_5_direct": {
+        "bsrnn_tse_cdcs_5": {
           "output_text": "she had almost forgotten that it was here he can touch and sight",
           "wer": 0.166667,
           "a_sw": false,
           "speaker_margin": 0.561049,
           "utmos": 3.324447,
-          "dnsmos_ovrl": 2.755967,
           "estoi": 0.864569
         },
         "qwen_tse_ud": {
@@ -95,7 +90,6 @@
           "a_sw": true,
           "speaker_margin": -0.008244,
           "utmos": 2.976541,
-          "dnsmos_ovrl": 1.922893,
           "estoi": 0.003788
         },
         "qwen_tse_fixed_csg": {
@@ -104,7 +98,6 @@
           "a_sw": false,
           "speaker_margin": 0.673998,
           "utmos": 3.858996,
-          "dnsmos_ovrl": 3.349729,
           "estoi": 0.747898
         }
       }
@@ -114,22 +107,20 @@
       "trial_id": "test:260-123440-0013_8230-279154-0016:8230",
       "target_text": "in actual fact there are doubtless various",
       "systems": {
-        "primary_wesep": {
+        "bsrnn_tse": {
           "output_text": "in actual fact there are doubtless various",
           "wer": 0,
           "a_sw": false,
           "speaker_margin": 0.477253,
           "utmos": 2.918162,
-          "dnsmos_ovrl": 2.332892,
           "estoi": 0.647725
         },
-        "cdcs_5_direct": {
+        "bsrnn_tse_cdcs_5": {
           "output_text": "in actual fact there are doubtless various",
           "wer": 0,
           "a_sw": false,
           "speaker_margin": 0.491468,
           "utmos": 2.922394,
-          "dnsmos_ovrl": 2.372238,
           "estoi": 0.651861
         },
         "qwen_tse_ud": {
@@ -138,7 +129,6 @@
           "a_sw": false,
           "speaker_margin": 0.459699,
           "utmos": 3.596734,
-          "dnsmos_ovrl": 3.277292,
           "estoi": 0.31403
         },
         "qwen_tse_fixed_csg": {
@@ -147,7 +137,6 @@
           "a_sw": false,
           "speaker_margin": 0.421932,
           "utmos": 3.556462,
-          "dnsmos_ovrl": 2.968914,
           "estoi": 0.608632
         }
       }
@@ -157,22 +146,20 @@
       "trial_id": "test:3729-6852-0019_5639-40744-0037:3729",
       "target_text": "i tell him to give me some coffee if it is good",
       "systems": {
-        "primary_wesep": {
+        "bsrnn_tse": {
           "output_text": "i tell him to give me some coffee if it is good",
           "wer": 0,
           "a_sw": false,
           "speaker_margin": 0.530555,
           "utmos": 1.479945,
-          "dnsmos_ovrl": 2.320341,
           "estoi": 0.736379
         },
-        "cdcs_5_direct": {
+        "bsrnn_tse_cdcs_5": {
           "output_text": "i tell him to give me some coffee if it is good",
           "wer": 0,
           "a_sw": false,
           "speaker_margin": 0.486536,
           "utmos": 1.306923,
-          "dnsmos_ovrl": 1.269849,
           "estoi": 0.692086
         },
         "qwen_tse_ud": {
@@ -181,7 +168,6 @@
           "a_sw": false,
           "speaker_margin": 0.562963,
           "utmos": 3.780135,
-          "dnsmos_ovrl": 3.390587,
           "estoi": 0.626619
         },
         "qwen_tse_fixed_csg": {
@@ -190,7 +176,6 @@
           "a_sw": false,
           "speaker_margin": 0.560803,
           "utmos": 3.827171,
-          "dnsmos_ovrl": 3.170756,
           "estoi": 0.620886
         }
       }

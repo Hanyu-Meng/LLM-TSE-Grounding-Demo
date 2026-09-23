@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "title": "Natural Noisy TEST LLM-WER listening case study — Whisper large-v3",
   "scope": {
     "split": "Natural Noisy TEST",
@@ -39,8 +39,8 @@
       "listening_note": "The UD waveform remains intelligible but lexically imperfect; compare it with the target-exact grounded outputs.",
       "target_text": "he was like unto my father in a way and yet was not my father",
       "systems": {
-        "cdcs_direct": {
-          "label": "CDCS-5 direct",
+        "bsrnn_tse_cdcs_5": {
+          "label": "BSRNN-TSE-CDCS-5",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.614222,
           "audio": {
@@ -60,7 +60,7 @@
           }
         },
         "qwen_tse_ud": {
-          "label": "Qwen-TSE UD",
+          "label": "Qwen-TSE-UD",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.472376,
           "audio": {
@@ -79,8 +79,8 @@
             "hard_limit_proxy": false
           }
         },
-        "fixed_csg": {
-          "label": "Qwen-TSE fixed CSG",
+        "qwen_tse_fixed_csg": {
+          "label": "Qwen-TSE-fixed-CSG",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.457797,
           "audio": {
@@ -99,8 +99,8 @@
             "hard_limit_proxy": false
           }
         },
-        "adaptive_csg": {
-          "label": "Qwen-TSE adaptive CSG",
+        "qwen_tse_adaptive_csg": {
+          "label": "Qwen-TSE-adaptive-CSG",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.46717,
           "audio": {
@@ -119,8 +119,8 @@
             "hard_limit_proxy": false
           }
         },
-        "adaptive_csg_gnr": {
-          "label": "Qwen-TSE adaptive CSG+GNR",
+        "qwen_tse_adaptive_csg_gnr": {
+          "label": "Qwen-TSE-adaptive-CSG+GNR (supplementary)",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.494469,
           "audio": {
@@ -169,8 +169,8 @@
       "listening_note": "Large-v3 inserts 419 repeated tokens. Listen to the complete waveform to judge whether that repetition is acoustic or measurement-side.",
       "target_text": "alexander paced up and down the hallway buttoning and unbuttoning his overcoat until she returned and took him up to hildas living room",
       "systems": {
-        "cdcs_direct": {
-          "label": "CDCS-5 direct",
+        "bsrnn_tse_cdcs_5": {
+          "label": "BSRNN-TSE-CDCS-5",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.547999,
           "audio": {
@@ -190,7 +190,7 @@
           }
         },
         "qwen_tse_ud": {
-          "label": "Qwen-TSE UD",
+          "label": "Qwen-TSE-UD",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.466915,
           "audio": {
@@ -209,8 +209,8 @@
             "hard_limit_proxy": false
           }
         },
-        "fixed_csg": {
-          "label": "Qwen-TSE fixed CSG",
+        "qwen_tse_fixed_csg": {
+          "label": "Qwen-TSE-fixed-CSG",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.485288,
           "audio": {
@@ -229,8 +229,8 @@
             "hard_limit_proxy": false
           }
         },
-        "adaptive_csg": {
-          "label": "Qwen-TSE adaptive CSG",
+        "qwen_tse_adaptive_csg": {
+          "label": "Qwen-TSE-adaptive-CSG",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.477791,
           "audio": {
@@ -249,8 +249,8 @@
             "hard_limit_proxy": false
           }
         },
-        "adaptive_csg_gnr": {
-          "label": "Qwen-TSE adaptive CSG+GNR",
+        "qwen_tse_adaptive_csg_gnr": {
+          "label": "Qwen-TSE-adaptive-CSG+GNR (supplementary)",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.483429,
           "audio": {
@@ -299,8 +299,8 @@
       "listening_note": "The UD file has normal nominal duration, but large-v3 returns an empty transcript. Listen for silence, nonspeech, or speech too degraded to recover.",
       "target_text": "steam up and canvas spread the schooner started eastwards",
       "systems": {
-        "cdcs_direct": {
-          "label": "CDCS-5 direct",
+        "bsrnn_tse_cdcs_5": {
+          "label": "BSRNN-TSE-CDCS-5",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.442696,
           "audio": {
@@ -320,7 +320,7 @@
           }
         },
         "qwen_tse_ud": {
-          "label": "Qwen-TSE UD",
+          "label": "Qwen-TSE-UD",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.057863,
           "audio": {
@@ -339,8 +339,8 @@
             "hard_limit_proxy": false
           }
         },
-        "fixed_csg": {
-          "label": "Qwen-TSE fixed CSG",
+        "qwen_tse_fixed_csg": {
+          "label": "Qwen-TSE-fixed-CSG",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.534271,
           "audio": {
@@ -359,8 +359,8 @@
             "hard_limit_proxy": false
           }
         },
-        "adaptive_csg": {
-          "label": "Qwen-TSE adaptive CSG",
+        "qwen_tse_adaptive_csg": {
+          "label": "Qwen-TSE-adaptive-CSG",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.525914,
           "audio": {
@@ -379,8 +379,8 @@
             "hard_limit_proxy": false
           }
         },
-        "adaptive_csg_gnr": {
-          "label": "Qwen-TSE adaptive CSG+GNR",
+        "qwen_tse_adaptive_csg_gnr": {
+          "label": "Qwen-TSE-adaptive-CSG+GNR (supplementary)",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.528047,
           "audio": {
@@ -429,8 +429,8 @@
       "listening_note": "The output remains target-like according to the speaker encoder, but its fluent sentence is far from the 25-word large-v3 target reference.",
       "target_text": "ill gladly do that promised the new boolaroo and ill feed the honourable goat all the shavings and leather and tin cans he can eat",
       "systems": {
-        "cdcs_direct": {
-          "label": "CDCS-5 direct",
+        "bsrnn_tse_cdcs_5": {
+          "label": "BSRNN-TSE-CDCS-5",
           "acoustic_speaker_switch": true,
           "speaker_margin": -0.317458,
           "audio": {
@@ -450,7 +450,7 @@
           }
         },
         "qwen_tse_ud": {
-          "label": "Qwen-TSE UD",
+          "label": "Qwen-TSE-UD",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.107256,
           "audio": {
@@ -469,8 +469,8 @@
             "hard_limit_proxy": false
           }
         },
-        "fixed_csg": {
-          "label": "Qwen-TSE fixed CSG",
+        "qwen_tse_fixed_csg": {
+          "label": "Qwen-TSE-fixed-CSG",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.137775,
           "audio": {
@@ -489,8 +489,8 @@
             "hard_limit_proxy": false
           }
         },
-        "adaptive_csg": {
-          "label": "Qwen-TSE adaptive CSG",
+        "qwen_tse_adaptive_csg": {
+          "label": "Qwen-TSE-adaptive-CSG",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.132823,
           "audio": {
@@ -509,8 +509,8 @@
             "hard_limit_proxy": false
           }
         },
-        "adaptive_csg_gnr": {
-          "label": "Qwen-TSE adaptive CSG+GNR",
+        "qwen_tse_adaptive_csg_gnr": {
+          "label": "Qwen-TSE-adaptive-CSG+GNR (supplementary)",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.132823,
           "audio": {
@@ -559,8 +559,8 @@
       "listening_note": "Large-v3 transcribes UD as ‘thank you’; fixed CSG restores the complete target sentence and target-side speaker identity.",
       "target_text": "suddenly the ichthyosaurus and the plesiosaurus disappear below",
       "systems": {
-        "cdcs_direct": {
-          "label": "CDCS-5 direct",
+        "bsrnn_tse_cdcs_5": {
+          "label": "BSRNN-TSE-CDCS-5",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.621726,
           "audio": {
@@ -580,7 +580,7 @@
           }
         },
         "qwen_tse_ud": {
-          "label": "Qwen-TSE UD",
+          "label": "Qwen-TSE-UD",
           "acoustic_speaker_switch": true,
           "speaker_margin": -0.03911,
           "audio": {
@@ -599,8 +599,8 @@
             "hard_limit_proxy": false
           }
         },
-        "fixed_csg": {
-          "label": "Qwen-TSE fixed CSG",
+        "qwen_tse_fixed_csg": {
+          "label": "Qwen-TSE-fixed-CSG",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.396871,
           "audio": {
@@ -619,8 +619,8 @@
             "hard_limit_proxy": false
           }
         },
-        "adaptive_csg": {
-          "label": "Qwen-TSE adaptive CSG",
+        "qwen_tse_adaptive_csg": {
+          "label": "Qwen-TSE-adaptive-CSG",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.401422,
           "audio": {
@@ -639,8 +639,8 @@
             "hard_limit_proxy": false
           }
         },
-        "adaptive_csg_gnr": {
-          "label": "Qwen-TSE adaptive CSG+GNR",
+        "qwen_tse_adaptive_csg_gnr": {
+          "label": "Qwen-TSE-adaptive-CSG+GNR (supplementary)",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.356903,
           "audio": {
@@ -689,8 +689,8 @@
       "listening_note": "UD is nearly empty, but fixed CSG replaces it with fluent unrelated content and moves the acoustic speaker margin below zero.",
       "target_text": "sometime youll tell me please wont you",
       "systems": {
-        "cdcs_direct": {
-          "label": "CDCS-5 direct",
+        "bsrnn_tse_cdcs_5": {
+          "label": "BSRNN-TSE-CDCS-5",
           "acoustic_speaker_switch": true,
           "speaker_margin": -0.083588,
           "audio": {
@@ -710,7 +710,7 @@
           }
         },
         "qwen_tse_ud": {
-          "label": "Qwen-TSE UD",
+          "label": "Qwen-TSE-UD",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.033917,
           "audio": {
@@ -729,8 +729,8 @@
             "hard_limit_proxy": false
           }
         },
-        "fixed_csg": {
-          "label": "Qwen-TSE fixed CSG",
+        "qwen_tse_fixed_csg": {
+          "label": "Qwen-TSE-fixed-CSG",
           "acoustic_speaker_switch": true,
           "speaker_margin": -0.035985,
           "audio": {
@@ -749,8 +749,8 @@
             "hard_limit_proxy": false
           }
         },
-        "adaptive_csg": {
-          "label": "Qwen-TSE adaptive CSG",
+        "qwen_tse_adaptive_csg": {
+          "label": "Qwen-TSE-adaptive-CSG",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.009156,
           "audio": {
@@ -769,8 +769,8 @@
             "hard_limit_proxy": false
           }
         },
-        "adaptive_csg_gnr": {
-          "label": "Qwen-TSE adaptive CSG+GNR",
+        "qwen_tse_adaptive_csg_gnr": {
+          "label": "Qwen-TSE-adaptive-CSG+GNR (supplementary)",
           "acoustic_speaker_switch": false,
           "speaker_margin": 0.0027,
           "audio": {

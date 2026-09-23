@@ -242,9 +242,9 @@ figcaption { margin-top: .65rem; color: #666; font-size: .86rem; line-height: 1.
 .endpoint-card.generated-endpoint > strong { color: var(--ink); }
 .endpoint-card > small { color: var(--muted); font-size: .62rem; line-height: 1.4; }
 .endpoint-modes { display: grid; width: 100%; gap: .24rem; }
-.endpoint-modes > span { display: flex; align-items: center; justify-content: space-between; gap: .35rem; padding: .28rem .38rem; border: 1px solid var(--line); border-radius: 2px; color: var(--ink); background: white; font-size: .57rem; }
+.endpoint-modes > span { display: grid; justify-items: center; gap: .12rem; padding: .3rem .38rem; border: 1px solid var(--line); border-radius: 2px; color: var(--ink); background: white; font-size: .57rem; text-align: center; }
 .endpoint-modes > span:last-child { border-color: #b8add1; background: var(--diagram-purple-soft); }
-.endpoint-modes b { font-size: .57rem; }
+.endpoint-modes b { font-size: .57rem; overflow-wrap: anywhere; }
 .endpoint-modes small { color: var(--muted); font-size: .52rem; white-space: nowrap; }
 .endpoint-divider { position: relative; height: 2.1rem; display: grid; place-items: center; }
 .endpoint-divider::before { position: absolute; top: 50%; right: 0; left: 0; height: 1px; background: #d8dfe7; content: ""; }

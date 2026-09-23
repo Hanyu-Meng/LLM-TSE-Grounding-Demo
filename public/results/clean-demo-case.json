@@ -1,5 +1,5 @@
 {
-  "schema_version": "2.0",
+  "schema_version": "3.0",
   "condition": "clean",
   "split": "test",
   "split_trial_count": 6000,
@@ -7,22 +7,22 @@
   "case_role": "segmented-only speaker-confusion recovery",
   "selection_rule": "Frozen case identity retained from the segmented-only recovery selection; displayed transcripts and WER are re-audited consistently with Whisper large-v3.",
   "selected_candidate": {
-    "public_name": "CDCS-5 direct",
+    "public_name": "BSRNN-TSE-CDCS-5",
     "conditioning_view": "middle",
     "view_duration_seconds": 2
   },
   "transcripts": {
     "target": "this attitude springs from a false conception of sin the conception that sin is a small matter easily taken care of by good works",
-    "primary_wesep": "he obtained the desired speed and load with a friction brake also regulated speed but waited for an indicator to verify it",
-    "cdcs_5_direct": "this attitude springs from a false conception of sin the conception that sin is a small matter easily taken care of by good works"
+    "bsrnn_tse": "he obtained the desired speed and load with a friction brake also regulated speed but waited for an indicator to verify it",
+    "bsrnn_tse_cdcs_5": "this attitude springs from a false conception of sin the conception that sin is a small matter easily taken care of by good works"
   },
   "systems": {
-    "primary_wesep": {
+    "bsrnn_tse": {
       "wer_percent": 100,
       "acoustic_switch": 1,
       "speaker_margin": -0.285
     },
-    "cdcs_5_direct": {
+    "bsrnn_tse_cdcs_5": {
       "wer_percent": 0,
       "acoustic_switch": 0,
       "speaker_margin": 0.52
@@ -50,12 +50,12 @@
       "sha256": "7acb7719ff80f20959ea0cf0314e779ac0730f83e03fab3a37ce967f2ec93751"
     },
     {
-      "role": "primary_wesep",
+      "role": "bsrnn_tse",
       "path": "public/assets/audio/clean/segmented/primary.wav",
       "sha256": "d41e2e295034427311aad1aff7c3a83bf43bbd6a02502488ed4e720a61e75d04"
     },
     {
-      "role": "cdcs_5_direct_middle_view",
+      "role": "bsrnn_tse_cdcs_5_middle_view",
       "path": "public/assets/audio/clean/segmented/pool-d.wav",
       "sha256": "87a9138833139e6d49cb0df640d1f5cbb92ecf70d1fffaf139108d0f34123596"
     }
