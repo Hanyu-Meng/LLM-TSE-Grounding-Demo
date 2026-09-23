@@ -829,83 +829,36 @@ p { margin: .6rem 0 1rem; }
   background: #fafafa;
 }
 
-figure { margin: 1.45rem auto; }
-.figure-card,
-.plain-figure,
-.academic-diagram {
-  border: 0;
-  border-radius: 0;
-  background: #fff;
-  box-shadow: none;
-}
-.figure-card { padding: 0; }
-.academic-diagram {
-  --diagram-width: min(1120px, calc(100vw - 32px));
-  padding: .25rem 0;
-}
-.method-overview-figure { --diagram-width: min(1160px, calc(100vw - 32px)); }
-.diagram-heading {
-  padding-bottom: .45rem;
-  border-color: #dedede;
-}
-.diagram-heading span { color: var(--muted); }
-figcaption {
-  margin-top: .65rem;
-  color: #747474;
-  font-size: .78rem;
-  line-height: 1.45;
-}
-
-.problem-panel,
-.problem-panel.generative-problem,
-.problem-panel.anchor-problem,
-.problem-panel.solution-problem,
-.grounding-step,
-.grounding-step:nth-child(1),
-.grounding-step:nth-child(2),
-.grounding-step:nth-child(3),
-.grounding-step.emphasis-step {
-  border-color: #dedede;
-  border-radius: 0;
-  background: #fff;
-}
-.problem-panel { border-top-width: 1px; }
-.problem-panel.solution-problem { border-left: 2px solid var(--accent); }
-.generative-problem .diagram-block,
-.qwen-block,
-.selected-evidence,
-.evidence-path,
-.csg-block,
-.endpoint-card,
-.endpoint-card.generated-endpoint,
-.generated-output,
-.expert-stack .diagram-block:first-child,
-.expert-stack .diagram-block:last-child {
-  color: var(--ink);
-  border-color: #cfcfcf;
-  background: #fafafa;
-}
-.selected-evidence,
-.csg-block,
-.endpoint-card.generated-endpoint { border-color: #9eb7d2; }
-.grounding-steps {
-  gap: 0;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-}
-.grounding-step {
-  padding: 1rem .9rem;
-  border-width: 0 1px 0 0;
-}
-.grounding-step:last-child { border-right: 0; }
-.step-number {
-  width: auto;
-  height: auto;
-  place-items: start;
-  border-radius: 0;
-  color: var(--muted);
-  background: transparent !important;
-  font-size: .7rem;
+/* Keep the editorial page shell minimal, but retain the original visual
+   hierarchy of the paper figures. These scoped variables restore the
+   pre-refresh blue/purple/teal diagram language without recolouring the
+   surrounding prose, audio examples, or results tables. */
+.figure-sequence,
+#method > .figure-card {
+  --ink: #17243a;
+  --text: #28364a;
+  --muted: #667386;
+  --accent: #16837e;
+  --accent-soft: #edf8f6;
+  --blue: #376da3;
+  --blue-dark: #244e79;
+  --blue-soft: #eef4fb;
+  --green: #2f8968;
+  --green-soft: #eef8f3;
+  --orange: #c77a31;
+  --orange-soft: #fff5e9;
+  --red: #b6535b;
+  --red-soft: #fdf0f1;
+  --diagram-navy: #2f5f90;
+  --diagram-teal: #16837e;
+  --diagram-teal-soft: #edf8f6;
+  --diagram-orange: #c77a31;
+  --diagram-orange-soft: #fff5e9;
+  --diagram-purple: #755aa5;
+  --diagram-purple-soft: #f4effa;
+  --line: #d8e0eb;
+  --line-dark: #a8b6c9;
+  --paper: #ffffff;
 }
 
 .case-navigation {
@@ -1121,9 +1074,6 @@ footer {
   h2 { font-size: 1.5rem; }
   section { padding: 1.8rem 0 1.35rem; }
   .paper-links { line-height: 1.9; }
-  .academic-diagram { --diagram-width: 100%; padding: 0; }
-  .grounding-steps { border-bottom: 0; }
-  .grounding-step { border-width: 0 0 1px; }
   .case-navigation { justify-content: center; }
   .audio-cell,
   .audio-cell.reference,
