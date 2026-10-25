@@ -23,7 +23,7 @@
     <title>Speaker-Consistent Grounding · Audio Demo</title>
     <link rel="icon" href="public/favicon.svg" />
     <link rel="stylesheet" href="public/vendor/katex/katex.min.css?v=0.18.6" />
-    <link rel="stylesheet" href="styles.css?v=20261025-paper-1" />
+    <link rel="stylesheet" href="styles.css?v=20261025-audio-2" />
   </head>
   <body>
     <a class="skip-link" href="#content">Skip to content</a>
@@ -189,15 +189,19 @@
         <div class="explanation-box listen-box"><strong>Listen for:</strong> speaker identity, word accuracy, and the fidelity–naturalness trade-off.</div>
         <p class="adaptive-audio-link"><a href="#grounding-failures">Compare fixed and adaptive CSG in Grounding limits ↓</a></p>
 
+        <div class="result-switch audio-condition-switch" role="group" aria-label="Choose clean or noisy audio examples">
+          <button type="button" data-audio-condition="clean" aria-pressed="true" aria-controls="audio-cases">Clean <span>1 example</span></button>
+          <button type="button" data-audio-condition="noisy" aria-pressed="false" aria-controls="audio-cases">Noisy <span>4 examples</span></button>
+        </div>
         <div class="case-navigation" aria-label="Audio example navigation">
-          <button type="button" id="case-previous" aria-label="Previous audio example">←</button>
-          <span id="case-count" aria-live="polite">Example 1 of 5</span>
-          <button type="button" id="case-next" aria-label="Next audio example">→</button>
+          <button type="button" id="case-previous" aria-label="Previous audio example" disabled>←</button>
+          <span id="case-count" aria-live="polite">Clean · 1 of 1</span>
+          <button type="button" id="case-next" aria-label="Next audio example" disabled>→</button>
         </div>
 
         <div id="audio-cases">
-          <article class="audio-case" data-audio-case>
-            <h3>Example 1 — clean BSRNN-TSE wrong-speaker failure</h3>
+          <article class="audio-case" data-audio-case data-condition="clean" id="audio-clean-1">
+            <h3>Clean example — BSRNN-TSE wrong-speaker failure</h3>
             <p>BSRNN-TSE follows the interferer. A two-second enrollment view recovers the target: <strong class="math-inline" data-tex="\operatorname{WER}:100\%\rightarrow0\%">WER: 100% → 0%</strong>,
               <strong class="math-inline" data-tex="m_{\mathrm{spk}}:-0.285\rightarrow+0.520">speaker margin: −0.285 → +0.520</strong>, and
               <strong class="math-inline" data-tex="\mathrm{A\text{-}sw.}:1\rightarrow0">A-sw.: 1 → 0</strong>.</p>
@@ -226,11 +230,11 @@
             <details class="spectrogram"><summary>Spectrogram</summary><figure class="spectrogram-frame"><a href="public/assets/figures/clean-case-segmented.png?v=20260923-names-1" target="_blank" rel="noopener"><img data-src="public/assets/figures/clean-case-segmented.png?v=20260923-names-1" width="2000" height="1160" alt="Clean wrong-speaker BSRNN-TSE and BSRNN-TSE-CDCS-5 recovery spectrogram comparison" /></a><figcaption>Clean target, clean interferer, wrong-speaker BSRNN-TSE, and the target-consistent middle-view candidate selected by CDCS-5. Select the figure for the 2,000-pixel original.</figcaption></figure></details>
           </article>
 
-          <article class="audio-case" data-audio-case hidden>
-            <h3>Example 2 — BSRNN-TSE extracts the wrong speaker under noise</h3>
+          <article class="audio-case" data-audio-case data-condition="noisy" id="audio-noisy-1" hidden>
+            <h3>Noisy example 1 — BSRNN-TSE extracts the wrong speaker under noise</h3>
             <p>BSRNN-TSE follows the interferer. CDCS-5 selects the TF-map/context candidate; fixed CSG preserves the repaired target content: <strong class="math-inline" data-tex="\operatorname{WER}:144.44\%\rightarrow0\%">WER: 144.44% → 0%</strong> and
               <strong class="math-inline" data-tex="\mathrm{A\text{-}sw.}:1\rightarrow0">A-sw.: 1 → 0</strong>.</p>
-            <details class="input-details wide-inputs">
+            <details class="input-details wide-inputs" open>
               <summary>Input, enrollment &amp; interferer</summary>
               <div class="audio-grid three">
                 <div class="audio-cell"><strong>Noisy mixture</strong><small>system input</small><audio controls preload="none" src="public/assets/audio/noisy/evidence-repair/mixture.wav"></audio></div>
@@ -259,11 +263,11 @@
             <details class="spectrogram"><summary>Spectrogram</summary><figure class="spectrogram-frame"><a href="public/assets/figures/noisy-case-evidence-repair.png?v=20260923-names-1" target="_blank" rel="noopener"><img data-src="public/assets/figures/noisy-case-evidence-repair.png?v=20260923-names-1" width="2000" height="1160" alt="Noisy BSRNN-TSE speaker-recovery spectrogram comparison" /></a><figcaption>Clean target, wrong-speaker BSRNN-TSE, repaired BSRNN-TSE-CDCS-5 evidence, and Qwen-TSE-fixed-CSG output. Select the figure for the 2,000-pixel original.</figcaption></figure></details>
           </article>
 
-          <article class="audio-case" data-audio-case hidden>
-            <h3>Example 3 — grounding blocks speaker collapse</h3>
+          <article class="audio-case" data-audio-case data-condition="noisy" id="audio-noisy-2" hidden>
+            <h3>Noisy example 2 — grounding blocks speaker collapse</h3>
             <p>Qwen-TSE-UD collapses despite target-consistent evidence. Fixed CSG restores identity and most words: <strong class="math-inline" data-tex="\operatorname{WER}_{\mathrm{UD}}=100\%\rightarrow\operatorname{WER}_{\mathrm{CSG}}=25\%">UD WER = 100% → CSG WER = 25%</strong> and
               <strong class="math-inline" data-tex="\mathrm{A\text{-}sw.}:1\rightarrow0">A-sw.: 1 → 0</strong>.</p>
-            <details class="input-details wide-inputs">
+            <details class="input-details wide-inputs" open>
               <summary>Input, enrollment &amp; interferer</summary>
               <div class="audio-grid three">
                 <div class="audio-cell"><strong>Noisy mixture</strong><small>system input</small><audio controls preload="none" src="public/assets/audio/noisy/speaker-grounding/mixture.wav"></audio></div>
@@ -291,10 +295,10 @@
             <details class="spectrogram"><summary>Spectrogram</summary><figure class="spectrogram-frame"><a href="public/assets/figures/noisy-case-speaker-grounding.png?v=20260923-names-1" target="_blank" rel="noopener"><img data-src="public/assets/figures/noisy-case-speaker-grounding.png?v=20260923-names-1" width="2000" height="1160" alt="Noisy Qwen-TSE-UD speaker collapse and Qwen-TSE-fixed-CSG recovery spectrogram comparison" /></a><figcaption>Clean target, BSRNN-TSE-CDCS-5 evidence, Qwen-TSE-UD speaker collapse, and Qwen-TSE-fixed-CSG recovery. Select the figure for the 2,000-pixel original.</figcaption></figure></details>
           </article>
 
-          <article class="audio-case" data-audio-case hidden>
-            <h3>Example 4 — a large-v3 transcript-agreement control</h3>
+          <article class="audio-case" data-audio-case data-condition="noisy" id="audio-noisy-3" hidden>
+            <h3>Noisy example 3 — a large-v3 transcript-agreement control</h3>
             <p>All displayed outputs match the target transcript under large-v3 (<strong class="math-inline" data-tex="\operatorname{WER}=0\%">WER = 0%</strong>). Listen for differences that ASR does not capture.</p>
-            <details class="input-details wide-inputs">
+            <details class="input-details wide-inputs" open>
               <summary>Input, enrollment &amp; interferer</summary>
               <div class="audio-grid three">
                 <div class="audio-cell"><strong>Noisy mixture</strong><small>system input</small><audio controls preload="none" src="public/assets/audio/noisy/content-grounding/mixture.wav"></audio></div>
@@ -320,11 +324,11 @@
             <details class="spectrogram"><summary>Spectrogram</summary><figure class="spectrogram-frame"><a href="public/assets/figures/noisy-case-content-grounding.png?v=20260923-names-1" target="_blank" rel="noopener"><img data-src="public/assets/figures/noisy-case-content-grounding.png?v=20260923-names-1" width="2000" height="1160" alt="Noisy large-v3 transcript-agreement control spectrogram comparison" /></a><figcaption>Clean target, BSRNN-TSE-CDCS-5 evidence, Qwen-TSE-UD, and Qwen-TSE-fixed-CSG all receive the same exact large-v3 transcript in this listening control. Select the figure for the 2,000-pixel original.</figcaption></figure></details>
           </article>
 
-          <article class="audio-case" data-audio-case hidden>
-            <h3>Example 5 — fidelity–naturalness operating points</h3>
+          <article class="audio-case" data-audio-case data-condition="noisy" id="audio-noisy-4" hidden>
+            <h3>Noisy example 4 — fidelity–naturalness operating points</h3>
             <p>Both endpoints preserve the target words and identity. Grounded generation raises predicted naturalness but lowers eSTOI: <strong class="math-inline" data-tex="\operatorname{UTMOS}:1.307\rightarrow3.827">UTMOS: 1.307 → 3.827</strong>, with
               <strong class="math-inline" data-tex="\operatorname{eSTOI}:0.692\rightarrow0.621">eSTOI: 0.692 → 0.621</strong>. No per-case DNSMOS P.808 score is available.</p>
-            <details class="input-details wide-inputs">
+            <details class="input-details wide-inputs" open>
               <summary>Input, enrollment &amp; interferer</summary>
               <div class="audio-grid three">
                 <div class="audio-cell"><strong>Noisy mixture</strong><small>system input</small><audio controls preload="none" src="public/assets/audio/noisy/quality-grounding/mixture.wav"></audio></div>
@@ -604,6 +608,6 @@
     </main>
 
     <script src="public/vendor/katex/katex.min.js?v=0.18.6"></script>
-    <script src="app.js?v=20261025-paper-1"></script>
+    <script src="app.js?v=20261025-audio-2"></script>
   </body>
 </html>

@@ -22,21 +22,37 @@ const audioCases = Array.from(document.querySelectorAll("[data-audio-case]"));
 const previousCase = document.querySelector("#case-previous");
 const nextCase = document.querySelector("#case-next");
 const caseCount = document.querySelector("#case-count");
+const audioConditionButtons = document.querySelectorAll('[data-audio-condition]');
+let activeCondition = 'clean';
 let activeCase = 0;
 
 function showAudioCase(index) {
-  activeCase = (index + audioCases.length) % audioCases.length;
+  const groupCases = audioCases.filter((audioCase) => audioCase.dataset.condition === activeCondition);
+  if (!groupCases.length) return;
+  activeCase = (index + groupCases.length) % groupCases.length;
   document.querySelectorAll("audio").forEach((player) => player.pause());
-  audioCases.forEach((audioCase, caseIndex) => {
-    audioCase.hidden = caseIndex !== activeCase;
+  audioCases.forEach((audioCase) => {
+    audioCase.hidden = audioCase !== groupCases[activeCase];
   });
-  if (caseCount) caseCount.textContent = `Example ${activeCase + 1} of ${audioCases.length}`;
+  if (caseCount) caseCount.textContent = `${activeCondition === 'clean' ? 'Clean' : 'Noisy'} · ${activeCase + 1} of ${groupCases.length}`;
+  if (previousCase) previousCase.disabled = groupCases.length < 2;
+  if (nextCase) nextCase.disabled = groupCases.length < 2;
+  audioConditionButtons.forEach((button) => {
+    button.setAttribute('aria-pressed', String(button.dataset.audioCondition === activeCondition));
+  });
 }
 
 if (audioCases.length && previousCase && nextCase) {
   previousCase.addEventListener("click", () => showAudioCase(activeCase - 1));
   nextCase.addEventListener("click", () => showAudioCase(activeCase + 1));
 }
+
+audioConditionButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    activeCondition = button.dataset.audioCondition;
+    showAudioCase(0);
+  });
+});
 
 function renderMath(root = document) {
   if (!window.katex) return;

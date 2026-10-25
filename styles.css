@@ -1114,6 +1114,8 @@ footer {
 .result-switch button span { margin-left: .4rem; font-size: .73rem; opacity: .8; }
 .result-switch button[aria-pressed="true"] { color: white; border-color: var(--ink); background: var(--ink); }
 .result-switch button:focus-visible, .table-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.case-navigation button:disabled { opacity: .3; cursor: default; }
+.audio-condition-switch { margin-top: 1.25rem; }
 .paper-table-note { color: var(--muted); font-size: .78rem; line-height: 1.6; }
 .paper-result-table { min-width: 790px; }
 .paper-result-table th, .paper-result-table td { padding: .72rem .5rem; font-size: .78rem; }
