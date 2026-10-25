@@ -16,7 +16,7 @@ The page presents one focused claim: reliable target-conditioned evidence must b
 - A restrained black-and-white problem formulation and paper-accurate method diagram using amplitude-normalized traces generated from the released audio examples.
 - Self-hosted KaTeX rendering for method, grounding, WER, and speaker-confusion equations, with readable text fallbacks.
 - Five paged listening cases: one deterministic frozen Clean TEST opener followed by four cases from the frozen 6,000-trial natural-noise TEST set, with config-consistent Whisper large-v3 transcripts and compact, lazy-loaded 2,000-pixel spectrograms that link to their full-resolution originals.
-- Three representative cases from the six-case frozen Natural Noisy TEST audit: grounding repair, target-like voice with incorrect words, and grounding regression. Each compares direct extraction, UD, fixed CSG, and adaptive CSG. Full six-case records and supplementary GNR results remain available in `public/results/noisy-llm-case-study.json`. Waveforms are complete; large-v3 transcripts and listening interpretations are not human-adjudicated.
+- A focused Whisper audit illustrates insertion-heavy ASR repetition with audio and full automatic transcripts. Full historical case records and supplementary GNR results remain available in `public/results/noisy-llm-case-study.json`.
 - A clean wrong-speaker BSRNN-TSE case that isolates speaker confusion without noise, followed by noisy evidence repair, speaker-collapse prevention, lexical-drift repair, and fidelity–naturalness examples selected by explicit deterministic rules rather than informal listening alone.
 - Machine-readable case records at `public/results/clean-demo-case.json`, `public/results/noisy-demo-cases.json`, and `public/results/noisy-llm-case-study.json`, with selection rules, Whisper large-v3 transcripts, per-system metrics, and per-asset SHA-256 hashes. The public audit uses descriptive case labels rather than corpus trial identifiers.
 
@@ -69,7 +69,7 @@ The page now reproduces the author-provided manuscript's two figures and Tables 
 - Table 2's wrong-speaker errors use SI-SDR margin; Table 1's acoustic switches use CAMPPlus. They are distinct diagnostics.
 - Figure 1 was extracted losslessly from the manuscript (3,764 × 976); Figure 2 was cropped directly from its rendered PDF (2,415 × 978). No curves were redrawn or digitized.
 - The additional Whisper audit reuses the existing `largev3-runaway` waveform and manifest. Its 7.68-second UD output yields 17 substitutions, 0 deletions and 419 insertions against 23 reference words (WER 1,895.65%). Audio and full automatic transcripts are provided together. No human adjudication or second-ASR validation is claimed.
-- The three previously selected grounding examples remain visible; full historical six-case records remain in the audit JSON. These selected natural-noise cases do not estimate prevalence or replace the pooled paper results.
+- The separate three-case grounding-limits section has been removed from the page to keep the presentation concise. Its historical six-case records and audio remain available through the audit JSON; the focused Whisper audit is retained.
 
 ### Complete five-system listening comparisons (2026-10-25)
 
