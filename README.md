@@ -70,3 +70,9 @@ The page now reproduces the author-provided manuscript's two figures and Tables 
 - Figure 1 was extracted losslessly from the manuscript (3,764 × 976); Figure 2 was cropped directly from its rendered PDF (2,415 × 978). No curves were redrawn or digitized.
 - The additional Whisper audit reuses the existing `largev3-runaway` waveform and manifest. Its 7.68-second UD output yields 17 substitutions, 0 deletions and 419 insertions against 23 reference words (WER 1,895.65%). Audio and full automatic transcripts are provided together. No human adjudication or second-ASR validation is claimed.
 - The three previously selected grounding examples remain visible; full historical six-case records remain in the audit JSON. These selected natural-noise cases do not estimate prevalence or replace the pooled paper results.
+
+### Complete five-system listening comparisons (2026-10-25)
+
+- The original Clean example and all four Noisy examples now include all five Table 1 systems in table order. Added the missing Clean UD/fixed/adaptive outputs and four Noisy adaptive outputs from existing evaluations; no new inference was run.
+- Trial IDs, evaluation condition and exact target/mixture hashes were checked before adding audio. New WAV SHA-256, duration, sample rate and config-consistent large-v3 WER counts are recorded in the corresponding case manifests.
+- Clean Qwen variants each score 8.33% WER; Noisy adaptive WER is 0%, 25%, 0%, 0% in displayed order. These are illustrative per-case results, not corpus averages.

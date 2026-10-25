@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "split": "test",
   "benchmark": "natural",
   "population_trials": 6000,
@@ -13,13 +13,13 @@
     "wer": "Uncapped utterance-level config-consistent Whisper large-v3 WER; insertions can make WER exceed 100%.",
     "a_sw": "Study-defined acoustic-switch indicator.",
     "utmos": "Non-intrusive predicted naturalness; it does not establish target-speaker or lexical correctness.",
-    "dnsmos_p808": "DNSMOS P.808 is reported only at corpus level because no per-case P.808 values are available for these examples.",
+    "dnsmos_p808": "DNSMOS P.808 is displayed at corpus level; per-case P.808 scores are not shown in these listening examples.",
     "estoi": "Intrusive intelligibility estimate against the clean target."
   },
   "selection_protocol": {
     "common_filter": "Trial identities and waveforms are unchanged from the frozen listening-case selection; displayed transcripts and WER are re-audited consistently with Whisper large-v3.",
     "evidence_repair": "Wrong-speaker BSRNN-TSE case retained to expose candidate repair; large-v3 scores BSRNN-TSE/BSRNN-TSE-CDCS-5/Qwen-TSE-fixed-CSG at 144.44/11.11/0% WER.",
-    "speaker_grounding": "Ungrounded acoustic-switch collapse retained; fixed CSG restores target-side speaker identity and lowers large-v3 WER from 100% to 25%.",
+    "speaker_grounding": "Ungrounded acoustic-switch collapse retained; fixed and adaptive CSG restore target-side speaker identity and lower large-v3 WER from 100% to 25%.",
     "content_grounding": "Former lexical-drift player set retained as a listening control because large-v3 assigns every displayed output the exact target transcript.",
     "quality_grounding": "Matched 0%-WER outputs retained to expose the fidelity–predicted-naturalness operating-point difference."
   },
@@ -60,8 +60,31 @@
           "speaker_margin": 0.249747,
           "utmos": 3.650644,
           "estoi": 0.692586
+        },
+        "qwen_tse_adaptive_csg": {
+          "output_text": "through the black night rain he sang to me",
+          "wer": 0.0,
+          "a_sw": false,
+          "speaker_margin": 0.2431435417884214,
+          "utmos": 3.33864164352417,
+          "estoi": 0.6969271193161576,
+          "wer_counts": {
+            "substitutions": 0,
+            "deletions": 0,
+            "insertions": 0,
+            "reference_words": 9
+          }
         }
-      }
+      },
+      "audio_assets": [
+        {
+          "role": "qwen_tse_adaptive_csg",
+          "path": "public/assets/audio/noisy/evidence-repair/qwen-adaptive-csg.wav",
+          "sha256": "af514a32372c22cfaf4cfdc43b3b806dab44d54c5100ef8f007f8734745f09c0",
+          "sample_rate_hz": 24000,
+          "duration_seconds": 3.48
+        }
+      ]
     },
     {
       "slug": "speaker-grounding",
@@ -99,8 +122,31 @@
           "speaker_margin": 0.673998,
           "utmos": 3.858996,
           "estoi": 0.747898
+        },
+        "qwen_tse_adaptive_csg": {
+          "output_text": "she had almost forgotten that it was here they didnt touch and sigh",
+          "wer": 0.25,
+          "a_sw": false,
+          "speaker_margin": 0.6698132990792056,
+          "utmos": 3.923950672149658,
+          "estoi": 0.7556042568834386,
+          "wer_counts": {
+            "substitutions": 2,
+            "deletions": 0,
+            "insertions": 1,
+            "reference_words": 12
+          }
         }
-      }
+      },
+      "audio_assets": [
+        {
+          "role": "qwen_tse_adaptive_csg",
+          "path": "public/assets/audio/noisy/speaker-grounding/qwen-adaptive-csg.wav",
+          "sha256": "0a421c9120d19589886fed6f3c8ce5b6006919f36959394ed7b7596bb91c4171",
+          "sample_rate_hz": 24000,
+          "duration_seconds": 3.56
+        }
+      ]
     },
     {
       "slug": "content-grounding",
@@ -138,8 +184,31 @@
           "speaker_margin": 0.421932,
           "utmos": 3.556462,
           "estoi": 0.608632
+        },
+        "qwen_tse_adaptive_csg": {
+          "output_text": "in actual fact there are doubtless various",
+          "wer": 0.0,
+          "a_sw": false,
+          "speaker_margin": 0.4201470881115929,
+          "utmos": 3.6364340782165527,
+          "estoi": 0.6003693106932193,
+          "wer_counts": {
+            "substitutions": 0,
+            "deletions": 0,
+            "insertions": 0,
+            "reference_words": 7
+          }
         }
-      }
+      },
+      "audio_assets": [
+        {
+          "role": "qwen_tse_adaptive_csg",
+          "path": "public/assets/audio/noisy/content-grounding/qwen-adaptive-csg.wav",
+          "sha256": "99a5ab25f42f7e7adc1dba5ed3b5492cb64c67ec014dff0353218c670eacac1b",
+          "sample_rate_hz": 24000,
+          "duration_seconds": 3.48
+        }
+      ]
     },
     {
       "slug": "quality-grounding",
@@ -177,8 +246,31 @@
           "speaker_margin": 0.560803,
           "utmos": 3.827171,
           "estoi": 0.620886
+        },
+        "qwen_tse_adaptive_csg": {
+          "output_text": "i tell him to give me some coffee if it is good",
+          "wer": 0.0,
+          "a_sw": false,
+          "speaker_margin": 0.558653760509469,
+          "utmos": 3.84786057472229,
+          "estoi": 0.618567535094135,
+          "wer_counts": {
+            "substitutions": 0,
+            "deletions": 0,
+            "insertions": 0,
+            "reference_words": 12
+          }
         }
-      }
+      },
+      "audio_assets": [
+        {
+          "role": "qwen_tse_adaptive_csg",
+          "path": "public/assets/audio/noisy/quality-grounding/qwen-adaptive-csg.wav",
+          "sha256": "c36a7554768fab857efede9ab10d04144562b6ebaa66ae1bacbcf30c949571b8",
+          "sample_rate_hz": 24000,
+          "duration_seconds": 3.32
+        }
+      ]
     }
   ],
   "asr": {
@@ -189,5 +281,12 @@
     "repetition_penalty": 1.1,
     "batch_size": 32
   },
-  "reference_protocol": "Config-consistent WER against the clean-target transcript produced by the same Whisper large-v3 configuration."
+  "reference_protocol": "Config-consistent WER against the clean-target transcript produced by the same Whisper large-v3 configuration.",
+  "adaptive_addition": {
+    "date": "2026-10-25",
+    "source": "Existing frozen Natural Noisy TEST adaptive-CSG waveforms and completed post-hoc large-v3/RP=1.10 audit.",
+    "matching": "Exact trial IDs and target/mixture SHA-256 match the existing four examples.",
+    "new_inference": false,
+    "added_audio_asset_hashes": "Each case.audio_assets lists the newly added adaptive-CSG waveform."
+  }
 }
