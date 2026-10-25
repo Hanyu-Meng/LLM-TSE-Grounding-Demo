@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "source": {
+    "title": "Speaker-Consistent Grounding for Confusion-Resilient LLM-Based Target Speech Extraction",
+    "snapshot_date": "2026-10-25",
+    "description": "Transcribed from Tables 1 and 2 of the current author-provided manuscript. Values retain the manuscript's displayed precision.",
+    "table_1_page": 3,
+    "table_2_page": 4,
+    "pdf_sha256": "33d2e4670a223b13b468ae5856a35ca443386748c0198bc6aeb8d7246147165b"
+  },
+  "protocol": {
+    "clean_test_trials": 6000,
+    "noisy_test_trials": 8400,
+    "noisy_natural_trials": 6000,
+    "noisy_controlled_snr_trials": 2400,
+    "controlled_trials_per_snr": 480,
+    "controlled_snr_db": [
+      -5,
+      0,
+      5,
+      10,
+      15
+    ],
+    "wer": "Uncapped macro WER against Whisper-large-v3 transcripts of the clean target, not human transcripts.",
+    "acoustic_switch": "Negative target-minus-interferer CAMPPlus cosine-similarity margin.",
+    "wrong_speaker_error": "Negative clean-reference SI-SDR margin; distinct from acoustic-switch rate.",
+    "quality": "DNSMOS P.808 and UTMOS are predicted quality scores, not listening-test MOS."
+  },
+  "columns": [
+    "wer_percent",
+    "content_switch_percent",
+    "acoustic_switch_percent",
+    "speaker_margin",
+    "dnsmos_p808",
+    "utmos"
+  ],
+  "systems": [
+    "BSRNN-TSE",
+    "BSRNN-TSE-CDCS-5",
+    "Qwen-TSE-UD",
+    "Qwen-TSE-fixed-CSG",
+    "Qwen-TSE-adaptive-CSG"
+  ],
+  "clean_test": [
+    [
+      11.41,
+      7.0,
+      6.98,
+      0.449,
+      3.688,
+      3.606
+    ],
+    [
+      7.02,
+      0.88,
+      0.78,
+      0.506,
+      3.699,
+      3.647
+    ],
+    [
+      8.99,
+      0.92,
+      0.43,
+      0.421,
+      3.705,
+      3.913
+    ],
+    [
+      8.04,
+      0.92,
+      0.23,
+      0.422,
+      3.699,
+      3.91
+    ],
+    [
+      8.12,
+      0.9,
+      0.2,
+      0.421,
+      3.711,
+      3.921
+    ]
+  ],
+  "noisy_test": [
+    [
+      39.85,
+      18.79,
+      18.23,
+      0.266,
+      3.031,
+      2.001
+    ],
+    [
+      30.67,
+      11.02,
+      10.39,
+      0.327,
+      2.98,
+      1.948
+    ],
+    [
+      46.7,
+      12.79,
+      1.68,
+      0.377,
+      3.494,
+      3.216
+    ],
+    [
+      42.11,
+      9.1,
+      0.51,
+      0.386,
+      3.498,
+      3.147
+    ],
+    [
+      42.73,
+      9.37,
+      0.53,
+      0.388,
+      3.503,
+      3.253
+    ]
+  ],
+  "ablation_columns": [
+    "clean_dev",
+    "clean_test",
+    "noisy_dev",
+    "noisy_test"
+  ],
+  "ablation": [
+    {
+      "configuration": "Full (no CDCS)",
+      "values": [
+        6.9,
+        6.87,
+        19.85,
+        18.95
+      ]
+    },
+    {
+      "configuration": "Early (E)",
+      "values": [
+        8.52,
+        8.57,
+        20.61,
+        19.96
+      ]
+    },
+    {
+      "configuration": "Middle (M)",
+      "values": [
+        8.27,
+        8.9,
+        20.92,
+        20.73
+      ]
+    },
+    {
+      "configuration": "Late (L)",
+      "values": [
+        8.52,
+        8.5,
+        20.71,
+        20.18
+      ]
+    },
+    {
+      "configuration": "TF-context (TF)",
+      "values": [
+        2.35,
+        2.53,
+        14.32,
+        14.37
+      ]
+    },
+    {
+      "configuration": "Full + E/M/L",
+      "values": [
+        3.7,
+        3.6,
+        15.96,
+        15.0
+      ]
+    },
+    {
+      "configuration": "Full + TF",
+      "values": [
+        1.17,
+        1.18,
+        12.0,
+        11.3
+      ]
+    },
+    {
+      "configuration": "CDCS-5",
+      "values": [
+        0.88,
+        0.75,
+        11.02,
+        10.46
+      ]
+    }
+  ],
+  "recovery": [
+    {
+      "split": "Clean TEST",
+      "recovery": "355/398 (89.20%)",
+      "oracle": "360/398 (90.45%)",
+      "new_errors": "2/5,588 (0.04%)"
+    },
+    {
+      "split": "Noisy TEST",
+      "recovery": "374/646 (57.89%)",
+      "oracle": "431/646 (66.72%)",
+      "new_errors": "8/4,709 (0.17%)"
+    }
+  ]
+}

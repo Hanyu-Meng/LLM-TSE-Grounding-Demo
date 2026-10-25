@@ -61,3 +61,16 @@ function renderMath(root = document) {
 }
 
 renderMath();
+
+// Keep both paper tables in the HTML; switch only their visibility.
+document.querySelectorAll('[data-result-button]').forEach((button) => {
+  button.addEventListener('click', () => {
+    const condition = button.dataset.resultButton;
+    document.querySelectorAll('[data-result-button]').forEach((other) => {
+      other.setAttribute('aria-pressed', String(other === button));
+    });
+    document.querySelectorAll('[data-result-panel]').forEach((panel) => {
+      panel.hidden = panel.dataset.resultPanel !== condition;
+    });
+  });
+});

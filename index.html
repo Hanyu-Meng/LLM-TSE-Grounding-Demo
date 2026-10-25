@@ -23,7 +23,7 @@
     <title>Speaker-Consistent Grounding · Audio Demo</title>
     <link rel="icon" href="public/favicon.svg" />
     <link rel="stylesheet" href="public/vendor/katex/katex.min.css?v=0.18.6" />
-    <link rel="stylesheet" href="styles.css?v=20260923-adaptive-csg-1" />
+    <link rel="stylesheet" href="styles.css?v=20261025-paper-1" />
   </head>
   <body>
     <a class="skip-link" href="#content">Skip to content</a>
@@ -32,32 +32,22 @@
       <header class="paper-header" id="top">
         <p class="venue">ICASSP 2027 · Audio demo</p>
         <h1>Speaker-Consistent Grounding for Confusion-Resilient LLM-Based Target Speech Extraction</h1>
-        <p class="tagline">Repair the target-speaker evidence first; then constrain the optional LLM speech generator.</p>
+        <p class="tagline">Repair target-speaker evidence, then ground LLM generation.</p>
         <div class="paper-links" aria-label="Project links">
           <a href="#audio">Audio examples</a>
+          <a href="#metrics">Paper results</a>
+          <a href="#whisper-audit">Whisper audit</a>
           <a href="#grounding-failures">Grounding limits</a>
-          <a href="#metrics">Metrics</a>
           <a href="https://github.com/Hanyu-Meng/LLM-TSE-Grounding">Code</a>
         </div>
         <hr />
-        <p class="status complete"><span aria-hidden="true"></span><strong>Status:</strong> Frozen evaluations and listening examples are complete.</p>
+        <p class="status complete"><span aria-hidden="true"></span><strong>Status:</strong> Frozen evaluations and audio examples complete.</p>
       </header>
 
       <section id="overview">
         <h2>Overview</h2>
-        <p>
-          Two failures are easy to conflate. A deterministic waveform TSE system does not introduce
-          autoregressive token hallucination, but under noise it may sound distorted or extract the wrong
-          speaker. An autoregressive speech model can raise estimated perceptual quality, yet its learned
-          prior can change words or speaker identity. Our rule is therefore simple: <strong>repair the
-          target evidence first, then ground generation on that repaired evidence.</strong>
-        </p>
-        <div class="explanation-box">
-          <strong>Key result.</strong> On the frozen 6,000-trial natural-noise TEST set, BSRNN-TSE-CDCS-5
-          reduces WER from <strong>46.17% to 35.64%</strong>, content-switch rate from
-          <strong>15.57% to 7.95%</strong>, and acoustic-switch rate from
-          <strong>14.57% to 7.17%</strong> relative to the BSRNN-TSE baseline.
-        </div>
+        <p>TSE can extract the wrong speaker; LLM generation can also change words or identity. <strong>We repair target-speaker evidence before grounding generation.</strong></p>
+        <div class="explanation-box"><strong>Repair before grounding.</strong> CDCS-5 reduces clean wrong-speaker errors from <strong>6.87% to 0.75%</strong>. On Noisy TEST, fixed CSG reduces content switching from <strong>12.79% to 9.10%</strong>. <a href="#metrics">See paper results ↓</a></div>
 
         <div class="figure-sequence">
           <figure class="figure-card academic-diagram problem-figure">
@@ -128,164 +118,31 @@
                 <p class="design-rule"><strong>CDCS repairs <em>who</em>;</strong><br />CSG constrains <em>what</em>.</p>
               </article>
             </div>
-            <figcaption>
-              <strong>Figure 1.</strong> Why repair must precede grounding. Deterministic TSE can
-              distort speech or follow the interferer; autoregressive decoding can drift in content
-              or speaker; and grounding confused evidence may reinforce the wrong identity. We therefore
-              repair evidence identity with CDCS-5 before fixed or adaptive CSG constrains Qwen-TSE generation.
-              Waveforms are amplitude-normalized traces computed from the released listening examples;
-              representative nodes need not belong to the same trial.
-            </figcaption>
+            <figcaption><strong>Problem illustration.</strong> TSE can follow the wrong speaker; generation can drift; grounding can preserve a wrong-speaker anchor. CDCS-5 repairs evidence before fixed or adaptive CSG constrains generation. Waveforms are amplitude-normalized traces from released examples, not necessarily the same trial.</figcaption>
           </figure>
 
           <p class="figure-bridge"><span>Design rule</span> Repair target identity first; ground autoregressive generation second.</p>
 
-          <figure class="figure-card academic-diagram method-overview-figure">
-            <div
-              class="method-diagram"
-              role="img"
-              aria-label="Three-panel proposed method. Panel a constructs five frozen, conditioning-diverse TSE candidates and uses a frozen ECAPA selector to obtain repaired evidence c star. Panel b tokenizes c star and uses it together with mixture and speaker conditions to ground a fixed Qwen-TSE model. Fixed CSG uses lambda one and window zero; adaptive CSG estimates utterance difficulty from the mixture and repaired evidence, applies a DEV-frozen strength, and uses window one. Panel c exposes direct, fixed-CSG, and adaptive-CSG operating points."
-            >
-              <section class="method-panel repair-method">
-                <h3><span>(a)</span> Conditioning-diverse evidence repair</h3>
-                <div class="repair-flow">
-                  <div class="repair-inputs">
-                    <div class="signal-node"><img class="signal-wave" src="public/assets/waveforms/mixture.png" alt="" /><small>Mixture <span class="math-inline" data-tex="y">y</span></small></div>
-                    <div class="enrolment-node">
-                      <img class="signal-wave compact-wave" src="public/assets/waveforms/enrollment.png" alt="" />
-                      <strong>Target enrolment <span class="math-inline" data-tex="r">r</span></strong>
-                      <div class="view-chips"><span>Full</span><span>First</span><span>Middle</span><span>Final</span></div>
-                      <small>deterministic high-energy views</small>
-                    </div>
-                  </div>
-                  <span class="flow-across" aria-hidden="true">→</span>
-                  <div class="expert-stack">
-                    <div class="diagram-block"><strong>Global Embedding<br />TSE</strong><small>TSE-BSRNN · spk_emb_100 · frozen</small></div>
-                    <div class="diagram-block"><strong>TF-Context<br />TSE</strong><small>TSE-BSRNN · tfmap_context_100 · frozen</small></div>
-                  </div>
-                  <span class="flow-across" aria-hidden="true">→</span>
-                  <div class="candidate-stack" aria-label="Five candidate waveforms">
-                    <div><b class="math-inline" data-tex="c_1">c₁</b><img class="signal-wave candidate-wave" src="public/assets/waveforms/primary.png" alt="" /><small>full</small></div>
-                    <div><b class="math-inline" data-tex="c_2">c₂</b><img class="signal-wave candidate-wave" src="public/assets/waveforms/primary.png" alt="" /><small>first</small></div>
-                    <div><b class="math-inline" data-tex="c_3">c₃</b><img class="signal-wave candidate-wave" src="public/assets/waveforms/repaired.png" alt="" /><small>middle</small></div>
-                    <div><b class="math-inline" data-tex="c_4">c₄</b><img class="signal-wave candidate-wave" src="public/assets/waveforms/primary.png" alt="" /><small>final</small></div>
-                    <div><b class="math-inline" data-tex="c_5">c₅</b><img class="signal-wave candidate-wave" src="public/assets/waveforms/tfmap.png" alt="" /><small>TF-map/context</small></div>
-                  </div>
-                  <span class="flow-across" aria-hidden="true">→</span>
-                  <div class="selector-stage">
-                    <div class="diagram-block selector-block"><strong>Speaker Consistency<br />Selection</strong><small>ECAPA-TDNN · frozen</small></div>
-                    <div class="math-display compact-math" data-tex="q_i=\cos\!\left(F_{\mathrm{spk}}(c_i),F_{\mathrm{spk}}(r)\right)">qᵢ = cos(Fspk(cᵢ), Fspk(r))</div>
-                    <div class="math-display compact-math" data-tex="i^\star=\operatorname*{arg\,max}_{i\in\{1,\ldots,5\}}q_i,\quad c^\star=c_{i^\star}">i* = arg maxᵢ qᵢ, c* = cᵢ*</div>
-                  </div>
-                </div>
-                <div class="selected-evidence">
-                  <span><b>Selected evidence <span class="math-inline" data-tex="c^\star">c*</span></b><small>target-consistent waveform</small></span>
-                  <img class="signal-wave" src="public/assets/waveforms/evidence.png" alt="" />
-                  <b class="continues-arrow" aria-hidden="true">→</b>
-                </div>
-                <p class="method-footnote">Training-free selection · mixture and enrolment only · no clean source, transcript, interferer, or oracle label</p>
-              </section>
-
-              <section class="method-panel generation-method">
-                <h3><span>(b)</span> Evidence-conditioned Qwen-TSE decoding</h3>
-                <div class="conditioning-paths">
-                  <div class="conditioning-path evidence-path">
-                    <span><b class="math-inline" data-tex="c^\star">c*</b> repaired waveform</span><b aria-hidden="true">→</b><span class="compact-module">S3/FSQ tokenizer<br /><i>CosyVoice3 · 25 Hz · frozen</i></span><b aria-hidden="true">→</b><span class="token-row teal-tokens"><i>12</i><i>87</i><i>45</i><i>61</i><i>…</i><i>73</i></span><small>Evidence tokens <span class="math-inline" data-tex="z^e">zᵉ</span></small>
-                  </div>
-                  <div class="conditioning-path">
-                    <span>Mixture <span class="math-inline" data-tex="y">y</span></span><b aria-hidden="true">→</b><span class="compact-module">WavLM encoder<br /><i>frozen</i></span><b aria-hidden="true">→</b><span class="feature-row" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><small>Features <span class="math-inline" data-tex="M">M</span></small>
-                  </div>
-                  <div class="conditioning-path">
-                    <span>Enrolment <span class="math-inline" data-tex="r">r</span></span><b aria-hidden="true">→</b><span class="compact-module">Speaker encoder<br /><i>frozen</i></span><b aria-hidden="true">→</b><span class="feature-row" aria-hidden="true"><i></i><i></i><i></i><i></i></span><small>Condition <span class="math-inline" data-tex="S">S</span></small>
-                  </div>
-                </div>
-                <div class="condition-merge"><span class="math-inline" data-tex="z^e">zᵉ</span><span class="math-inline" data-tex="M">M</span><span class="math-inline" data-tex="S">S</span><b aria-hidden="true">↓</b></div>
-                <div class="diagram-block qwen-block"><strong>Qwen-TSE</strong><small>Qwen2.5-0.5B-Instruct · fixed checkpoint</small></div>
-                <span class="flow-down" aria-hidden="true">↓</span>
-                <div class="logit-stage"><small>Candidate-token log probabilities</small><span class="token-row purple-tokens"><i class="math-inline" data-tex="\ell_1">ℓ₁</i><i class="math-inline" data-tex="\ell_2">ℓ₂</i><i class="math-inline" data-tex="\ell_3">ℓ₃</i><i class="math-inline" data-tex="\ell_4">ℓ₄</i><i class="math-inline" data-tex="\ell_5">ℓ₅</i><i>…</i></span></div>
-                <span class="flow-down" aria-hidden="true">↓</span>
-                <div class="diagram-block csg-block">
-                  <strong>Code-Space Grounding (CSG)</strong>
-                  <small>shared grounded token re-ranking</small>
-                  <div class="math-display compact-equation" data-tex="\hat z_t=\operatorname*{arg\,max}_{v\in\mathcal V}\!\left[\log p_t(v)-\lambda\min_{|\delta|\le w}d_H\!\left(v,z^e_{t+\delta}\right)\right]">ẑₜ = arg maxᵥ [log pₜ(v) − λ min dH(v,zᵉₜ₊δ)]</div>
-                  <div class="csg-modes" aria-label="Fixed and adaptive CSG settings">
-                    <span><b>Fixed</b><i class="math-inline" data-tex="\lambda=1,\;w=0">λ = 1, w = 0</i></span>
-                    <span><b>Adaptive</b><i class="math-inline" data-tex="\lambda=g(\xi),\;w=1">λ = g(ξ), w = 1</i></span>
-                  </div>
-                  <div class="adaptive-route">
-                    <span><span class="math-inline" data-tex="y">y</span> + <span class="math-inline" data-tex="c^\star">c*</span></span><b aria-hidden="true">→</b><span>difficulty <span class="math-inline" data-tex="\xi">ξ</span></span><b aria-hidden="true">→</b><span>DEV-frozen <span class="math-inline" data-tex="g(\xi)">g(ξ)</span></span>
-                    <small>one grounding strength per utterance · held fixed during decoding</small>
-                  </div>
-                  <em>Coordinate-wise FSQ Hamming distance; no oracle information or model update</em>
-                </div>
-                <span class="flow-down" aria-hidden="true">↓</span>
-                <div class="grounded-token-stage"><span class="token-row purple-tokens"><i>41</i><i>09</i><i>63</i><i>21</i><i>78</i><i>…</i><i>36</i></span><strong>Grounded tokens <span class="math-inline" data-tex="\hat z">ẑ</span></strong></div>
-              </section>
-
-              <section class="method-panel endpoint-method">
-                <h3><span>(c)</span> Three operating points</h3>
-                <article class="endpoint-card direct-endpoint">
-                  <p class="endpoint-source"><span class="math-inline" data-tex="c^\star">c*</span> · direct waveform bypass</p>
-                  <img class="signal-wave output-wave" src="public/assets/waveforms/evidence.png" alt="" />
-                  <strong>BSRNN-TSE-CDCS-5</strong>
-                  <small>No autoregressive decoder<br />Content-fidelity endpoint</small>
-                </article>
-                <div class="endpoint-divider"><span>or</span></div>
-                <article class="endpoint-card generated-endpoint">
-                  <p class="endpoint-source">Grounded tokens <span class="math-inline" data-tex="\hat z">ẑ</span></p>
-                  <div class="diagram-block compact-block">CosyVoice3 decoder<br /><i>frozen</i></div>
-                  <img class="signal-wave output-wave" src="public/assets/waveforms/qwen-csg.png" alt="" />
-                  <strong>Grounded generative endpoints</strong>
-                  <small>Autoregressive speech prior<br />Two grounded generative endpoints</small>
-                  <div class="endpoint-modes">
-                    <span><b>Qwen-TSE-fixed-CSG</b><small><span class="math-inline" data-tex="\lambda=1,\;w=0">λ = 1, w = 0</span></small></span>
-                    <span><b>Qwen-TSE-adaptive-CSG</b><small><span class="math-inline" data-tex="\lambda=g(\xi),\;w=1">λ = g(ξ), w = 1</span></small></span>
-                  </div>
-                </article>
-                <p class="ablation-note">Fixed CSG favors the lowest switch/error rates; adaptive CSG provides a second reliability–quality operating point. UD and GNR remain evaluation ablations.</p>
-              </section>
-            </div>
-            <figcaption>
-              <strong>Figure 2.</strong> Proposed repair-before-grounding pipeline. CDCS-5 constructs
-              five frozen, conditioning-diverse TSE candidates and selects repaired evidence with a
-              frozen ECAPA encoder. The waveform is either returned directly or tokenized to ground
-              the fixed Qwen-TSE decoder, where either fixed or adaptive CSG constrains token drift.
-              Adaptive CSG derives one utterance-level grounding strength from the mixture and repaired
-              evidence using a DEV-frozen rule. Candidate thumbnails are
-              representative real traces; independent first/final-view candidate audio is not publicly exposed.
-            </figcaption>
+          <figure class="figure-card paper-framework-figure">
+            <a href="public/assets/figures/paper/framework.png" target="_blank" rel="noopener" aria-label="Open paper Figure 1 at full resolution"><img src="public/assets/figures/paper/framework.png" width="3764" height="976" decoding="async" alt="Paper Figure 1: CDCS-5 selects target-consistent evidence from five frozen TSE estimates; evidence tokens, mixture features and target-speaker conditioning guide Qwen-TSE, with CSG constraining autoregressive decoding." /></a>
+            <figcaption><strong>Paper Figure 1.</strong> Repair before grounding: (a) CDCS-5 selects target-speaker-consistent evidence, (b) the selected waveform is returned directly or tokenized for Qwen-TSE, and (c) CSG constrains autoregressive decoding. <a href="public/assets/figures/paper/framework.png" target="_blank" rel="noopener">Full resolution ↗</a></figcaption>
           </figure>
         </div>
       </section>
 
       <section id="method">
         <h2>Method</h2>
-        <p>
-          Conditioning-diverse candidate selection (CDCS-5) selects the most enrollment-consistent
-          waveform from five frozen TSE candidates. It can be returned directly as the content-fidelity
-          endpoint, or tokenized as evidence for Qwen-TSE. The Qwen-TSE speech prior supplies the
-          estimated-quality gain; CSG keeps its next-token choices close to the repaired evidence.
-          <strong>Fixed CSG</strong> uses <span class="math-inline" data-tex="(\lambda,w)=(1,0)">(λ, w) = (1, 0)</span>.
-          <strong>Adaptive CSG</strong> estimates utterance difficulty from the mixture and repaired evidence,
-          applies a DEV-frozen decreasing map <span class="math-inline" data-tex="\lambda=g(\xi)">λ = g(ξ)</span>,
-          and uses <span class="math-inline" data-tex="w=1">w = 1</span>; the selected strength is held fixed
-          throughout that utterance. Neither mode uses a clean target, transcript, oracle label, or model update.
-          This ordering matters: CSG limits generation
-          drift, but cannot repair a wrong-speaker anchor by itself.
-        </p>
+        <p>CDCS-5 selects the most enrollment-consistent of five frozen TSE candidates. Its waveform is returned directly or used to ground Qwen-TSE. <strong>Fixed CSG</strong> uses <span class="math-inline" data-tex="(\lambda,w)=(1,0)">(λ, w) = (1, 0)</span>. <strong>Adaptive CSG</strong> uses <span class="math-inline" data-tex="\lambda=g(\xi)">λ = g(ξ)</span> and <span class="math-inline" data-tex="w=1">w = 1</span>, with a DEV-frozen decreasing map and one strength per utterance. Both use no clean references, transcripts, oracle labels, or model updates. Grounding constrains drift; it cannot repair a wrong-speaker anchor.</p>
 
         <h3>Token-level grounding intuition</h3>
-        <p>
-          The speech tokenizer represents each acoustic token with eight ternary FSQ coordinates.
-          Grounding changes token selection inside Qwen-TSE; it does not change the CDCS-5 selector.
-        </p>
+        <p>Each acoustic token has eight ternary FSQ coordinates. CSG changes Qwen-TSE token selection, not the CDCS-5 selector.</p>
 
         <figure class="figure-card">
           <div class="grounding-steps">
             <article class="grounding-step">
               <span class="step-number">1</span>
               <h4>Qwen-TSE proposes</h4>
-              <p>Raw logits rank the next token. A fluent high-score proposal may still drift from the evidence.</p>
+              <p>High-scoring next tokens can drift from the evidence.</p>
               <div class="token-labels"><span>Evidence</span><span>Raw proposal</span></div>
               <div class="token-pair">
                 <div class="trit-row evidence-row"><span>0</span><span>2</span><span>1</span><span>1</span><span>0</span><span>2</span><span>0</span><span>1</span></div>
@@ -296,7 +153,7 @@
             <article class="grounding-step emphasis-step">
               <span class="step-number">2</span>
               <h4>CSG constrains</h4>
-              <p>Hamming-distant candidates receive a larger penalty, pulling generation toward nearby evidence.</p>
+              <p>Penalize tokens with greater Hamming distance from the evidence.</p>
               <div class="equation math-display" data-tex="s_{\mathrm{CSG}}(v,t)=s_{\mathrm{LLM}}(v,t)-\lambda\min_{|\delta|\le w}d_H\!\left(v,z^e_{t+\delta}\right)">
                 sCSG(v,t) = sLLM(v,t) − λ min dH(v,zᵉt+δ)
               </div>
@@ -310,7 +167,7 @@
             <article class="grounding-step adaptive-step">
               <span class="step-number">3</span>
               <h4>Adaptive CSG sets strength</h4>
-              <p>Projection of the mixture onto repaired evidence gives an utterance-level difficulty score; a DEV-frozen decreasing map chooses one grounding strength for the whole decode.</p>
+              <p>A mixture–evidence projection score sets one grounding strength per utterance through a DEV-frozen decreasing map.</p>
               <div class="difficulty-formula math-display" data-tex="\xi(y,c^\star)=10\log_{10}\!\frac{\lVert\alpha^\star c^\star\rVert_2^2+\epsilon}{\lVert y-\alpha^\star c^\star\rVert_2^2+\epsilon}">
                 ξ(y,c*) = 10 log₁₀ (projected evidence / residual)
               </div>
@@ -322,32 +179,15 @@
               <small class="no-feedback">One <span class="math-inline" data-tex="\lambda">λ</span> per utterance · no token-level adaptation</small>
             </article>
           </div>
-          <figcaption>
-            <strong>Figure 3.</strong> Fixed and adaptive CSG share the same grounded token-selection
-            rule. Fixed CSG uses <span class="math-inline" data-tex="\lambda=1,\;w=0">λ = 1, w = 0</span>;
-            adaptive CSG uses a DEV-frozen utterance-level policy
-            <span class="math-inline" data-tex="\lambda=g(\xi),\;w=1">λ = g(ξ), w = 1</span> and keeps
-            <span class="math-inline" data-tex="\lambda">λ</span> unchanged during decoding. Transparently, on the
-            reported noisy evaluation this frozen rule selected
-            <span class="math-inline" data-tex="\lambda=0.5">λ = 0.5</span> for every trial.
-          </figcaption>
+          <figcaption><strong>Grounding intuition.</strong> Fixed CSG uses <span class="math-inline" data-tex="\lambda=1,\;w=0">λ = 1, w = 0</span>; adaptive CSG uses <span class="math-inline" data-tex="\lambda=g(\xi),\;w=1">λ = g(ξ), w = 1</span>. Strength stays constant during each decode. The mapping is selected on DEV and kept fixed for TEST.</figcaption>
         </figure>
       </section>
 
       <section id="audio">
         <h2>Audio examples</h2>
-        <p>
-          The first example is a deterministic frozen Clean TEST case that makes the wrong-speaker failure
-          easy to hear. The following four examples come from the completed, frozen 6,000-trial natural-noise
-          TEST set. Clean targets and interferers are provided only for interpretation; the deployed system
-          never receives them.
-        </p>
-        <div class="explanation-box listen-box">
-          <strong>What to listen for:</strong> (1) whether the output follows the enrolled speaker,
-          (2) missing, substituted, or invented words, and (3) the fidelity–naturalness trade-off
-          between direct evidence and grounded generation.
-        </div>
-        <p class="adaptive-audio-link"><a href="#grounding-failures">Hear Fixed and Adaptive CSG side by side in the six Grounding limits cases ↓</a></p>
+        <p>One clean and four noisy examples from frozen TEST evaluations. Clean targets and interferers are for evaluation only, never system inputs.</p>
+        <div class="explanation-box listen-box"><strong>Listen for:</strong> speaker identity, word accuracy, and the fidelity–naturalness trade-off.</div>
+        <p class="adaptive-audio-link"><a href="#grounding-failures">Compare fixed and adaptive CSG in Grounding limits ↓</a></p>
 
         <div class="case-navigation" aria-label="Audio example navigation">
           <button type="button" id="case-previous" aria-label="Previous audio example">←</button>
@@ -358,15 +198,11 @@
         <div id="audio-cases">
           <article class="audio-case" data-audio-case>
             <h3>Example 1 — clean BSRNN-TSE wrong-speaker failure</h3>
-            <p>
-              Although the enrollment specifies the target speaker, BSRNN-TSE follows the interferer.
-              A complementary two-second enrollment view recovers target-consistent evidence:
-              <strong class="math-inline" data-tex="\operatorname{WER}:100\%\rightarrow0\%">WER: 100% → 0%</strong>,
+            <p>BSRNN-TSE follows the interferer. A two-second enrollment view recovers the target: <strong class="math-inline" data-tex="\operatorname{WER}:100\%\rightarrow0\%">WER: 100% → 0%</strong>,
               <strong class="math-inline" data-tex="m_{\mathrm{spk}}:-0.285\rightarrow+0.520">speaker margin: −0.285 → +0.520</strong>, and
-              <strong class="math-inline" data-tex="\mathrm{A\text{-}sw.}:1\rightarrow0">A-sw.: 1 → 0</strong>.
-            </p>
+              <strong class="math-inline" data-tex="\mathrm{A\text{-}sw.}:1\rightarrow0">A-sw.: 1 → 0</strong>.</p>
             <details class="input-details wide-inputs" open>
-              <summary>Hear the clean input and the speaker BSRNN-TSE mistakenly follows</summary>
+              <summary>Input, enrollment &amp; interferer</summary>
               <div class="audio-grid three">
                 <div class="audio-cell"><strong>Clean mixture</strong><small>system input</small><audio controls preload="none" src="public/assets/audio/clean/segmented/mixture.wav"></audio></div>
                 <div class="audio-cell reference"><strong>Target enrollment</strong><small>speaker condition</small><audio controls preload="none" src="public/assets/audio/clean/segmented/enrollment.wav"></audio></div>
@@ -379,27 +215,23 @@
               <div class="audio-cell ours"><strong>BSRNN-TSE-CDCS-5</strong><small>middle view · WER 0%</small><audio controls preload="none" src="public/assets/audio/clean/segmented/pool-d.wav"></audio></div>
             </div>
             <div class="transcript-panel" aria-label="Transcripts for Example 1">
-              <p class="transcript-note"><strong>Whisper large-v3</strong> · frozen greedy English decoding, repetition penalty 1.10; clean target reference used only for evaluation</p>
+              <p class="transcript-note"><strong>Whisper large-v3</strong> · greedy English · repetition penalty 1.10 · ASR target reference</p>
               <dl>
                 <div><dt>Target · large-v3</dt><dd>this attitude springs from a false conception of sin the conception that sin is a small matter easily taken care of by good works</dd></div>
                 <div class="wrong-line"><dt>BSRNN-TSE · large-v3</dt><dd>he obtained the desired speed and load with a friction brake also regulated speed but waited for an indicator to verify it <span class="wer-tag">WER 100%</span></dd></div>
                 <div class="ours-line"><dt>BSRNN-TSE-CDCS-5 · large-v3</dt><dd>this attitude springs from a false conception of sin the conception that sin is a small matter easily taken care of by good works <span class="wer-tag">WER 0%</span></dd></div>
               </dl>
-              <p class="transcript-reading"><strong>Failure anatomy:</strong> clean speech rules out noise as the cause. The extracted words and voice both match the competing speaker, so this is a genuine speaker-confusion error rather than ordinary ASR corruption.</p>
+              <p class="transcript-reading"><strong>Speaker confusion:</strong> the extracted words and voice match the interferer, even without noise.</p>
             </div>
-            <details class="spectrogram"><summary>View compact high-resolution spectrogram</summary><figure class="spectrogram-frame"><a href="public/assets/figures/clean-case-segmented.png?v=20260923-names-1" target="_blank" rel="noopener"><img data-src="public/assets/figures/clean-case-segmented.png?v=20260923-names-1" width="2000" height="1160" alt="Clean wrong-speaker BSRNN-TSE and BSRNN-TSE-CDCS-5 recovery spectrogram comparison" /></a><figcaption>Clean target, clean interferer, wrong-speaker BSRNN-TSE, and the target-consistent middle-view candidate selected by CDCS-5. Select the figure for the 2,000-pixel original.</figcaption></figure></details>
+            <details class="spectrogram"><summary>Spectrogram</summary><figure class="spectrogram-frame"><a href="public/assets/figures/clean-case-segmented.png?v=20260923-names-1" target="_blank" rel="noopener"><img data-src="public/assets/figures/clean-case-segmented.png?v=20260923-names-1" width="2000" height="1160" alt="Clean wrong-speaker BSRNN-TSE and BSRNN-TSE-CDCS-5 recovery spectrogram comparison" /></a><figcaption>Clean target, clean interferer, wrong-speaker BSRNN-TSE, and the target-consistent middle-view candidate selected by CDCS-5. Select the figure for the 2,000-pixel original.</figcaption></figure></details>
           </article>
 
           <article class="audio-case" data-audio-case hidden>
             <h3>Example 2 — BSRNN-TSE extracts the wrong speaker under noise</h3>
-            <p>
-              BSRNN-TSE exactly follows the same-gender interferer rather than the enrolled target. CDCS-5 selects the complementary
-              TF-map/context candidate, after which fixed CSG preserves the repaired target content:
-              <strong class="math-inline" data-tex="\operatorname{WER}:144.44\%\rightarrow0\%">WER: 144.44% → 0%</strong> and
-              <strong class="math-inline" data-tex="\mathrm{A\text{-}sw.}:1\rightarrow0">A-sw.: 1 → 0</strong>.
-            </p>
+            <p>BSRNN-TSE follows the interferer. CDCS-5 selects the TF-map/context candidate; fixed CSG preserves the repaired target content: <strong class="math-inline" data-tex="\operatorname{WER}:144.44\%\rightarrow0\%">WER: 144.44% → 0%</strong> and
+              <strong class="math-inline" data-tex="\mathrm{A\text{-}sw.}:1\rightarrow0">A-sw.: 1 → 0</strong>.</p>
             <details class="input-details wide-inputs">
-              <summary>Hear the noisy input and the speaker BSRNN-TSE mistakenly follows</summary>
+              <summary>Input, enrollment &amp; interferer</summary>
               <div class="audio-grid three">
                 <div class="audio-cell"><strong>Noisy mixture</strong><small>system input</small><audio controls preload="none" src="public/assets/audio/noisy/evidence-repair/mixture.wav"></audio></div>
                 <div class="audio-cell reference"><strong>Target enrollment</strong><small>speaker condition</small><audio controls preload="none" src="public/assets/audio/noisy/evidence-repair/enrollment.wav"></audio></div>
@@ -414,7 +246,7 @@
               <div class="audio-cell ours"><strong>Qwen-TSE-fixed-CSG</strong><small>grounded · WER 0%</small><audio controls preload="none" src="public/assets/audio/noisy/evidence-repair/qwen-fixed-csg.wav"></audio></div>
             </div>
             <div class="transcript-panel" aria-label="Transcripts for Example 2">
-              <p class="transcript-note"><strong>Whisper large-v3</strong> · frozen greedy English decoding, repetition penalty 1.10; clean target reference used only for evaluation</p>
+              <p class="transcript-note"><strong>Whisper large-v3</strong> · greedy English · repetition penalty 1.10 · ASR target reference</p>
               <dl>
                 <div><dt>Target · large-v3</dt><dd>through the black night rain he sang to me</dd></div>
                 <div class="wrong-line"><dt>BSRNN-TSE · large-v3</dt><dd>in the stern i carved the tail up almost as high as the head <span class="wer-tag">WER 144.44%</span></dd></div>
@@ -422,21 +254,17 @@
                 <div><dt>Qwen-TSE-UD · large-v3</dt><dd>through the black night rain he sang to me <span class="wer-tag">WER 0%</span></dd></div>
                 <div class="ours-line"><dt>Qwen-TSE-fixed-CSG · large-v3</dt><dd>through the black night rain he sang to me <span class="wer-tag">WER 0%</span></dd></div>
               </dl>
-              <p class="transcript-reading"><strong>Why repair matters:</strong> a relatively high MOS cannot reveal that BSRNN-TSE extracted the wrong person. CDCS-5 first repairs <em>who</em> is speaking; both Qwen-TSE variants then preserve the large-v3 target transcript in this case.</p>
+              <p class="transcript-reading"><strong>Repair identity first:</strong> MOS alone misses wrong-speaker extraction. Both Qwen variants preserve the target transcript here.</p>
             </div>
-            <details class="spectrogram"><summary>View compact high-resolution spectrogram</summary><figure class="spectrogram-frame"><a href="public/assets/figures/noisy-case-evidence-repair.png?v=20260923-names-1" target="_blank" rel="noopener"><img data-src="public/assets/figures/noisy-case-evidence-repair.png?v=20260923-names-1" width="2000" height="1160" alt="Noisy BSRNN-TSE speaker-recovery spectrogram comparison" /></a><figcaption>Clean target, wrong-speaker BSRNN-TSE, repaired BSRNN-TSE-CDCS-5 evidence, and Qwen-TSE-fixed-CSG output. Select the figure for the 2,000-pixel original.</figcaption></figure></details>
+            <details class="spectrogram"><summary>Spectrogram</summary><figure class="spectrogram-frame"><a href="public/assets/figures/noisy-case-evidence-repair.png?v=20260923-names-1" target="_blank" rel="noopener"><img data-src="public/assets/figures/noisy-case-evidence-repair.png?v=20260923-names-1" width="2000" height="1160" alt="Noisy BSRNN-TSE speaker-recovery spectrogram comparison" /></a><figcaption>Clean target, wrong-speaker BSRNN-TSE, repaired BSRNN-TSE-CDCS-5 evidence, and Qwen-TSE-fixed-CSG output. Select the figure for the 2,000-pixel original.</figcaption></figure></details>
           </article>
 
           <article class="audio-case" data-audio-case hidden>
             <h3>Example 3 — grounding blocks speaker collapse</h3>
-            <p>
-              The selected evidence remains target-consistent, but ungrounded Qwen-TSE collapses to one word
-              and crosses the acoustic speaker boundary. Fixed CSG restores the target identity and most content:
-              <strong class="math-inline" data-tex="\operatorname{WER}_{\mathrm{UD}}=100\%\rightarrow\operatorname{WER}_{\mathrm{CSG}}=25\%">UD WER = 100% → CSG WER = 25%</strong> and
-              <strong class="math-inline" data-tex="\mathrm{A\text{-}sw.}:1\rightarrow0">A-sw.: 1 → 0</strong>.
-            </p>
+            <p>Qwen-TSE-UD collapses despite target-consistent evidence. Fixed CSG restores identity and most words: <strong class="math-inline" data-tex="\operatorname{WER}_{\mathrm{UD}}=100\%\rightarrow\operatorname{WER}_{\mathrm{CSG}}=25\%">UD WER = 100% → CSG WER = 25%</strong> and
+              <strong class="math-inline" data-tex="\mathrm{A\text{-}sw.}:1\rightarrow0">A-sw.: 1 → 0</strong>.</p>
             <details class="input-details wide-inputs">
-              <summary>Listen to the noisy input, enrollment, and interferer</summary>
+              <summary>Input, enrollment &amp; interferer</summary>
               <div class="audio-grid three">
                 <div class="audio-cell"><strong>Noisy mixture</strong><small>system input</small><audio controls preload="none" src="public/assets/audio/noisy/speaker-grounding/mixture.wav"></audio></div>
                 <div class="audio-cell reference"><strong>Target enrollment</strong><small>speaker condition</small><audio controls preload="none" src="public/assets/audio/noisy/speaker-grounding/enrollment.wav"></audio></div>
@@ -451,27 +279,23 @@
               <div class="audio-cell ours"><strong>Qwen-TSE-fixed-CSG</strong><small>speaker restored · WER 25%</small><audio controls preload="none" src="public/assets/audio/noisy/speaker-grounding/qwen-fixed-csg.wav"></audio></div>
             </div>
             <div class="transcript-panel" aria-label="Transcripts for Example 3">
-              <p class="transcript-note"><strong>Whisper large-v3</strong> · frozen greedy English decoding, repetition penalty 1.10; clean target reference used only for evaluation</p>
+              <p class="transcript-note"><strong>Whisper large-v3</strong> · greedy English · repetition penalty 1.10 · ASR target reference</p>
               <dl>
                 <div><dt>Target · large-v3</dt><dd>she had almost forgotten that it was here within touch and sight</dd></div>
                 <div><dt>BSRNN-TSE-CDCS-5 · large-v3</dt><dd>she had almost forgotten that it was here he can touch and sight <span class="wer-tag">WER 16.67%</span></dd></div>
                 <div class="wrong-line"><dt>Qwen-TSE-UD · large-v3</dt><dd>you <span class="wer-tag">WER 100%</span></dd></div>
                 <div class="ours-line"><dt>Qwen-TSE-fixed-CSG · large-v3</dt><dd>she had almost forgotten that it was here they didnt touch and sigh <span class="wer-tag">WER 25%</span></dd></div>
               </dl>
-              <p class="transcript-reading"><strong>Why grounding matters:</strong> the generative prior can ignore otherwise correct evidence. Fixed CSG keeps decoding anchored to its content and target identity.</p>
+              <p class="transcript-reading"><strong>Grounding matters:</strong> fixed CSG anchors generation to the target evidence.</p>
             </div>
-            <details class="spectrogram"><summary>View compact high-resolution spectrogram</summary><figure class="spectrogram-frame"><a href="public/assets/figures/noisy-case-speaker-grounding.png?v=20260923-names-1" target="_blank" rel="noopener"><img data-src="public/assets/figures/noisy-case-speaker-grounding.png?v=20260923-names-1" width="2000" height="1160" alt="Noisy Qwen-TSE-UD speaker collapse and Qwen-TSE-fixed-CSG recovery spectrogram comparison" /></a><figcaption>Clean target, BSRNN-TSE-CDCS-5 evidence, Qwen-TSE-UD speaker collapse, and Qwen-TSE-fixed-CSG recovery. Select the figure for the 2,000-pixel original.</figcaption></figure></details>
+            <details class="spectrogram"><summary>Spectrogram</summary><figure class="spectrogram-frame"><a href="public/assets/figures/noisy-case-speaker-grounding.png?v=20260923-names-1" target="_blank" rel="noopener"><img data-src="public/assets/figures/noisy-case-speaker-grounding.png?v=20260923-names-1" width="2000" height="1160" alt="Noisy Qwen-TSE-UD speaker collapse and Qwen-TSE-fixed-CSG recovery spectrogram comparison" /></a><figcaption>Clean target, BSRNN-TSE-CDCS-5 evidence, Qwen-TSE-UD speaker collapse, and Qwen-TSE-fixed-CSG recovery. Select the figure for the 2,000-pixel original.</figcaption></figure></details>
           </article>
 
           <article class="audio-case" data-audio-case hidden>
             <h3>Example 4 — a large-v3 transcript-agreement control</h3>
-            <p>
-              Large-v3 assigns the same exact target transcript to direct, ungrounded, and grounded outputs:
-              <strong class="math-inline" data-tex="\operatorname{WER}=0\%">WER = 0%</strong> throughout.
-              The players are retained as a listening control: identical ASR text does not imply identical waveforms.
-            </p>
+            <p>All displayed outputs match the target transcript under large-v3 (<strong class="math-inline" data-tex="\operatorname{WER}=0\%">WER = 0%</strong>). Listen for differences that ASR does not capture.</p>
             <details class="input-details wide-inputs">
-              <summary>Listen to the noisy input, enrollment, and interferer</summary>
+              <summary>Input, enrollment &amp; interferer</summary>
               <div class="audio-grid three">
                 <div class="audio-cell"><strong>Noisy mixture</strong><small>system input</small><audio controls preload="none" src="public/assets/audio/noisy/content-grounding/mixture.wav"></audio></div>
                 <div class="audio-cell reference"><strong>Target enrollment</strong><small>speaker condition</small><audio controls preload="none" src="public/assets/audio/noisy/content-grounding/enrollment.wav"></audio></div>
@@ -486,27 +310,22 @@
               <div class="audio-cell ours"><strong>Qwen-TSE-fixed-CSG</strong><small>large-v3 WER 0%</small><audio controls preload="none" src="public/assets/audio/noisy/content-grounding/qwen-fixed-csg.wav"></audio></div>
             </div>
             <div class="transcript-panel" aria-label="Transcripts for Example 4">
-              <p class="transcript-note"><strong>Whisper large-v3</strong> · frozen greedy English decoding, repetition penalty 1.10; clean target reference used only for evaluation</p>
+              <p class="transcript-note"><strong>Whisper large-v3</strong> · greedy English · repetition penalty 1.10 · ASR target reference</p>
               <dl>
                 <div><dt>Target · large-v3</dt><dd>in actual fact there are doubtless various</dd></div>
                 <div class="ours-line"><dt>All displayed outputs · large-v3</dt><dd>in actual fact there are doubtless various <span class="wer-tag">WER 0%</span></dd></div>
               </dl>
-              <p class="transcript-reading"><strong>Why listening is still needed:</strong> a shared 0% automatic transcript establishes lexical agreement under this ASR, not perceptual equivalence between waveforms.</p>
+              <p class="transcript-reading"><strong>Listen beyond WER:</strong> matching ASR transcripts do not imply identical sound.</p>
             </div>
-            <details class="spectrogram"><summary>View compact high-resolution spectrogram</summary><figure class="spectrogram-frame"><a href="public/assets/figures/noisy-case-content-grounding.png?v=20260923-names-1" target="_blank" rel="noopener"><img data-src="public/assets/figures/noisy-case-content-grounding.png?v=20260923-names-1" width="2000" height="1160" alt="Noisy large-v3 transcript-agreement control spectrogram comparison" /></a><figcaption>Clean target, BSRNN-TSE-CDCS-5 evidence, Qwen-TSE-UD, and Qwen-TSE-fixed-CSG all receive the same exact large-v3 transcript in this listening control. Select the figure for the 2,000-pixel original.</figcaption></figure></details>
+            <details class="spectrogram"><summary>Spectrogram</summary><figure class="spectrogram-frame"><a href="public/assets/figures/noisy-case-content-grounding.png?v=20260923-names-1" target="_blank" rel="noopener"><img data-src="public/assets/figures/noisy-case-content-grounding.png?v=20260923-names-1" width="2000" height="1160" alt="Noisy large-v3 transcript-agreement control spectrogram comparison" /></a><figcaption>Clean target, BSRNN-TSE-CDCS-5 evidence, Qwen-TSE-UD, and Qwen-TSE-fixed-CSG all receive the same exact large-v3 transcript in this listening control. Select the figure for the 2,000-pixel original.</figcaption></figure></details>
           </article>
 
           <article class="audio-case" data-audio-case hidden>
             <h3>Example 5 — fidelity–naturalness operating points</h3>
-            <p>
-              Both endpoints preserve the complete target transcript and speaker identity. The direct output
-              retains stronger reference alignment, while grounded generation is rated substantially more natural:
-              <strong class="math-inline" data-tex="\operatorname{UTMOS}:1.307\rightarrow3.827">UTMOS: 1.307 → 3.827</strong>, with
-              <strong class="math-inline" data-tex="\operatorname{eSTOI}:0.692\rightarrow0.621">eSTOI: 0.692 → 0.621</strong>.
-              DNSMOS P.808 is reported at corpus level; no per-case P.808 score is available for this listening example.
-            </p>
+            <p>Both endpoints preserve the target words and identity. Grounded generation raises predicted naturalness but lowers eSTOI: <strong class="math-inline" data-tex="\operatorname{UTMOS}:1.307\rightarrow3.827">UTMOS: 1.307 → 3.827</strong>, with
+              <strong class="math-inline" data-tex="\operatorname{eSTOI}:0.692\rightarrow0.621">eSTOI: 0.692 → 0.621</strong>. No per-case DNSMOS P.808 score is available.</p>
             <details class="input-details wide-inputs">
-              <summary>Listen to the noisy input, enrollment, and interferer</summary>
+              <summary>Input, enrollment &amp; interferer</summary>
               <div class="audio-grid three">
                 <div class="audio-cell"><strong>Noisy mixture</strong><small>system input</small><audio controls preload="none" src="public/assets/audio/noisy/quality-grounding/mixture.wav"></audio></div>
                 <div class="audio-cell reference"><strong>Target enrollment</strong><small>speaker condition</small><audio controls preload="none" src="public/assets/audio/noisy/quality-grounding/enrollment.wav"></audio></div>
@@ -521,238 +340,132 @@
               <div class="audio-cell ours"><strong>Qwen-TSE-fixed-CSG</strong><small>WER 0% · UTMOS 3.83</small><audio controls preload="none" src="public/assets/audio/noisy/quality-grounding/qwen-fixed-csg.wav"></audio></div>
             </div>
             <div class="transcript-panel" aria-label="Transcripts for Example 5">
-              <p class="transcript-note"><strong>Whisper large-v3</strong> · frozen greedy English decoding, repetition penalty 1.10; clean target reference used only for evaluation</p>
+              <p class="transcript-note"><strong>Whisper large-v3</strong> · greedy English · repetition penalty 1.10 · ASR target reference</p>
               <dl>
                 <div><dt>Target · large-v3</dt><dd>i tell him to give me some coffee if it is good</dd></div>
                 <div class="ours-line"><dt>All displayed outputs · large-v3</dt><dd>i tell him to give me some coffee if it is good <span class="wer-tag">WER 0%</span></dd></div>
               </dl>
-              <p class="transcript-reading"><strong>Two honest operating points:</strong> BSRNN-TSE-CDCS-5 favors waveform/reference fidelity; Qwen-TSE-fixed-CSG uses the speech prior to improve predicted naturalness while preserving words and speaker here. The modest eSTOI decrease is reported rather than hidden.</p>
+              <p class="transcript-reading"><strong>Trade-off:</strong> direct extraction favors fidelity; fixed CSG improves predicted naturalness here, with lower eSTOI.</p>
             </div>
-            <details class="spectrogram"><summary>View compact high-resolution spectrogram</summary><figure class="spectrogram-frame"><a href="public/assets/figures/noisy-case-quality-grounding.png?v=20260923-names-1" target="_blank" rel="noopener"><img data-src="public/assets/figures/noisy-case-quality-grounding.png?v=20260923-names-1" width="2000" height="1160" alt="Noisy fidelity and naturalness operating-point spectrogram comparison" /></a><figcaption>Clean target, BSRNN-TSE-CDCS-5, Qwen-TSE-UD, and Qwen-TSE-fixed-CSG. Select the figure for the 2,000-pixel original.</figcaption></figure></details>
+            <details class="spectrogram"><summary>Spectrogram</summary><figure class="spectrogram-frame"><a href="public/assets/figures/noisy-case-quality-grounding.png?v=20260923-names-1" target="_blank" rel="noopener"><img data-src="public/assets/figures/noisy-case-quality-grounding.png?v=20260923-names-1" width="2000" height="1160" alt="Noisy fidelity and naturalness operating-point spectrogram comparison" /></a><figcaption>Clean target, BSRNN-TSE-CDCS-5, Qwen-TSE-UD, and Qwen-TSE-fixed-CSG. Select the figure for the 2,000-pixel original.</figcaption></figure></details>
           </article>
         </div>
 
-        <p class="pending"><strong>Selection protocol.</strong> These are mechanism-focused examples, not aggregate evidence. Trial identities and waveforms are unchanged from the frozen case selection; the page displays only config-consistent Whisper large-v3 transcripts and WER. The fourth noisy example is retained as a listening control because large-v3 assigns every displayed output the same exact transcript. No case was reselected after this ASR audit. Corpus-level results remain available in the paper and machine-readable records. <a href="public/results/clean-demo-case.json">Clean case record</a> · <a href="public/results/noisy-demo-cases.json">Noisy case record</a>.</p>
+        <p class="pending"><strong>Illustrative cases, not aggregate results.</strong> Waveforms and case selection are unchanged; displayed transcripts and WER use one large-v3 configuration. Full selection rules and results: <a href="public/results/clean-demo-case.json">clean record</a> · <a href="public/results/noisy-demo-cases.json">noisy record</a>.</p>
+      </section>
+
+
+      <section id="metrics" aria-labelledby="paper-results-title">
+        <p class="split-label">Results from the paper</p>
+        <h2 id="paper-results-title">Evidence repair and grounded generation</h2>
+        <p>CDCS-5 reduces speaker confusion. CSG further stabilizes the generative branch while retaining its predicted-quality advantage.</p>
+        <div class="paper-highlights">
+          <div><span>Evidence repair · Clean TEST</span><strong>6.87 → 0.75%</strong><small>Wrong-speaker errors · Full → CDCS-5</small></div>
+          <div><span>Grounding · Noisy TEST</span><strong>12.79 → 9.10%</strong><small>Content switching · UD → fixed CSG</small></div>
+          <div><span>Grounding · Noisy TEST</span><strong>1.68 → 0.51%</strong><small>Acoustic switching · UD → fixed CSG</small></div>
+        </div>
+        <h3>System comparison</h3>
+        <div class="result-switch" role="group" aria-label="Choose evaluation condition">
+          <button type="button" id="show-noisy" data-result-button="noisy" aria-pressed="true" aria-controls="result-noisy">Noisy TEST <span>8,400 trials</span></button>
+          <button type="button" id="show-clean" data-result-button="clean" aria-pressed="false" aria-controls="result-clean">Clean TEST <span>6,000 trials</span></button>
+        </div>
+        <div id="result-noisy" data-result-panel="noisy" role="region" aria-labelledby="show-noisy">
+          <p class="paper-table-note">6,000 natural-noise + 2,400 controlled-SNR trials. All systems use the same evaluation pool.</p>
+          <div class="table-scroll" tabindex="0" role="region" aria-label="Noisy TEST results table, horizontally scrollable">
+      <table class="paper-result-table" data-paper-split="noisy_test">
+        <caption>Noisy TEST · Table 1</caption>
+        <thead><tr><th scope="col">System</th><th scope="col">WER ↓<small>%</small></th><th scope="col"><abbr title="Content-switch rate">C-sw.</abbr> ↓<small>%</small></th><th scope="col"><abbr title="Acoustic-switch rate">A-sw.</abbr> ↓<small>%</small></th><th scope="col">Spk. margin ↑</th><th scope="col">DNSMOS ↑<small>P.808</small></th><th scope="col">UTMOS ↑</th></tr></thead>
+        <tbody><tr><th scope="row">BSRNN-TSE</th><td>39.85</td><td>18.79</td><td>18.23</td><td>0.266</td><td>3.031</td><td>2.001</td></tr><tr><th scope="row">BSRNN-TSE-CDCS-5</th><td><strong>30.67</strong></td><td>11.02</td><td>10.39</td><td>0.327</td><td>2.980</td><td>1.948</td></tr><tr><th scope="row">Qwen-TSE-UD</th><td>46.70</td><td>12.79</td><td>1.68</td><td>0.377</td><td>3.494</td><td>3.216</td></tr><tr><th scope="row">Qwen-TSE-fixed-CSG</th><td>42.11</td><td><strong>9.10</strong></td><td><strong>0.51</strong></td><td>0.386</td><td>3.498</td><td>3.147</td></tr><tr><th scope="row">Qwen-TSE-adaptive-CSG</th><td>42.73</td><td>9.37</td><td>0.53</td><td><strong>0.388</strong></td><td><strong>3.503</strong></td><td><strong>3.253</strong></td></tr></tbody>
+      </table></div>
+        </div>
+        <div id="result-clean" data-result-panel="clean" role="region" aria-labelledby="show-clean" hidden>
+          <p class="paper-table-note">3,000 clean mixtures, evaluated in both target-speaker directions.</p>
+          <div class="table-scroll" tabindex="0" role="region" aria-label="Clean TEST results table, horizontally scrollable">
+      <table class="paper-result-table" data-paper-split="clean_test">
+        <caption>Clean TEST · Table 1</caption>
+        <thead><tr><th scope="col">System</th><th scope="col">WER ↓<small>%</small></th><th scope="col"><abbr title="Content-switch rate">C-sw.</abbr> ↓<small>%</small></th><th scope="col"><abbr title="Acoustic-switch rate">A-sw.</abbr> ↓<small>%</small></th><th scope="col">Spk. margin ↑</th><th scope="col">DNSMOS ↑<small>P.808</small></th><th scope="col">UTMOS ↑</th></tr></thead>
+        <tbody><tr><th scope="row">BSRNN-TSE</th><td>11.41</td><td>7.00</td><td>6.98</td><td>0.449</td><td>3.688</td><td>3.606</td></tr><tr><th scope="row">BSRNN-TSE-CDCS-5</th><td><strong>7.02</strong></td><td><strong>0.88</strong></td><td>0.78</td><td><strong>0.506</strong></td><td>3.699</td><td>3.647</td></tr><tr><th scope="row">Qwen-TSE-UD</th><td>8.99</td><td>0.92</td><td>0.43</td><td>0.421</td><td>3.705</td><td>3.913</td></tr><tr><th scope="row">Qwen-TSE-fixed-CSG</th><td>8.04</td><td>0.92</td><td>0.23</td><td>0.422</td><td>3.699</td><td>3.910</td></tr><tr><th scope="row">Qwen-TSE-adaptive-CSG</th><td>8.12</td><td>0.90</td><td><strong>0.20</strong></td><td>0.421</td><td><strong>3.711</strong></td><td><strong>3.921</strong></td></tr></tbody>
+      </table></div>
+        </div>
+        <p class="paper-table-note"><strong>Bold:</strong> best value per column and condition. CDCS-5 returns the repaired waveform; fixed/adaptive CSG ground the same Qwen-TSE checkpoint. WER measures agreement with automatic target transcripts. DNSMOS and UTMOS predict quality.</p>
+        <figure class="figure-card paper-snr-figure">
+          <a href="public/assets/figures/paper/snr-results.png" target="_blank" rel="noopener" aria-label="Open paper Figure 2 at full resolution"><img src="public/assets/figures/paper/snr-results.png" width="2415" height="978" loading="lazy" decoding="async" alt="Paper Figure 2: acoustic-switch rate and DNSMOS P.808 versus SNR from minus 5 to 15 dB, comparing five TSE systems." /></a>
+          <figcaption><strong>Paper Figure 2.</strong> Controlled-noise TEST, 480 trials per SNR. Acoustic-switch rate uses a logarithmic axis; quality is DNSMOS P.808. <a href="public/assets/figures/paper/snr-results.png" target="_blank" rel="noopener">Full resolution ↗</a></figcaption>
+        </figure>
+        <details class="paper-details">
+          <summary>CDCS-5 ablation &amp; selection safety <span>Table 2</span></summary>
+          <p>Full/TF use the complete enrollment; E/M/L use early, middle and late local views. Wrong-speaker errors use the SI-SDR margin, <strong>not</strong> the CAMPPlus acoustic-switch definition in Table 1.</p>
+          <div class="table-scroll" tabindex="0" role="region" aria-label="CDCS ablation table, horizontally scrollable"><table class="paper-ablation-table"><caption>Table 2(a) · Wrong-speaker errors (%, ↓)</caption><thead><tr><th scope="col">Configuration</th><th scope="col">Clean DEV</th><th scope="col">Clean TEST</th><th scope="col">Noisy DEV</th><th scope="col">Noisy TEST</th></tr></thead><tbody><tr><th scope="row">Full (no CDCS)</th><td>6.90</td><td>6.87</td><td>19.85</td><td>18.95</td></tr><tr><th scope="row">Early (E)</th><td>8.52</td><td>8.57</td><td>20.61</td><td>19.96</td></tr><tr><th scope="row">Middle (M)</th><td>8.27</td><td>8.90</td><td>20.92</td><td>20.73</td></tr><tr><th scope="row">Late (L)</th><td>8.52</td><td>8.50</td><td>20.71</td><td>20.18</td></tr><tr><th scope="row">TF-context (TF)</th><td>2.35</td><td>2.53</td><td>14.32</td><td>14.37</td></tr><tr><th scope="row">Full + E/M/L</th><td>3.70</td><td>3.60</td><td>15.96</td><td>15.00</td></tr><tr><th scope="row">Full + TF</th><td>1.17</td><td>1.18</td><td>12.00</td><td>11.30</td></tr><tr><th scope="row">CDCS-5</th><td>0.88</td><td>0.75</td><td>11.02</td><td>10.46</td></tr></tbody></table></div>
+          <div class="table-scroll" tabindex="0" role="region" aria-label="Selection safety table, horizontally scrollable"><table class="paper-recovery-table"><caption>Table 2(b) · High-confidence confusion recovery &amp; new errors</caption><thead><tr><th scope="col">Split</th><th scope="col">CDCS-5 recovery</th><th scope="col">Oracle availability</th><th scope="col">New errors</th></tr></thead><tbody><tr><th scope="row">Clean TEST</th><td>355/398 (89.20%)</td><td>360/398 (90.45%)</td><td>2/5,588 (0.04%)</td></tr><tr><th scope="row">Noisy TEST</th><td>374/646 (57.89%)</td><td>431/646 (66.72%)</td><td>8/4,709 (0.17%)</td></tr></tbody></table></div>
+          <p class="paper-table-note">Recovery and new-error rates use their respective high-confidence subsets, shown in the denominators. Oracle availability uses clean references for analysis only; CDCS never receives these references.</p>
+        </details>
+        <p class="paper-table-note">Source: manuscript Tables 1–2 and Figures 1–2, checked 25 October 2026. <a href="public/results/paper-results.json">Download table values &amp; protocol</a> · <a href="#metric-definitions">Metric definitions</a></p>
+      </section>
+
+      <section id="whisper-audit" aria-labelledby="whisper-title">
+        <p class="split-label">Listening audit · selected Natural Noisy TEST example</p>
+        <h2 id="whisper-title">When Whisper-based WER becomes misleading</h2>
+        <p>A generated waveform and its ASR transcript can fail in different ways. This example shows why we interpret WER together with audio, speaker consistency and predicted quality.</p>
+        <article class="whisper-example">
+          <div class="whisper-heading"><h3>7.68 seconds of audio. 419 insertion errors.</h3><span>ASR transcript repetition</span></div>
+          <p>Whisper large-v3 transcribes the UD output as “out zander paced up and down the hallway f f f …”. The repeated transcript dominates WER; it does not establish that the waveform contains hundreds of spoken repetitions.</p>
+          <div class="wer-breakdown" aria-label="WER: the sum of 17 substitutions, zero deletions and 419 insertions divided by 23 reference words, times 100 percent, equals 1895.65 percent">
+            <div class="wer-fraction"><div class="wer-numerator"><span><b>17</b> substitutions</span><i>+</i><span><b>0</b> deletions</span><i>+</i><span class="insertions"><b>419</b> insertions</span></div><div class="wer-denominator">23 reference words</div></div><i>× 100% =</i><span><b>1,895.65%</b> WER</span>
+          </div>
+          <p class="paper-table-note">WER = (S + D + I) / reference words × 100%. Insertions can push it above 100%.</p>
+          <div class="audio-grid whisper-audio"><div class="audio-cell reference"><strong>Clean target</strong><small>Reference audio · evaluation only</small><audio controls preload="none" aria-label="Whisper audit: Clean target" src="public/assets/audio/noisy-llm-case-study/largev3-runaway/target.wav"></audio></div><div class="audio-cell failure-output"><strong>Qwen-TSE-UD</strong><small>7.68 s · WER 1,895.65% · speaker margin +0.467</small><audio controls preload="none" aria-label="Whisper audit: Qwen-TSE-UD" src="public/assets/audio/noisy-llm-case-study/largev3-runaway/qwen-ud.wav"></audio></div><div class="audio-cell ours"><strong>Qwen-TSE-fixed-CSG</strong><small>7.68 s · WER 34.78% · speaker margin +0.485</small><audio controls preload="none" aria-label="Whisper audit: Qwen-TSE-fixed-CSG" src="public/assets/audio/noisy-llm-case-study/largev3-runaway/qwen-fixed-csg.wav"></audio></div><div class="audio-cell evidence"><strong>BSRNN-TSE-CDCS-5</strong><small>7.67 s · WER 8.70%</small><audio controls preload="none" aria-label="Whisper audit: BSRNN-TSE-CDCS-5" src="public/assets/audio/noisy-llm-case-study/largev3-runaway/cdcs-5.wav"></audio></div></div>
+          <details class="failure-transcripts">
+            <summary>Read the target, UD and grounded ASR transcripts</summary>
+            <div class="transcript-panel"><dl>
+              <div><dt>Clean target · Whisper large-v3</dt><dd>alexander paced up and down the hallway buttoning and unbuttoning his overcoat until she returned and took him up to hildas living room</dd></div>
+              <div class="wrong-line"><dt>UD · full automatic transcript</dt><dd class="runaway-transcript">out zander paced up and down the hallway f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f</dd></div>
+              <div><dt>Fixed CSG · Whisper large-v3</dt><dd>alexander paced up and down the hallway buttoning and unbuttoning his overcoat until she returned into the hotel of his</dd></div>
+            </dl></div>
+          </details>
+          <ul class="whisper-reading">
+            <li><strong>What is measured:</strong> an insertion-heavy ASR transcript, against a 23-word automatic reference.</li>
+            <li><strong>What to listen for:</strong> actual words and repetitions in the waveform. A positive speaker margin confirms neither transcription accuracy nor correct content.</li>
+            <li><strong>What remains unverified:</strong> the exact split between speech-generation and recognition errors; this audit has no human-adjudicated transcript or second-recognizer check.</li>
+          </ul>
+        </article>
+        <p class="paper-table-note">Post-hoc example, selected for the largest large-v3 insertion count in the complete Natural Noisy TEST audit. English transcription, greedy decoding, repetition penalty 1.10. Clean-target reference text is also automatic. This is not a failure-rate estimate. <a href="public/results/noisy-llm-case-study.json">Full audit &amp; audio hashes</a>.</p>
       </section>
 
       <section id="grounding-failures" aria-labelledby="grounding-failures-title">
         <div class="failure-section-heading">
-          <p class="split-label">Frozen Natural Noisy TEST · 6,000 trials · post-hoc listening audit</p>
+          <p class="split-label">Frozen Natural Noisy TEST · selected examples</p>
           <h2 id="grounding-failures-title">Why can LLM-based TSE have high WER?</h2>
-          <p>
-            These six cases expose lexical drift, decoding failures, speaker/content confusion, and genuine
-            grounding successes or regressions under one ASR configuration. Play the complete waveforms first, then
-            reveal the transcripts. The cases are illustrations, not prevalence estimates, and were never used
-            to tune a system or replace the frozen TEST metrics.
-          </p>
+          <p>Generation can change words even when the voice sounds right. These three cases show when grounding helps—and when it fails.</p>
         </div>
 
-        <p class="failure-protocol audit-key">
-          <strong>ASR used throughout.</strong> Every transcript and WER chip in this listening audit uses
-          <code>Whisper large-v3</code> with frozen greedy English decoding, repetition penalty 1.10, and
-          batch size 32. The target reference is transcribed with the same configuration. No human reference
-          transcription was added, so the listening interpretation remains deliberately cautious.
-        </p>
+        <p class="failure-protocol audit-key"><strong>Listen first.</strong> WER and reference transcripts use Whisper large-v3, not human transcription; ASR errors can also inflate WER.</p>
 
         <div class="failure-grid">
-          <article class="failure-card measurement-card">
-            <div class="failure-label"><span>Case 01</span><strong>Grounding repair</strong></div>
-            <h3>Grounding removes residual UD lexical drift</h3>
-            <p>
-              Whisper large-v3 finds a near-reference sentence in Qwen-TSE-UD but still measures residual
-              substitutions. Fixed, adaptive, and GNR grounding recover the target transcript exactly. Listen to
-              the full 4.32-second outputs to compare the remaining UD drift with the grounded reconstructions.
-            </p>
-            <div class="failure-metrics" aria-label="Whisper large-v3 WER comparison">
-              <span class="metric-focus"><b>UD</b> 26.67%</span>
-              <span class="metric-good"><b>Fixed</b> 0%</span>
-              <span><b>Adaptive</b> 0%</span>
-              <span><b>GNR</b> 0%</span>
-            </div>
-            <details class="input-details failure-inputs">
-              <summary>Listen to the complete input and references</summary>
-              <div class="audio-grid three">
-                <div class="audio-cell"><strong>Noisy mixture</strong><small>4.32 s · system input</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/grounding-repair-ud/mixture.wav"></audio></div>
-                <div class="audio-cell reference"><strong>Clean target</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/grounding-repair-ud/target.wav"></audio></div>
-                <div class="audio-cell reference"><strong>Clean interferer</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/grounding-repair-ud/interferer.wav"></audio></div>
-              </div>
-            </details>
-            <div class="audio-grid five failure-audio-grid">
-              <div class="audio-cell evidence"><strong>BSRNN-TSE-CDCS-5</strong><small>large-v3 WER 0%</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/grounding-repair-ud/cdcs-5.wav"></audio></div>
-              <div class="audio-cell failure-output"><strong>Qwen-TSE-UD</strong><small>large-v3 WER 26.67%</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/grounding-repair-ud/qwen-ud.wav"></audio></div>
-              <div class="audio-cell ours"><strong>Qwen-TSE-fixed-CSG</strong><small>large-v3 WER 0%</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/grounding-repair-ud/qwen-fixed-csg.wav"></audio></div>
-              <div class="audio-cell"><strong>Qwen-TSE-adaptive-CSG</strong><small>large-v3 WER 0%</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/grounding-repair-ud/qwen-adaptive-csg.wav"></audio></div>
-              <div class="audio-cell"><strong>Qwen-TSE-adaptive-CSG+GNR</strong><small>supplementary · large-v3 WER 0%</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/grounding-repair-ud/qwen-adaptive-csg-gnr.wav"></audio></div>
-            </div>
-            <details class="failure-transcripts">
-              <summary>Reveal target and large-v3 transcripts</summary>
-              <div class="transcript-panel">
-                <dl>
-                  <div><dt>Target</dt><dd>he was like unto my father in a way and yet was not my father</dd></div>
-                  <div><dt>Qwen-TSE-UD · large-v3</dt><dd>she was reckoned to be my father in a way and yet was not my father <span class="wer-tag">WER 26.67%</span></dd></div>
-                  <div class="ours-line"><dt>Qwen-TSE-fixed-CSG · large-v3</dt><dd>he was like unto my father in a way and yet was not my father <span class="wer-tag">WER 0%</span></dd></div>
-                </dl>
-                <p class="transcript-reading">Provisional interpretation: the UD waveform is intelligible but lexically imperfect, while grounding restores the target sentence under the frozen large-v3 audit.</p>
-              </div>
-            </details>
-          </article>
-
-          <article class="failure-card measurement-card">
-            <div class="failure-label"><span>Case 02</span><strong>ASR decoding runaway</strong></div>
-            <h3>Whisper large-v3 can enter a decoding loop</h3>
-            <p>
-              On this 7.68-second UD waveform, large-v3 inserts 419 repeated “f” tokens and reports
-              1,895.65% WER. The fixed, adaptive, and GNR waveforms remain around 35%, showing why an
-              extreme automatic transcript should be checked against the complete audio.
-            </p>
-            <div class="failure-metrics" aria-label="Whisper large-v3 WER comparison">
-              <span class="metric-focus"><b>UD</b> 1,895.65%</span>
-              <span><b>Fixed</b> 34.78%</span>
-              <span><b>Adaptive</b> 34.78%</span>
-              <span><b>GNR</b> 34.78%</span>
-            </div>
-            <details class="input-details failure-inputs">
-              <summary>Listen to the complete input and references</summary>
-              <div class="audio-grid three">
-                <div class="audio-cell"><strong>Noisy mixture</strong><small>7.68 s · system input</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/largev3-runaway/mixture.wav"></audio></div>
-                <div class="audio-cell reference"><strong>Clean target</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/largev3-runaway/target.wav"></audio></div>
-                <div class="audio-cell reference"><strong>Clean interferer</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/largev3-runaway/interferer.wav"></audio></div>
-              </div>
-            </details>
-            <div class="audio-grid five failure-audio-grid">
-              <div class="audio-cell evidence"><strong>BSRNN-TSE-CDCS-5</strong><small>large-v3 WER 8.70%</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/largev3-runaway/cdcs-5.wav"></audio></div>
-              <div class="audio-cell failure-output"><strong>Qwen-TSE-UD</strong><small>large-v3 runaway</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/largev3-runaway/qwen-ud.wav"></audio></div>
-              <div class="audio-cell ours"><strong>Qwen-TSE-fixed-CSG</strong><small>large-v3 WER 34.78%</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/largev3-runaway/qwen-fixed-csg.wav"></audio></div>
-              <div class="audio-cell"><strong>Qwen-TSE-adaptive-CSG</strong><small>large-v3 WER 34.78%</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/largev3-runaway/qwen-adaptive-csg.wav"></audio></div>
-              <div class="audio-cell"><strong>Qwen-TSE-adaptive-CSG+GNR</strong><small>supplementary · large-v3 WER 34.78%</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/largev3-runaway/qwen-adaptive-csg-gnr.wav"></audio></div>
-            </div>
-            <details class="failure-transcripts">
-              <summary>Reveal target and large-v3 transcripts</summary>
-              <div class="transcript-panel">
-                <dl>
-                  <div><dt>Target</dt><dd>alexander paced up and down the hallway buttoning and unbuttoning his overcoat until she returned and took him up to hildas living room</dd></div>
-                  <div class="wrong-line"><dt>Qwen-TSE-UD · large-v3</dt><dd>out zander paced up and down the hallway f f f f f f … <span class="wer-tag">419 insertions · WER 1,895.65%</span></dd></div>
-                  <div class="ours-line"><dt>Qwen-TSE-fixed-CSG · large-v3</dt><dd>alexander paced up and down the hallway buttoning and unbuttoning his overcoat until she returned into the hotel of his <span class="wer-tag">WER 34.78%</span></dd></div>
-                </dl>
-                <p class="transcript-reading">Provisional interpretation: large-v3 decoding runaway. Listen for whether the repeated “f” sequence actually exists in the waveform.</p>
-              </div>
-            </details>
-          </article>
-
-          <article class="failure-card">
-            <div class="failure-label"><span>Case 03</span><strong>UD collapse</strong></div>
-            <h3>Large-v3 hears no lexical content from UD</h3>
-            <p>
-              Large-v3 returns an empty transcript for Qwen-TSE-UD: nine deletions and 100% WER. The WAV
-              has its normal four-second duration, so this is not a missing
-              file. Listen for silence, nonspeech, or speech that is too degraded to recover.
-            </p>
-            <div class="failure-metrics" aria-label="Whisper large-v3 WER comparison">
-              <span class="metric-focus"><b>UD</b> 100%</span>
-              <span><b>Fixed</b> 66.67%</span>
-              <span><b>Adaptive</b> 88.89%</span>
-              <span><b>GNR</b> 100%</span>
-            </div>
-            <details class="input-details failure-inputs">
-              <summary>Listen to the complete input and references</summary>
-              <div class="audio-grid three">
-                <div class="audio-cell"><strong>Noisy mixture</strong><small>3.98 s · system input</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/ud-collapse/mixture.wav"></audio></div>
-                <div class="audio-cell reference"><strong>Clean target</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/ud-collapse/target.wav"></audio></div>
-                <div class="audio-cell reference"><strong>Clean interferer</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/ud-collapse/interferer.wav"></audio></div>
-              </div>
-            </details>
-            <div class="audio-grid five failure-audio-grid">
-              <div class="audio-cell evidence"><strong>BSRNN-TSE-CDCS-5</strong><small>large-v3 WER 55.56%</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/ud-collapse/cdcs-5.wav"></audio></div>
-              <div class="audio-cell failure-output"><strong>Qwen-TSE-UD</strong><small>empty large-v3 transcript</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/ud-collapse/qwen-ud.wav"></audio></div>
-              <div class="audio-cell ours"><strong>Qwen-TSE-fixed-CSG</strong><small>large-v3 WER 66.67%</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/ud-collapse/qwen-fixed-csg.wav"></audio></div>
-              <div class="audio-cell"><strong>Qwen-TSE-adaptive-CSG</strong><small>large-v3 WER 88.89%</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/ud-collapse/qwen-adaptive-csg.wav"></audio></div>
-              <div class="audio-cell"><strong>Qwen-TSE-adaptive-CSG+GNR</strong><small>supplementary · large-v3 WER 100%</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/ud-collapse/qwen-adaptive-csg-gnr.wav"></audio></div>
-            </div>
-            <details class="failure-transcripts">
-              <summary>Reveal target and large-v3 transcripts</summary>
-              <div class="transcript-panel">
-                <dl>
-                  <div><dt>Target</dt><dd>steam up and canvas spread the schooner started eastwards</dd></div>
-                  <div class="wrong-line"><dt>Qwen-TSE-UD · large-v3</dt><dd>[empty transcript] <span class="wer-tag">9 deletions · WER 100%</span></dd></div>
-                  <div><dt>Qwen-TSE-fixed-CSG · large-v3</dt><dd>theba cant spread the schooner starting to <span class="wer-tag">WER 66.67%</span></dd></div>
-                </dl>
-                <p class="transcript-reading">Provisional interpretation: likely waveform-content failure, but the player is provided so the audible failure can be checked directly.</p>
-              </div>
-            </details>
-          </article>
-
-          <article class="failure-card">
-            <div class="failure-label"><span>Case 04</span><strong>Identity/content separation</strong></div>
-            <h3>The voice stays target-like while the words leave the target</h3>
-            <p>
-              The large-v3 target reference contains 25 words, but all LLM arms produce a fluent unrelated sentence.
-              Their speaker margins remain positive and A-sw. stays false.
-              This is why an output can sound like the correct person yet still have very high WER.
-            </p>
-            <div class="failure-metrics" aria-label="Whisper large-v3 WER comparison">
-              <span><b>UD</b> 124%</span>
-              <span><b>Fixed</b> 112%</span>
-              <span><b>Adaptive</b> 112%</span>
-              <span><b>GNR</b> 112%</span>
-            </div>
-            <details class="input-details failure-inputs">
-              <summary>Listen to the complete input and references</summary>
-              <div class="audio-grid three">
-                <div class="audio-cell"><strong>Noisy mixture</strong><small>9.01 s · system input</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/identity-content-drift/mixture.wav"></audio></div>
-                <div class="audio-cell reference"><strong>Clean target</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/identity-content-drift/target.wav"></audio></div>
-                <div class="audio-cell reference"><strong>Clean interferer</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/identity-content-drift/interferer.wav"></audio></div>
-              </div>
-            </details>
-            <div class="audio-grid five failure-audio-grid">
-              <div class="audio-cell failure-output"><strong>BSRNN-TSE-CDCS-5</strong><small>A-sw. · large-v3 WER 104%</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/identity-content-drift/cdcs-5.wav"></audio></div>
-              <div class="audio-cell failure-output"><strong>Qwen-TSE-UD</strong><small>WER 124% · margin +0.107</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/identity-content-drift/qwen-ud.wav"></audio></div>
-              <div class="audio-cell failure-output"><strong>Qwen-TSE-fixed-CSG</strong><small>WER 112% · margin +0.138</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/identity-content-drift/qwen-fixed-csg.wav"></audio></div>
-              <div class="audio-cell failure-output"><strong>Qwen-TSE-adaptive-CSG</strong><small>WER 112% · margin +0.133</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/identity-content-drift/qwen-adaptive-csg.wav"></audio></div>
-              <div class="audio-cell failure-output"><strong>Qwen-TSE-adaptive-CSG+GNR</strong><small>supplementary · WER 112% · margin +0.133</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/identity-content-drift/qwen-adaptive-csg-gnr.wav"></audio></div>
-            </div>
-            <details class="failure-transcripts">
-              <summary>Reveal the large-v3 target and output transcript</summary>
-              <div class="transcript-panel">
-                <dl>
-                  <div><dt>Target · large-v3</dt><dd>ill gladly do that promised the new boolaroo and ill feed the honourable goat all the shavings and leather and tin cans he can eat</dd></div>
-                  <div class="wrong-line"><dt>Qwen-TSE-fixed-CSG · large-v3</dt><dd>of course he did not realize that it was i who was nodding but nonetheless his conduct was very uncourteous and indeed out of the circumstance he was rather suspicious fine <span class="wer-tag">WER 112%</span></dd></div>
-                </dl>
-                <p class="transcript-reading">The large-v3 transcript is far from the target, while the speaker encoder still places the generated voice on the target side of the acoustic boundary.</p>
-              </div>
-            </details>
-          </article>
-
           <article class="failure-card repair-card">
-            <div class="failure-label"><span>Case 05</span><strong>Fixed-CSG repair</strong></div>
-            <h3>Grounding repairs an UD identity/content collapse</h3>
-            <p>
-              Large-v3 transcribes UD as “thank you”; it has 100% WER and a negative speaker margin.
-              Fixed CSG restores the complete eight-word target with 0% WER and
-              moves the speaker margin to +0.397.
-            </p>
+            <div class="failure-label"><span>Case 01</span><strong>Fixed-CSG repair</strong></div>
+            <h3>Grounding repairs missing content</h3>
+            <p>UD is transcribed as “thank you” (100% WER). Fixed CSG matches all eight words of the automatic target transcript and yields a positive speaker margin.</p>
             <div class="failure-metrics" aria-label="Whisper large-v3 WER comparison">
               <span class="metric-warn"><b>UD</b> 100%</span>
               <span class="metric-good"><b>Fixed</b> 0%</span>
               <span><b>Adaptive</b> 0%</span>
-              <span><b>GNR</b> 0%</span>
             </div>
             <details class="input-details failure-inputs">
-              <summary>Listen to the complete input and references</summary>
+              <summary>Input &amp; references</summary>
               <div class="audio-grid three">
                 <div class="audio-cell"><strong>Noisy mixture</strong><small>5.13 s · system input</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/fixed-csg-repair/mixture.wav"></audio></div>
                 <div class="audio-cell reference"><strong>Clean target</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/fixed-csg-repair/target.wav"></audio></div>
                 <div class="audio-cell reference"><strong>Clean interferer</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/fixed-csg-repair/interferer.wav"></audio></div>
               </div>
             </details>
-            <div class="audio-grid five failure-audio-grid">
+            <div class="audio-grid failure-audio-grid">
               <div class="audio-cell evidence"><strong>BSRNN-TSE-CDCS-5</strong><small>large-v3 WER 0%</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/fixed-csg-repair/cdcs-5.wav"></audio></div>
               <div class="audio-cell failure-output"><strong>Qwen-TSE-UD</strong><small>A-sw. · “thank you”</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/fixed-csg-repair/qwen-ud.wav"></audio></div>
               <div class="audio-cell ours"><strong>Qwen-TSE-fixed-CSG</strong><small>WER 0% · margin +0.397</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/fixed-csg-repair/qwen-fixed-csg.wav"></audio></div>
               <div class="audio-cell"><strong>Qwen-TSE-adaptive-CSG</strong><small>large-v3 WER 0%</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/fixed-csg-repair/qwen-adaptive-csg.wav"></audio></div>
-              <div class="audio-cell"><strong>Qwen-TSE-adaptive-CSG+GNR</strong><small>supplementary · large-v3 WER 0%</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/fixed-csg-repair/qwen-adaptive-csg-gnr.wav"></audio></div>
             </div>
             <details class="failure-transcripts">
-              <summary>Reveal target and output transcripts</summary>
+              <summary>ASR transcripts</summary>
               <div class="transcript-panel">
                 <dl>
                   <div><dt>Target</dt><dd>suddenly the ichthyosaurus and the plesiosaurus disappear below</dd></div>
@@ -763,37 +476,66 @@
             </details>
           </article>
 
+          <article class="failure-card">
+            <div class="failure-label"><span>Case 02</span><strong>Identity/content separation</strong></div>
+            <h3>Target-like voice, wrong words</h3>
+            <p>The automatic transcripts differ from the target transcript, despite positive speaker margins. Voice similarity alone does not establish content accuracy.</p>
+            <div class="failure-metrics" aria-label="Whisper large-v3 WER comparison">
+              <span><b>UD</b> 124%</span>
+              <span><b>Fixed</b> 112%</span>
+              <span><b>Adaptive</b> 112%</span>
+            </div>
+            <details class="input-details failure-inputs">
+              <summary>Input &amp; references</summary>
+              <div class="audio-grid three">
+                <div class="audio-cell"><strong>Noisy mixture</strong><small>9.01 s · system input</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/identity-content-drift/mixture.wav"></audio></div>
+                <div class="audio-cell reference"><strong>Clean target</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/identity-content-drift/target.wav"></audio></div>
+                <div class="audio-cell reference"><strong>Clean interferer</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/identity-content-drift/interferer.wav"></audio></div>
+              </div>
+            </details>
+            <div class="audio-grid failure-audio-grid">
+              <div class="audio-cell failure-output"><strong>BSRNN-TSE-CDCS-5</strong><small>A-sw. · large-v3 WER 104%</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/identity-content-drift/cdcs-5.wav"></audio></div>
+              <div class="audio-cell failure-output"><strong>Qwen-TSE-UD</strong><small>WER 124% · margin +0.107</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/identity-content-drift/qwen-ud.wav"></audio></div>
+              <div class="audio-cell failure-output"><strong>Qwen-TSE-fixed-CSG</strong><small>WER 112% · margin +0.138</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/identity-content-drift/qwen-fixed-csg.wav"></audio></div>
+              <div class="audio-cell failure-output"><strong>Qwen-TSE-adaptive-CSG</strong><small>WER 112% · margin +0.133</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/identity-content-drift/qwen-adaptive-csg.wav"></audio></div>
+            </div>
+            <details class="failure-transcripts">
+              <summary>ASR transcripts</summary>
+              <div class="transcript-panel">
+                <dl>
+                  <div><dt>Target · large-v3</dt><dd>ill gladly do that promised the new boolaroo and ill feed the honourable goat all the shavings and leather and tin cans he can eat</dd></div>
+                  <div class="wrong-line"><dt>Qwen-TSE-fixed-CSG · large-v3</dt><dd>of course he did not realize that it was i who was nodding but nonetheless his conduct was very uncourteous and indeed out of the circumstance he was rather suspicious fine <span class="wer-tag">WER 112%</span></dd></div>
+                </dl>
+                <p class="transcript-reading">The transcript drifts while the speaker encoder remains on the target side.</p>
+              </div>
+            </details>
+          </article>
+
           <article class="failure-card regression-card">
-            <div class="failure-label"><span>Case 06</span><strong>Fixed-CSG regression</strong></div>
-            <h3>A counterexample: grounding invents fluent unrelated speech</h3>
-            <p>
-              UD is almost empty but remains on the target side of the acoustic boundary. Fixed CSG replaces
-              it with fluent unrelated content, worsens large-v3 WER from 85.71% to 128.57%, introduces an
-              A-sw., and moves the speaker margin below zero.
-            </p>
+            <div class="failure-label"><span>Case 03</span><strong>Fixed-CSG regression</strong></div>
+            <h3>Grounding can also fail</h3>
+            <p>The fixed-CSG transcript diverges further from the target: WER rises from 85.71% to 128.57%, with an acoustic speaker switch.</p>
             <div class="failure-metrics" aria-label="Whisper large-v3 WER comparison">
               <span><b>UD</b> 85.71%</span>
               <span class="metric-warn"><b>Fixed</b> 128.57%</span>
               <span><b>Adaptive</b> 185.71%</span>
-              <span><b>GNR</b> 185.71%</span>
             </div>
             <details class="input-details failure-inputs">
-              <summary>Listen to the complete input and references</summary>
+              <summary>Input &amp; references</summary>
               <div class="audio-grid three">
                 <div class="audio-cell"><strong>Noisy mixture</strong><small>3.30 s · system input</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/fixed-csg-regression/mixture.wav"></audio></div>
                 <div class="audio-cell reference"><strong>Clean target</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/fixed-csg-regression/target.wav"></audio></div>
                 <div class="audio-cell reference"><strong>Clean interferer</strong><small>evaluation only</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/fixed-csg-regression/interferer.wav"></audio></div>
               </div>
             </details>
-            <div class="audio-grid five failure-audio-grid">
+            <div class="audio-grid failure-audio-grid">
               <div class="audio-cell failure-output"><strong>BSRNN-TSE-CDCS-5</strong><small>A-sw. · large-v3 WER 214.29%</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/fixed-csg-regression/cdcs-5.wav"></audio></div>
               <div class="audio-cell"><strong>Qwen-TSE-UD</strong><small>large-v3: “you”</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/fixed-csg-regression/qwen-ud.wav"></audio></div>
               <div class="audio-cell failure-output"><strong>Qwen-TSE-fixed-CSG</strong><small>A-sw. · WER 128.57%</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/fixed-csg-regression/qwen-fixed-csg.wav"></audio></div>
               <div class="audio-cell failure-output"><strong>Qwen-TSE-adaptive-CSG</strong><small>WER 185.71%</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/fixed-csg-regression/qwen-adaptive-csg.wav"></audio></div>
-              <div class="audio-cell failure-output"><strong>Qwen-TSE-adaptive-CSG+GNR</strong><small>supplementary · WER 185.71%</small><audio controls preload="none" src="public/assets/audio/noisy-llm-case-study/fixed-csg-regression/qwen-adaptive-csg-gnr.wav"></audio></div>
             </div>
             <details class="failure-transcripts">
-              <summary>Reveal target and output transcripts</summary>
+              <summary>ASR transcripts</summary>
               <div class="transcript-panel">
                 <dl>
                   <div><dt>Target · large-v3</dt><dd>sometime youll tell me please wont you</dd></div>
@@ -805,38 +547,23 @@
           </article>
         </div>
 
-        <p class="failure-protocol">
-          All six cases come from the already completed 6,000-trial Natural Noisy TEST block and use unchanged
-          waveforms. The post-hoc large-v3 audit completed 57,578 unique transcripts and 50,400 metric rows with
-          zero failures and <code>MERGE_VALIDATION=PASS</code>. It is explicitly
-          <code>does_not_replace_frozen_test_metrics=true</code>. Exact unabridged transcripts, S/D/I counts,
-          speaker diagnostics, selection rules, durations, and per-asset SHA-256 hashes are in the
-          <a href="public/results/noisy-llm-case-study.json">machine-readable case record</a>.
-          Audio licensing and transformations are documented in <a href="AUDIO_ATTRIBUTION.md">Audio attribution</a>.
-        </p>
+        <p class="failure-protocol">Illustrative post-hoc cases, not prevalence estimates or replacements for frozen TEST results. <a href="public/results/noisy-llm-case-study.json">Full six-case audit, ASR settings and supplementary GNR results</a> · <a href="AUDIO_ATTRIBUTION.md">Audio attribution</a>.</p>
       </section>
 
-      <section id="metrics">
+      <section id="metric-definitions">
         <h2>Evaluation metrics</h2>
         <aside class="metric-guide" aria-labelledby="metric-guide-title">
           <div class="metric-intro">
             <p class="study-badge">Introduced in this work</p>
             <h3 id="metric-guide-title">Two operational diagnostics for speaker confusion</h3>
-            <p>
-              WER alone cannot tell whether an output followed the competing speaker. We therefore
-              define paired, reference-based indicators for lexical identity and acoustic identity.
-            </p>
+            <p>WER alone does not identify speaker confusion. We measure both lexical and acoustic switches.</p>
           </div>
 
           <div class="switch-metric-grid">
             <article class="switch-metric content-metric">
               <div class="metric-title-line"><span class="metric-symbol">C-sw.</span><span class="metric-direction">↓ lower is better</span></div>
               <h4>Content-switch rate</h4>
-              <p>
-                A trial is flagged when the fixed canonical ASR transcript of the output has lower
-                WER to the clean interferer transcript than to the clean target transcript. Ties are
-                not switches.
-              </p>
+              <p>The fixed-ASR output transcript has lower WER against the clean interferer transcript than the target transcript. Ties do not count.</p>
               <div class="metric-formula math-display" data-tex="c_{\mathrm{sw},n}=\mathbf{1}\!\left[\operatorname{WER}(\tau_{I,n},\hat\tau_n)&lt;\operatorname{WER}(\tau_{T,n},\hat\tau_n)\right]">
                 csw,n = 1[WER(τI,n, τ̂n) &lt; WER(τT,n, τ̂n)]
               </div>
@@ -845,10 +572,7 @@
             <article class="switch-metric acoustic-metric">
               <div class="metric-title-line"><span class="metric-symbol">A-sw.</span><span class="metric-direction">↓ lower is better</span></div>
               <h4>Acoustic-switch rate</h4>
-              <p>
-                A frozen CosyVoice CAMPPlus evaluator flags a trial when the output is more
-                cosine-similar to the clean interferer than to the clean target. Ties are not switches.
-              </p>
+              <p>Frozen CosyVoice CAMPPlus places the output closer to the clean interferer than to the clean target in cosine similarity. Ties do not count.</p>
               <div class="metric-formula formula-stack">
                 <span class="math-display" data-tex="\begin{aligned}m_{\mathrm{spk},n}&amp;=\cos\!\left(f(s_{T,n}),f(\hat s_n)\right)\\&amp;\quad-\cos\!\left(f(s_{I,n}),f(\hat s_n)\right)\end{aligned}">mspk,n = cos(f(sT,n), f(ŝn)) − cos(f(sI,n), f(ŝn))</span>
                 <span class="math-display" data-tex="a_{\mathrm{sw},n}=\mathbf{1}\!\left[m_{\mathrm{spk},n}&lt;0\right]">asw,n = 1[mspk,n &lt; 0]</span>
@@ -861,12 +585,7 @@
             <span class="rate-divider" aria-hidden="true">·</span>
             <span class="rate-expression math-display" data-tex="\mathrm{A\text{-}sw.}=\frac{100\%}{N}\sum_{n=1}^{N}a_{\mathrm{sw},n}">A-sw. = 100%/N Σ asw,n</span>
           </div>
-          <p class="metric-caveat">
-            These are study-defined operational diagnostics, not standardized perceptual metrics or
-            proof of semantic or speaker correctness. Clean target and interferer references are used
-            for evaluation only; CDCS deployment uses neither. The CAMPPlus evaluator is independent
-            of the frozen ECAPA selector.
-          </p>
+          <p class="metric-caveat">Study-defined diagnostics, not perceptual ground truth. Clean references are for evaluation only. CAMPPlus evaluates identity independently of the ECAPA selector.</p>
         </aside>
 
         <dl class="supporting-metrics" aria-label="Supporting metric definitions">
@@ -885,6 +604,6 @@
     </main>
 
     <script src="public/vendor/katex/katex.min.js?v=0.18.6"></script>
-    <script src="app.js?v=20260914-1"></script>
+    <script src="app.js?v=20261025-paper-1"></script>
   </body>
 </html>
